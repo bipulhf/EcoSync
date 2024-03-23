@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+
+# Build directories
+dist/
+build/
+
+# Environment variables file
+.env
+
+# Log files
+logs/
+*.log
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Testing and coverage files
+coverage/
+
+# Compiled binary addons
+**/*.node
+
