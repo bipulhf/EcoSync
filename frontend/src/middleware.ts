@@ -24,7 +24,8 @@ export async function middleware(req: NextRequest, res: NextResponse) {
   } else if (
     req.nextUrl.pathname === "/" ||
     req.nextUrl.pathname === "/login" ||
-    req.nextUrl.pathname === "/reset-password"
+    req.nextUrl.pathname === "/reset-password" ||
+    req.nextUrl.pathname === "/new-password"
   ) {
     return NextResponse.next();
   }

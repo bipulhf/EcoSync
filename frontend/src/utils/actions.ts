@@ -51,6 +51,46 @@ export async function login(prevState: any, formData: FormData) {
   }
 }
 
+export async function resetPassword(prevState: any, formData: FormData) {
+  const email = formData.get("email");
+  const data = await fetch(`${baseURL}/auth/reset-password/initiate`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+  if (data.status === 200) {
+    cookies().set("email", email as string);
+    redirect("/new-password");
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function confirmPassword(prevState: any, formData: FormData) {
+  const email = cookies().get("email")?.value;
+  const code = formData.get("code");
+  const password = formData.get("password");
+
+  const data = await fetch(`${baseURL}/auth/reset-password/confirm`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, token: code, newPassword: password }),
+  });
+
+  if (data.status === 200) {
+    cookies().delete("email");
+    redirect("/login");
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
 export async function leftSTS(formData: FormData) {
   const id = formData.get("id");
   const data = await fetch(`${baseURL}/sts/vehicle/${id}`, { method: "PUT" });

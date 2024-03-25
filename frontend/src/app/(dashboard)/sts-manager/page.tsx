@@ -75,3 +75,5 @@ export default async function StsManager() {
     </div>
   );
 }
+
+export const fetchCache = "force-no-store";

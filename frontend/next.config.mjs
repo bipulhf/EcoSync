@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.freeimages.com",
       },
+      {
+        protocol: "https",
+        hostname: "beforeigosolutions.com",
+      },
     ],
   },
 };

@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import { login } from "@/utils/actions";
+import Link from "next/link";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -56,6 +57,12 @@ export default function LoginForm() {
           placeholder="********"
         />
         <Submit />
+        <Link
+          href="/reset-password"
+          className="text-admin hover:underline text-2xl font-medium mx-10"
+        >
+          Reset Password
+        </Link>
       </form>
       {state?.message && (
         <p className="text-red text-2xl font-medium mt-4">{state.message}</p>
