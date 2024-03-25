@@ -1,26 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as jose from "jose";
+import { verify } from "./utils/verify";
 
 export async function middleware(req: NextRequest, res: NextResponse) {
   const token =
     req.headers.get("Authorization") || req.cookies.get("jwt")?.value;
   if (token) {
-    const decoded = await jose.jwtVerify(
-      token,
-      new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET)
-    );
-    if (decoded.payload.role && decoded.payload.name) {
+    const { name, role } = await verify(token);
+    if (role && name) {
       if (
         req.nextUrl.pathname === "/login" ||
         req.nextUrl.pathname === "/reset-password"
       ) {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      } else if (req.nextUrl.pathname.startsWith(`/${decoded.payload.role}`)) {
+        return NextResponse.redirect(new URL(`/${role}`, req.url));
+      } else if (
+        req.nextUrl.pathname.startsWith(`/${role}`) ||
+        req.nextUrl.pathname === "/profile"
+      ) {
         return NextResponse.next();
       }
-      return NextResponse.redirect(
-        new URL(`/${decoded.payload.role}`, req.url)
-      );
+      return NextResponse.redirect(new URL(`/${role}`, req.url));
     }
   } else if (
     req.nextUrl.pathname === "/" ||

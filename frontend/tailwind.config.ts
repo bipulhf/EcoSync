@@ -18,6 +18,7 @@ const config: Config = {
         landfill_bg: "#FFFFFF",
         black: "#000000",
         red: "#DF3E3E",
+        unassigned: "#6F6F6F",
       },
     },
   },
