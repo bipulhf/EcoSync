@@ -6,12 +6,30 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") 
 }
 
 model User {
-  user_id   Int    @id
-  user_name String
-}
+  id        Int      @id @default(autoincrement())
+  first_name String
+  last_name String 
+  email     String   @unique
+  password  String
+  profile_photo String? //cloud_image_link
+  mobile    String?  
+  role          String    @default("UNASSIGNED")
+  token    Token?  
+}  
 
+
+model Token {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  body      String?
+  valid      Boolean   @default(true)
+  expiration DateTime
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int @unique
+}
