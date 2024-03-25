@@ -5,6 +5,29 @@ import { baseURL } from "../../files";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+export async function registration(prevState: any, formData: FormData) {
+  const first_name = formData.get("first_name");
+  const last_name = formData.get("last_name");
+  const email = formData.get("email");
+  const mobile = formData.get("mobile");
+
+  const data = await fetch(`${baseURL}/auth/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${cookies().get("jwt")?.value}`,
+    },
+    body: JSON.stringify({ first_name, last_name, email, mobile }),
+  });
+
+  if (data.status === 200) {
+    redirect(`/admin/users`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
 export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email");
   const password = formData.get("password");
@@ -19,8 +42,8 @@ export async function login(prevState: any, formData: FormData) {
 
   if (data.status === 200) {
     const response = await data.json();
-    const { role, jwt } = response;
-    cookies().set("jwt", jwt);
+    const { role, token } = response;
+    cookies().set("jwt", token);
     redirect(`/${role}`);
   } else {
     const response = await data.json();
