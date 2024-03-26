@@ -9,7 +9,7 @@ export default function UserCard({ user }: any) {
           alt="user"
           width={100}
           height={100}
-          className="rounded-full"
+          className="rounded-full size-[100px] overflow-hidden"
         />
       </div>
       <div>

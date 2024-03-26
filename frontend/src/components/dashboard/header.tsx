@@ -37,7 +37,7 @@ export default async function UserHeader() {
                   alt="Profile"
                   width={50}
                   height={50}
-                  className="rounded-full"
+                  className="rounded-full size-[50px] overflow-hidden"
                 />
               </div>
             </Link>

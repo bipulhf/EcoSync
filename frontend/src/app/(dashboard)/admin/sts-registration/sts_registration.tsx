@@ -1,7 +1,7 @@
 "use client";
 
+import { stsRegistration } from "@/utils/actions";
 import { useFormState, useFormStatus } from "react-dom";
-import { registration } from "@/utils/actions";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -13,14 +13,14 @@ function Submit() {
         className={`bg-admin hover:underline transition-all duration-300 text-white font-bold py-2 px-4 rounded`}
         disabled={pending}
       >
-        {pending ? "Adding User..." : "Add User"}
+        {pending ? "Adding STS..." : "Add STS"}
       </button>
     </div>
   );
 }
 
-export default function UserRegistaionsForm() {
-  const [state, formAction] = useFormState(registration, null);
+export default function STSRegistrationForm() {
+  const [state, formAction] = useFormState(stsRegistration, null);
 
   return (
     <>
@@ -31,76 +31,88 @@ export default function UserRegistaionsForm() {
         <div className="flex justify-around items-center">
           <div className="w-full mr-10">
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="first_name" className="w-[30%] block mb-2">
-                First Name
+              <label htmlFor="ward_no" className="w-[30%] block mb-2">
+                Ward No
               </label>
               <input
                 type="text"
-                id="first_name"
-                name="first_name"
+                id="ward_no"
+                name="ward_no"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter First Name"
+                placeholder="Enter Ward No"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="last_name" className="w-[30%] block mb-2">
-                Last Name
+              <label htmlFor="capacity" className="w-[30%] block mb-2">
+                Capacity
               </label>
               <input
                 type="text"
-                id="last_name"
-                name="last_name"
+                id="capacity"
+                name="capacity"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Last Name"
+                placeholder="Enter STS Capacity"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="email" className="w-[30%] block mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Email"
-              />
-            </div>
-            <div className="mb-4 flex w-full items-center">
-              <label htmlFor="mobile" className="w-[30%] block mb-2">
-                Mobile
+              <label htmlFor="latitude" className="w-[30%] block mb-2">
+                Latitude
               </label>
               <input
                 type="text"
-                id="mobile"
-                name="mobile"
+                id="latitude"
+                name="latitude"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Mobile Number"
+                placeholder="Enter Vehicle Number"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="role" className="w-[30%] block mb-2">
-                User Role
+              <label htmlFor="longitude" className="w-[30%] block mb-2">
+                Longitude
               </label>
-              <select
-                id="role"
-                name="role"
+              <input
+                type="text"
+                id="longitude"
+                name="longitude"
                 required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
-              >
-                <option value="unassigned">Unassigned</option>
-                <option value="sts-manager">STS Manager</option>
-                <option value="landfill-manager">Landfill Manager</option>
-                <option value="admin">Admin</option>
-              </select>
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                placeholder="Enter Vehicle Number"
+              />
+            </div>
+            <div className="mb-4 flex w-full items-center">
+              <label htmlFor="manager_id" className="w-[30%] block mb-2">
+                STS Manager
+              </label>
+              <input
+                type="text"
+                id="manager_id"
+                name="manager_id"
+                required
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                placeholder="Enter STS Manager ID"
+              />
+            </div>
+            <div className="mb-4 flex w-full items-center">
+              <label htmlFor="landfill_id" className="w-[30%] block mb-2">
+                Landfill ID
+              </label>
+              <input
+                type="text"
+                id="landfill_id"
+                name="landfill_id"
+                required
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                placeholder="Enter Landfill ID"
+              />
             </div>
           </div>
         </div>
-        <Submit />
+        <div className="flex justify-center my-5">
+          <Submit />
+        </div>
       </form>
       {state?.message && (
         <p className="text-red text-2xl font-medium mt-4">{state.message}</p>

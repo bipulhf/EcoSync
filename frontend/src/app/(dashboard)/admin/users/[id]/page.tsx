@@ -118,7 +118,7 @@ export default async function UserProfile({
                   height={200}
                   alt={`${dname + " " + dname}'s photo`}
                   unoptimized
-                  className="rounded-full"
+                  className="rounded-full size-[200px] overflow-hidden"
                 />
               </div>
               <input

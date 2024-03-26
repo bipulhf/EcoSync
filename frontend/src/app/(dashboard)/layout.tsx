@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 
   return (
     role && (
-      <main className={`h-screen`} style={{ backgroundColor: bgColor }}>
+      <main className={`min-h-screen`} style={{ backgroundColor: bgColor }}>
         <UserHeader />
         {children}
       </main>
