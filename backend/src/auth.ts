@@ -10,6 +10,45 @@ import { User } from "@prisma/client";
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
 
+export const deleteUser = async (req: Request, res: Response) => {
+  
+  
+  try{
+    const token = req.headers.authorization as string;  
+    verifyUserAccess(userRole.admin, token, "Permission Denied, Only System Admin can delete user", res)
+  }catch(error){
+    return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
+  }
+  
+
+  try {
+  
+    const userId = parseInt(req.params.id); 
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+ 
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    // Delete the user
+    await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+
+}
+
+
 const verifyUserAccess = (role:string, token: string, message: string, res: Response) => {
  
   const decoded = jwt.verify(token, JWT_SECRET) as any;
@@ -23,7 +62,7 @@ const verifyUserAccess = (role:string, token: string, message: string, res: Resp
 
   if (roleType !== role) {
     return res
-      .status(401)
+      .status(403)
       .json({ message: message });
   }
  
@@ -33,7 +72,7 @@ export const getUser = async (req: Request, res: Response) => {
 
   try{
     const token = req.headers.authorization as string;  
-    verifyUserAccess(userRole.admin, token, "Unauthorized, Only System Admin can access user", res)
+    verifyUserAccess(userRole.admin, token, "Permission Denined, Only System Admin can access user", res)
   }catch(error){
     return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
   }
@@ -65,7 +104,7 @@ export const getUser = async (req: Request, res: Response) => {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error('Error retrieving user:', error);
+    
     res.status(500).json({ error: 'Internal server error' });
   }
 
@@ -75,7 +114,7 @@ export const getUser = async (req: Request, res: Response) => {
 export const getAllUsers = async (req: Request, res: Response) => {  
   try{
     const token = req.headers.authorization as string;
-    verifyUserAccess(userRole.admin, token, "Unauthorized, Only System Admin can access users", res)
+    verifyUserAccess(userRole.admin, token, "Permission Denied, Only System Admin can access users", res)
   }catch(error){
     return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
   }
@@ -176,7 +215,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Password reset email sent successfully" });
   } catch (error) {
-    console.error("Error:", error);
+    
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
