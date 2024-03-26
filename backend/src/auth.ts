@@ -10,16 +10,85 @@ import { User } from "@prisma/client";
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
 
+
+export const updateUser = async (req: Request, res: Response) => {
+
+  const userId = parseInt(req.params.id);
+  const { first_name, last_name, email, profile_photo, mobile, role } = req.body;
+
+
+  try{
+    const token = req.headers.authorization as string;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+
+    const currentUserRole = decoded.role;
+    const currentUserId = decoded.userId
+
+  if (currentUserRole !== userRole.admin && currentUserId !== userId) {
+    return res
+      .status(403)
+      .json({ message: "Permission Denined, Only System Admin or Owner Can Update User" });
+  }
+ 
+  }catch(error){
+  return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
+}
+
+
+  try {
+    // Check if the user exists
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // update user details
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        first_name,
+        last_name,
+        email,
+        profile_photo,
+        mobile,
+        role,
+      },
+    });
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+
+}
+
+
 export const deleteUser = async (req: Request, res: Response) => {
   
-  
   try{
-    const token = req.headers.authorization as string;  
-    verifyUserAccess(userRole.admin, token, "Permission Denied, Only System Admin can delete user", res)
-  }catch(error){
-    return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
+    const token = req.headers.authorization as string;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+
+    const currentUserRole = decoded.role;
+
+  if (currentUserRole !== userRole.admin) {
+    return res
+      .status(403)
+      .json({ message: "Permission Denined, Only System Admin can access user" });
   }
-  
+ 
+  }catch(error){
+  return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
+}
 
   try {
   
@@ -49,34 +118,25 @@ export const deleteUser = async (req: Request, res: Response) => {
 }
 
 
-const verifyUserAccess = (role:string, token: string, message: string, res: Response) => {
- 
-  const decoded = jwt.verify(token, JWT_SECRET) as any;
-  
-  if (!decoded) {
-    return res
-      .status(401)
-      .json({ message: message });
-  }
-  const roleType = decoded.role;
-
-  if (roleType !== role) {
-    return res
-      .status(403)
-      .json({ message: message });
-  }
- 
-}
 
 export const getUser = async (req: Request, res: Response) => {
 
   try{
-    const token = req.headers.authorization as string;  
-    verifyUserAccess(userRole.admin, token, "Permission Denined, Only System Admin can access user", res)
-  }catch(error){
-    return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
+    const token = req.headers.authorization as string;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+
+    const currentUserRole = decoded.role;
+
+  if (currentUserRole !== userRole.admin) {
+    return res
+      .status(403)
+      .json({ message: "Permission Denined, Only System Admin can access user" });
   }
-  
+ 
+  }catch(error){
+  return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
+}
+
 
   try {
 
@@ -113,9 +173,18 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const getAllUsers = async (req: Request, res: Response) => {  
   try{
-    const token = req.headers.authorization as string;
-    verifyUserAccess(userRole.admin, token, "Permission Denied, Only System Admin can access users", res)
-  }catch(error){
+      const token = req.headers.authorization as string;
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+
+      const currentUserRole = decoded.role;
+  
+    if (currentUserRole !== userRole.admin) {
+      return res
+        .status(403)
+        .json({ message: "Permission Denined, Only System Admin can access user" });
+    }
+   
+    }catch(error){
     return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
   }
   
