@@ -30,6 +30,6 @@ model Token {
   body      String?
   valid      Boolean   @default(true)
   expiration DateTime
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int @unique
 }
