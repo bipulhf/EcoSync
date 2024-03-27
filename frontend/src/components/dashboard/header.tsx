@@ -8,8 +8,8 @@ export default async function UserHeader() {
   const { name, role, photo } = await extractUserInfo();
   let headerColor = "#6F6F6F";
   if (role === "admin") headerColor = "#4A75CB";
-  else if (role === "sts-manager") headerColor = "#82B378";
-  else if (role === "landfill-manager") headerColor = "#B84C42";
+  else if (role === "sts_manager") headerColor = "#82B378";
+  else if (role === "landfill_manager") headerColor = "#B84C42";
 
   return (
     role && (

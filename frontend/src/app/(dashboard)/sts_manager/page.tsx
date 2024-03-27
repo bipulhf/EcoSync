@@ -4,30 +4,53 @@ import { leftSTS } from "@/utils/actions";
 import Link from "next/link";
 import VehicleComingFromLandfill from "@/components/dashboard/vehicle_coming_from_landfill";
 import VechiclesInSTS from "@/components/dashboard/vehicle_in_sts";
+import { cookies } from "next/headers";
 
 const getData = async () => {
   const { id } = await extractUserInfo();
-  const { capacity } = await (
-    await fetch(`${baseURL}/sts/${id}`, { cache: "no-cache" })
-  ).json();
-  const sts_vehicle = await (
-    await fetch(`${baseURL}/sts/${id}/vehicle`, { cache: "no-cache" })
-  ).json();
-  const landfill_vehicle = await (
-    await fetch(`${baseURL}/landfill/vehicle`, { cache: "no-cache" })
+
+  const sts = await (
+    await fetch(`${baseURL}/sts?managerId=${id}`, {
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
   ).json();
 
-  return { capacity, sts_vehicle, landfill_vehicle };
+  const sts_vehicle = await (
+    await fetch(`${baseURL}/sts/vehicle`, {
+      cache: "no-store",
+      method: "GET",
+      headers: {
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
+  ).json();
+
+  const landfill_vehicle = await (
+    await fetch(`${baseURL}/landfill/left`, {
+      cache: "no-store",
+      headers: {
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
+  ).json();
+
+  return { sts, sts_vehicle, landfill_vehicle };
 };
 
 export default async function StsManager() {
-  const { capacity, sts_vehicle, landfill_vehicle } = await getData();
+  const { sts, sts_vehicle, landfill_vehicle } = await getData();
 
   return (
     <div className="w-full flex flex-col items-center text-center">
       <div className="mt-10 mb-5">
         <h2 className="text-2xl">Total Capacity:</h2>
-        <h2 className="text-4xl text-sts_text font-bold">{capacity} Tons</h2>
+        <h2 className="text-4xl text-sts_text font-bold">
+          {sts.capacity} Tons
+        </h2>
       </div>
       <div className="my-5">
         <Link href={"/sts-manager/entry-vehicle"}>

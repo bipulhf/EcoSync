@@ -11,6 +11,8 @@ export async function registration(prevState: any, formData: FormData) {
   const email = formData.get("email");
   const mobile = formData.get("mobile");
   const role = formData.get("role");
+  const sts_id = formData.get("sts_id");
+  const landfill_id = formData.get("landfill_id");
 
   const data = await fetch(`${baseURL}/auth/create`, {
     method: "POST",
@@ -18,7 +20,15 @@ export async function registration(prevState: any, formData: FormData) {
       "Content-Type": "application/json",
       Authorization: `${cookies().get("jwt")?.value}`,
     },
-    body: JSON.stringify({ first_name, last_name, email, mobile, role }),
+    body: JSON.stringify({
+      first_name,
+      last_name,
+      email,
+      mobile,
+      role,
+      sts_id,
+      landfill_id,
+    }),
   });
 
   if (data.status === 200) {
@@ -99,8 +109,8 @@ export async function updateUser(prevState: any, formData: FormData) {
   const mobile = formData.get("mobile");
   const password = formData.get("password");
 
-  const data = await fetch(`${baseURL}/auth/create`, {
-    method: "POST",
+  const data = await fetch(`${baseURL}/profile`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `${cookies().get("jwt")?.value}`,
@@ -116,26 +126,79 @@ export async function updateUser(prevState: any, formData: FormData) {
   }
 }
 
-export async function vehicleRegistration(prevState: any, formData: FormData) {
-  const ward_no = formData.get("ward_no");
+export async function updateUserAdmin(prevState: any, formData: FormData) {
+  const id = formData.get("id");
+  const first_name = formData.get("first_name");
+  const last_name = formData.get("last_name");
+  const email = formData.get("email");
+  const mobile = formData.get("mobile");
+  const password = formData.get("password");
+  const role = formData.get("role");
+  const sts_id = formData.get("sts_id");
+  const landfill_id = formData.get("landfill_id");
+
+  const data = await fetch(`${baseURL}/users/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${cookies().get("jwt")?.value}`,
+    },
+    body: JSON.stringify({
+      first_name,
+      last_name,
+      email,
+      mobile,
+      password,
+      role,
+      sts_id,
+      landfill_id,
+    }),
+  });
+
+  if (data.status === 200) {
+    redirect(`/admin/users`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function deleteUser(prevState: any, formData: FormData) {
+  const id = formData.get("id");
+  const data = await fetch(`${baseURL}/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${cookies().get("jwt")?.value}`,
+    },
+  });
+
+  if (data.status === 200) {
+    redirect(`/admin/users`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function stsRegistration(prevState: any, formData: FormData) {
+  const ward = formData.get("ward_no");
   const capacity = formData.get("capacity");
   const latitude = formData.get("latitude");
   const longitude = formData.get("longitude");
-  const manager_id = formData.get("manager_id");
   const landfill_id = formData.get("landfill_id");
 
-  const data = await fetch(`${baseURL}/auth/create`, {
+  const data = await fetch(`${baseURL}/sts`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
-      ward_no,
+      ward,
       capacity,
       latitude,
       longitude,
-      manager_id,
       landfill_id,
     }),
   });
@@ -148,16 +211,16 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
   }
 }
 
-export async function stsRegistration(prevState: any, formData: FormData) {
+export async function vehicleRegistration(prevState: any, formData: FormData) {
   const vehicle_number = formData.get("vehicle_number");
-  const vehicle_type = formData.get("vehicle_type");
+  const type = formData.get("vehicle_type");
   const capacity = formData.get("capacity");
   const driver_name = formData.get("driver_name");
   const driver_mobile = formData.get("driver_mobile");
-  const loaded = formData.get("loaded");
-  const unloaded = formData.get("unloaded");
+  const cost_per_km_load = formData.get("loaded");
+  const cost_per_km_unload = formData.get("unloaded");
 
-  const data = await fetch(`${baseURL}/auth/create`, {
+  const data = await fetch(`${baseURL}/vehicle`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -165,12 +228,12 @@ export async function stsRegistration(prevState: any, formData: FormData) {
     },
     body: JSON.stringify({
       vehicle_number,
-      vehicle_type,
+      type,
       capacity,
       driver_name,
       driver_mobile,
-      loaded,
-      unloaded,
+      cost_per_km_load,
+      cost_per_km_unload,
     }),
   });
 

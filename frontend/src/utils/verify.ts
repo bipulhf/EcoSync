@@ -13,9 +13,9 @@ export async function verify(token: string) {
 export default async function extractUserInfo() {
   const data = await verify(cookies().get("jwt")?.value as string);
   return {
-    id: data.id as string,
+    id: data.userId as string,
     name: data.name as string,
     role: data.role as string,
-    photo: data.photo as string,
+    photo: data.profile_photo as string,
   };
 }

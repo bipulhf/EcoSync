@@ -53,7 +53,7 @@ export default function STSRegistrationForm() {
                 name="capacity"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter STS Capacity"
+                placeholder="Enter STS Capacity in Tons"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
@@ -66,7 +66,7 @@ export default function STSRegistrationForm() {
                 name="latitude"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Vehicle Number"
+                placeholder="Enter Latitude"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
@@ -79,20 +79,7 @@ export default function STSRegistrationForm() {
                 name="longitude"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Vehicle Number"
-              />
-            </div>
-            <div className="mb-4 flex w-full items-center">
-              <label htmlFor="manager_id" className="w-[30%] block mb-2">
-                STS Manager
-              </label>
-              <input
-                type="text"
-                id="manager_id"
-                name="manager_id"
-                required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter STS Manager ID"
+                placeholder="Enter Longitude"
               />
             </div>
             <div className="mb-4 flex w-full items-center">

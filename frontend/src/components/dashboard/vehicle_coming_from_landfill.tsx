@@ -8,7 +8,8 @@ export default function VehicleComingFromLandfill({ landfill_vehicle }: any) {
           key={vehicle.id}
         >
           <span className="mx-2">
-            Left at: <b>{vehicle.departure_time}</b>
+            Left at:{" "}
+            <b>{new Date(vehicle.departure_time).toLocaleTimeString()}</b>
           </span>{" "}
           | <span className="mx-2">{vehicle.vehicle.vehicle_number}</span> |{" "}
           <span className="mx-2">{vehicle.vehicle.driver_name}</span>|{" "}

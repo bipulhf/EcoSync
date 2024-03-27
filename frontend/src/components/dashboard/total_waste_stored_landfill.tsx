@@ -1,4 +1,4 @@
-export default function TotalWasteStoredThisWeek({ capacity }: any) {
+export default async function TotalWasteStoredThisWeek({ capacity }: any) {
   return (
     <div className="mt-10 mb-5">
       <h2 className="text-2xl">Total Waste Stored (this week):</h2>

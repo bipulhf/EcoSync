@@ -1,3 +1,5 @@
+import { distance } from "@/utils/distance";
+
 interface Props {
   sts: Array<any>;
 }
@@ -24,39 +26,15 @@ export default function STSList({ sts }: Props) {
               <td className="min-w-[5rem]">{sts.id}</td>
               <td className="min-w-[10rem]">{sts.ward}</td>
               <td className="min-w-[10rem]">{sts.capacity} Tons</td>
-              <td className="min-w-[10rem]">{sts.distance} km</td>
               <td className="min-w-[10rem]">
-                <button className="bg-admin text-white px-2 py-1 rounded-lg font-bold text-lg hover:underline transition-all duration-300">
-                  Show on Map
-                </button>
+                {distance(
+                  sts.latitude,
+                  sts.longitude,
+                  sts.landfill.latitude,
+                  sts.landfill.longitude
+                ).toFixed(2)}{" "}
+                km
               </td>
-            </tr>
-          ))}
-          {sts.map((sts: any) => (
-            <tr
-              key={sts.id}
-              className="hover:text-landfill transition-all duration-200"
-            >
-              <td className="min-w-[5rem]">{sts.id}</td>
-              <td className="min-w-[10rem]">{sts.ward}</td>
-              <td className="min-w-[10rem]">{sts.capacity} Tons</td>
-              <td className="min-w-[10rem]">{sts.distance} km</td>
-              <td className="min-w-[10rem]">
-                <button className="bg-admin text-white px-2 py-1 rounded-lg font-bold text-lg hover:underline transition-all duration-300">
-                  Show on Map
-                </button>
-              </td>
-            </tr>
-          ))}
-          {sts.map((sts: any) => (
-            <tr
-              key={sts.id}
-              className="hover:text-landfill transition-all duration-200"
-            >
-              <td className="min-w-[5rem]">{sts.id}</td>
-              <td className="min-w-[10rem]">{sts.ward}</td>
-              <td className="min-w-[10rem]">{sts.capacity} Tons</td>
-              <td className="min-w-[10rem]">{sts.distance} km</td>
               <td className="min-w-[10rem]">
                 <button className="bg-admin text-white px-2 py-1 rounded-lg font-bold text-lg hover:underline transition-all duration-300">
                   Show on Map

@@ -16,8 +16,8 @@ export default async function DashboardLayout({
   const { role } = await extractUserInfo();
   let bgColor = "#FFFFFF";
   if (role === "admin") bgColor = "#F3F7FB";
-  else if (role === "sts-manager") bgColor = "#F8FFF6";
-  else if (role === "landfill-manager") bgColor = "#FFFFFF";
+  else if (role === "sts_manager") bgColor = "#F8FFF6";
+  else if (role === "landfill_manager") bgColor = "#FFFFFF";
 
   return (
     role && (

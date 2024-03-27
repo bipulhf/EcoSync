@@ -52,9 +52,10 @@ export default function VechicleRegistrationForm() {
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
               >
-                <option value={1}>Car</option>
-                <option value={2}>Car</option>
-                <option value={3}>Car</option>
+                <option value="open_truck">Open Truck</option>
+                <option value="dump_truck">Dump Truck</option>
+                <option value="compactor">Compactor</option>
+                <option value="container">Container</option>
               </select>
             </div>
             <div className="mb-4 flex w-full items-center">
@@ -67,9 +68,9 @@ export default function VechicleRegistrationForm() {
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
               >
-                <option value={1}>5 Ton</option>
-                <option value={2}>6 Ton</option>
-                <option value={3}>8 Ton</option>
+                <option value={3}>3 Ton</option>
+                <option value={5}>5 Ton</option>
+                <option value={7}>7 Ton</option>
               </select>
             </div>
             <div className="mb-4 flex w-full items-center">
@@ -108,7 +109,7 @@ export default function VechicleRegistrationForm() {
                 name="loaded"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Cost Per Kilometer (Loaded)"
+                placeholder="Enter Cost Per Kilometer (Loaded) in liters"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
@@ -121,7 +122,7 @@ export default function VechicleRegistrationForm() {
                 name="unloaded"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Cost Per Kilometer (Unloaded)"
+                placeholder="Enter Cost Per Kilometer (Unloaded) in liters"
               />
             </div>
           </div>

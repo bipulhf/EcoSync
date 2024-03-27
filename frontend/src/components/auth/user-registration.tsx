@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import { registration } from "@/utils/actions";
+import { useState } from "react";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -21,6 +22,7 @@ function Submit() {
 
 export default function UserRegistaionsForm() {
   const [state, formAction] = useFormState(registration, null);
+  const [role, setRole] = useState("unassigned");
 
   return (
     <>
@@ -87,17 +89,49 @@ export default function UserRegistaionsForm() {
                 User Role
               </label>
               <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
                 id="role"
                 name="role"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
               >
                 <option value="unassigned">Unassigned</option>
-                <option value="sts-manager">STS Manager</option>
-                <option value="landfill-manager">Landfill Manager</option>
+                <option value="sts_manager">STS Manager</option>
+                <option value="landfill_manager">Landfill Manager</option>
                 <option value="admin">Admin</option>
               </select>
             </div>
+            {role === "sts_manager" && (
+              <div className="mb-4 flex w-full items-center">
+                <label htmlFor="sts_id" className="w-[30%] block mb-2">
+                  Enter STS ID
+                </label>
+                <input
+                  type="text"
+                  id="sts_id"
+                  name="sts_id"
+                  required
+                  className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                  placeholder="Enter STS ID"
+                />
+              </div>
+            )}
+            {role === "landfill_manager" && (
+              <div className="mb-4 flex w-full items-center">
+                <label htmlFor="landfill_id" className="w-[30%] block mb-2">
+                  Enter Landfill ID
+                </label>
+                <input
+                  type="text"
+                  id="landfill_id"
+                  name="landfill_id"
+                  required
+                  className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                  placeholder="Enter Landfill ID"
+                />
+              </div>
+            )}
           </div>
         </div>
         <Submit />

@@ -1,24 +1,32 @@
 import extractUserInfo from "@/utils/verify";
 import { baseURL } from "../../../../files";
-import Image from "next/image";
 import ProfileForm from "./profile_form";
+import { cookies } from "next/headers";
 
 const getData = async () => {
-  const { id, role } = await extractUserInfo();
   const data = await (
-    await fetch(`${baseURL}/user/${id}`, { cache: "no-store" })
+    await fetch(`${baseURL}/profile`, {
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
   ).json();
   return {
-    name: data.name,
-    photo: data.photo,
+    id: data.id,
+    first_name: data.first_name,
+    last_name: data.last_name,
+    photo: data.profile_photo,
     email: data.email,
     mobile: data.mobile,
-    role,
+    role: data.role,
   };
 };
 
 export default async function Profile() {
-  const { name, photo, email, mobile, role } = await getData();
+  const { id, first_name, last_name, photo, email, mobile, role } =
+    await getData();
   let color = "black";
   if (role === "admin") color = "admin";
   else if (role === "sts-manager") color = "sts_text";
@@ -29,12 +37,14 @@ export default async function Profile() {
         Profile
       </h1>
       <ProfileForm
+        id={id}
         color={color}
-        fname={name}
-        lname={name}
+        fname={first_name}
+        lname={last_name}
         photo={photo}
         email={email}
         mobile={mobile}
+        role={role}
       />
     </>
   );

@@ -1,8 +1,9 @@
 "use client";
 
-import { updateUser } from "@/utils/actions";
+import { updateUserAdmin } from "@/utils/actions";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import DeleteForm from "./delete";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -20,15 +21,16 @@ function Submit() {
   );
 }
 
-export default function ProfileForm({
+export default function UserProfileForm({
   id,
-  color,
   fname,
   lname,
   photo,
   email,
   mobile,
   role,
+  sts_id,
+  landfill_id,
 }: any) {
   const [user, setUser] = useState({
     first_name: fname,
@@ -37,14 +39,17 @@ export default function ProfileForm({
     email,
     mobile,
     password: "",
+    role,
+    sts_id,
+    landfill_id,
   });
 
-  const [state, formAction] = useFormState(updateUser, null);
+  const [state, formAction] = useFormState(updateUserAdmin, null);
 
   return (
     <>
       <form
-        className={`text-${color} font-medium w-[80%] mx-auto text-2xl my-5`}
+        className={`text-admin font-medium w-[80%] mx-auto text-2xl py-5`}
         action={formAction}
       >
         <div className="flex justify-around items-center">
@@ -59,7 +64,7 @@ export default function ProfileForm({
                 id="first_name"
                 name="first_name"
                 required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 placeholder="Enter your first name"
                 value={user.first_name}
                 onChange={(e) =>
@@ -77,7 +82,7 @@ export default function ProfileForm({
                 id="last_name"
                 name="last_name"
                 required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 value={user.last_name}
                 placeholder="Enter your last name"
                 onChange={(e) =>
@@ -95,7 +100,7 @@ export default function ProfileForm({
                 id="email"
                 name="email"
                 required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 value={user.email}
                 placeholder="Enter your email"
                 onChange={(e) =>
@@ -112,7 +117,7 @@ export default function ProfileForm({
                 type="password"
                 id="password"
                 name="password"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 placeholder="(unchanged)"
                 onChange={(e) =>
                   setUser({ ...user, password: e.target.value as string })
@@ -129,7 +134,7 @@ export default function ProfileForm({
                 id="mobile"
                 name="mobile"
                 required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 placeholder="Enter your mobile number"
                 value={user.mobile}
                 onChange={(e) =>
@@ -137,20 +142,60 @@ export default function ProfileForm({
                 }
               />
             </div>
-            <div className="mb-2">
-              <label htmlFor="role" className="block mb-2">
-                Role:
+            <div className="mb-2 items-center">
+              <label htmlFor="role" className="w-[30%] block mb-2">
+                User Role
               </label>
-              <input
-                type="text"
+              <select
+                value={user.role}
+                onChange={(e) => setUser({ ...user, role: e.target.value })}
                 id="role"
                 name="role"
                 required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
-                value={role.toUpperCase()}
-                disabled
-              />
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
+              >
+                <option value="unassigned">Unassigned</option>
+                <option value="sts_manager">STS Manager</option>
+                <option value="landfill_manager">Landfill Manager</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
+            {user.role === "sts_manager" && (
+              <div className="mb-2 items-center">
+                <label htmlFor="sts_id" className="w-[30%] block mb-2">
+                  Enter STS ID
+                </label>
+                <input
+                  type="text"
+                  id="sts_id"
+                  name="sts_id"
+                  required
+                  value={user.sts_id}
+                  onChange={(e) => setUser({ ...user, sts_id: e.target.value })}
+                  className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                  placeholder="Enter STS ID"
+                />
+              </div>
+            )}
+            {user.role === "landfill_manager" && (
+              <div className="mb-2 items-center">
+                <label htmlFor="landfill_id" className="w-[30%] block mb-2">
+                  Enter Landfill ID
+                </label>
+                <input
+                  type="text"
+                  id="landfill_id"
+                  name="landfill_id"
+                  required
+                  value={user.landfill_id}
+                  onChange={(e) =>
+                    setUser({ ...user, landfill_id: e.target.value })
+                  }
+                  className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                  placeholder="Enter Landfill ID"
+                />
+              </div>
+            )}
           </div>
           <div>
             <div className="mb-2">
@@ -171,13 +216,14 @@ export default function ProfileForm({
                 id="image"
                 name="image"
                 accept="image/*"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
               />
             </div>
           </div>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-10">
           <Submit />
+          <DeleteForm id={id} />
         </div>
       </form>
       {state?.message && (

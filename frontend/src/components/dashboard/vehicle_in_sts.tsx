@@ -16,10 +16,12 @@ export default function VechiclesInSTS({
         >
           <input name="id" value={vehicle.id} type="hidden" />
           <span className="mx-2">
-            Arrived at: <b>{vehicle.arrival_time}</b>
+            Arrived at:{" "}
+            <b>{new Date(vehicle.arrival_time).toLocaleTimeString()}</b>
           </span>{" "}
           | <span className="mx-2">{vehicle.vehicle.vehicle_number}</span> |{" "}
-          <span className="mx-2">{vehicle.vehicle.driver_name}</span>
+          <span className="mx-2">{vehicle.vehicle.driver_name}</span> |{" "}
+          <span className="mx-2">{vehicle.vehicle.driver_mobile}</span>
           <button
             type="submit"
             className="mx-2 px-3 py-2 text-white text-xl bg-sts_text rounded-lg hover:bg-sts_primary transition-all duration-300"
