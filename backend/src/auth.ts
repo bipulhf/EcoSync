@@ -6,48 +6,42 @@ import { mailOptions, mailTransporter } from "./helpers/mailTransporter";
 import { prisma } from "./db";
 import { userRole } from "./globals";
 import { User } from "@prisma/client";
+import { checkRole, getUserId } from "./helpers/getRole";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
 
-
 export const updateUser = async (req: Request, res: Response) => {
-
   const userId = parseInt(req.params.id);
-  const { first_name, last_name, email, profile_photo, mobile, role } = req.body;
-
-
-  try{
-    const token = req.headers.authorization as string;
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-
-    const currentUserRole = decoded.role;
-    const currentUserId = decoded.userId
-
-  if (currentUserRole !== userRole.admin && currentUserId !== userId) {
-    return res
-      .status(403)
-      .json({ message: "Permission Denined, Only System Admin or Owner Can Update User" });
-  }
- 
-  }catch(error){
-  return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
-}
-
+  const { first_name, last_name, email, profile_photo, mobile, role } =
+    req.body;
 
   try {
-    // Check if the user exists
-    const existingUser = await prisma.user.findUnique({
+    const token = req.headers.authorization as string;
+    const currentUserId = getUserId(token);
+
+    if (!checkRole(token, userRole.admin) && currentUserId !== userId) {
+      return res.status(403).json({
+        message:
+          "Permission Denined, Only System Admin or Owner Can Update User",
+      });
+    }
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized: JWT token expired or invalid" });
+  }
+
+  try {
+    const existingUser = await prisma.user.findFirst({
       where: {
         id: userId,
       },
     });
 
     if (!existingUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
-
-    // update user details
 
     const updatedUser = await prisma.user.update({
       where: {
@@ -63,44 +57,38 @@ export const updateUser = async (req: Request, res: Response) => {
       },
     });
 
-    res.json(updatedUser);
+    return res.json(updatedUser);
   } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating user:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-}
-
+};
 
 export const deleteUser = async (req: Request, res: Response) => {
-  
-  try{
+  try {
     const token = req.headers.authorization as string;
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
 
-    const currentUserRole = decoded.role;
-
-  if (currentUserRole !== userRole.admin) {
+    if (!checkRole(token, userRole.admin)) {
+      return res.status(403).json({
+        message: "Permission Denined, Only System Admin can access user",
+      });
+    }
+  } catch (error) {
     return res
-      .status(403)
-      .json({ message: "Permission Denined, Only System Admin can access user" });
+      .status(401)
+      .json({ message: "Unauthorized: JWT token expired or invalid" });
   }
- 
-  }catch(error){
-  return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
-}
 
   try {
-  
-    const userId = parseInt(req.params.id); 
+    const userId = parseInt(req.params.id);
     const existingUser = await prisma.user.findUnique({
       where: {
         id: userId,
       },
     });
- 
+
     if (!existingUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
     // Delete the user
     await prisma.user.delete({
@@ -109,37 +97,29 @@ export const deleteUser = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(204).send();
+    res.status(204).json({ message: "Deleted user successfully" });
   } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-}
-
-
+};
 
 export const getUser = async (req: Request, res: Response) => {
-
-  try{
+  try {
     const token = req.headers.authorization as string;
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
 
-    const currentUserRole = decoded.role;
-
-  if (currentUserRole !== userRole.admin) {
+    if (!checkRole(token, userRole.admin)) {
+      return res.status(403).json({
+        message: "Permission Denined, Only System Admin can access user",
+      });
+    }
+  } catch (error) {
     return res
-      .status(403)
-      .json({ message: "Permission Denined, Only System Admin can access user" });
+      .status(401)
+      .json({ message: "Unauthorized: JWT token expired or invalid" });
   }
- 
-  }catch(error){
-  return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
-}
-
 
   try {
-
     const userId = parseInt(req.params.id);
     const user = await prisma.user.findUnique({
       where: {
@@ -159,60 +139,51 @@ export const getUser = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json(user);
   } catch (error) {
-    
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
-
-
-}
-
-export const getAllUsers = async (req: Request, res: Response) => {  
-  try{
-      const token = req.headers.authorization as string;
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
-
-      const currentUserRole = decoded.role;
-  
-    if (currentUserRole !== userRole.admin) {
-      return res
-        .status(403)
-        .json({ message: "Permission Denined, Only System Admin can access user" });
-    }
-   
-    }catch(error){
-    return res.status(401).json({ error: "Unauthorized: JWT token expired or invalid" });
-  }
-  
-
-  try {
-    
-  const users: Omit<User, 'password'>[] = await prisma.user.findMany({
-    select: {
-      id: true,
-      first_name: true,
-      last_name: true,
-      email: true,
-      profile_photo: true,
-      mobile: true,
-      role: true,
-      token: true,
-    },
-  });
-
-  return res.status(200).json(users);
-
-  } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-  
 };
 
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization as string;
 
+    if (!checkRole(token, userRole.admin)) {
+      return res.status(403).json({
+        message: "Permission Denined, Only System Admin can access user",
+      });
+    }
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized: JWT token expired or invalid" });
+  }
+
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        profile_photo: true,
+        mobile: true,
+        role: true,
+        sts_id: true,
+        landfill_id: true,
+        token: true,
+      },
+    });
+
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 export const changePassword = async (req: Request, res: Response) => {
   const token = req.headers.authorization as string;
@@ -220,9 +191,7 @@ export const changePassword = async (req: Request, res: Response) => {
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-
-    const userId = decoded.userId;
+    const userId = getUserId(token);
 
     const { oldPassword, newPassword } = req.body;
 
@@ -245,7 +214,7 @@ export const changePassword = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -257,7 +226,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const resetToken = generateEmailToken();
@@ -284,8 +253,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Password reset email sent successfully" });
   } catch (error) {
-    
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -340,21 +308,14 @@ export const logout = async (req: Request, res: Response) => {};
 
 export const createUser = async (req: Request, res: Response) => {
   const token = req.headers.authorization as string;
-  const decoded = jwt.verify(token, JWT_SECRET) as any;
-  if (!decoded) {
-    return res
-      .status(401)
-      .json({ message: "Unauthorized, Only System Admin can create users" });
-  }
-  const roleType = decoded.role;
-
-  if (roleType !== userRole.admin) {
+  if (!checkRole(token, userRole.admin)) {
     return res
       .status(401)
       .json({ message: "Unauthorized, Only System Admin can create users" });
   }
 
-  const { first_name, last_name, email, mobile } = req.body;
+  const { first_name, last_name, email, mobile, role, sts_id, landfill_id } =
+    req.body;
 
   let user = await prisma.user.findFirst({
     where: { email },
@@ -375,7 +336,9 @@ export const createUser = async (req: Request, res: Response) => {
       profile_photo:
         "https://beforeigosolutions.com/wp-content/uploads/2021/12/dummy-profile-pic-300x300-1.png",
       mobile: mobile,
-      role: userRole.unassigned,
+      role: role,
+      sts_id,
+      landfill_id,
     },
   });
 
@@ -431,8 +394,7 @@ export const authenticateToken = async (req: Request, res: Response) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const userId = decoded.userId;
+    const userId = getUserId(token);
     const user = await prisma.user.findFirst({ where: { id: userId } });
 
     if (!user) {
