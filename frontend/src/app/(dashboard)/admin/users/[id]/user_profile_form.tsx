@@ -1,9 +1,11 @@
 "use client";
 
-import { updateUserAdmin } from "@/utils/actions";
+import { deleteUser, updateUserAdmin } from "@/utils/actions";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import DeleteForm from "./delete";
+import { useRouter } from "next/navigation";
+import { baseURL } from "../../../../../../files";
+import { revalidatePath } from "next/cache";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -45,6 +47,8 @@ export default function UserProfileForm({
   });
 
   const [state, formAction] = useFormState(updateUserAdmin, null);
+  const router = useRouter();
+  const [del, setDel] = useState(false);
 
   return (
     <>
@@ -223,7 +227,27 @@ export default function UserProfileForm({
         </div>
         <div className="flex justify-center gap-10">
           <Submit />
-          <DeleteForm id={id} />
+          <div className="flex justify-center my-5">
+            <button
+              className={`bg-red hover:underline transition-all duration-300 text-white font-bold py-2 px-4 rounded`}
+              disabled={del}
+              onClick={(e) => {
+                if (confirm("Do you really want to delete this profile?")) {
+                  setDel(true);
+                  fetch(`${baseURL}/users/${id}`, {
+                    method: "DELETE",
+                    credentials: "include",
+                  }).then(() => {
+                    setDel(false);
+                    deleteUser();
+                    router.replace("/admin/users");
+                  });
+                }
+              }}
+            >
+              {del ? "Deleting..." : "Delete"}
+            </button>
+          </div>
         </div>
       </form>
       {state?.message && (

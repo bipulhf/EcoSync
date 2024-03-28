@@ -163,22 +163,8 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
   }
 }
 
-export async function deleteUser(prevState: any, formData: FormData) {
-  const id = formData.get("id");
-  const data = await fetch(`${baseURL}/users/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
-    },
-  });
-
-  if (data.status === 200) {
-    redirect(`/admin/users`);
-  } else {
-    const response = await data.json();
-    return { message: response.message };
-  }
+export async function deleteUser() {
+  revalidatePath(`/admin/users`);
 }
 
 export async function stsRegistration(prevState: any, formData: FormData) {
@@ -321,6 +307,35 @@ export async function leftLandfill(formData: FormData) {
     revalidatePath("/landfill_manager");
   }
 }
+
+export async function searchReport(prevState: any, formData: FormData) {
+  const search = formData.get("search");
+  const type = formData.get("type");
+  const date = formData.get("date");
+
+  const query = search || date;
+
+  const data = await (
+    await fetch(`${baseURL}/report?pageNo=1&type=${type}&query=${query}`, {
+      headers: {
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
+  ).json();
+  if (data.status == 200) {
+    revalidatePath("/admin/report");
+    redirect(`/admin/report?pageNo=1&type=${type}&query=${query}`);
+  }
+}
+
+export const downloadReport = async (sts_vehicle_id: string) => {
+  await fetch(`${baseURL}/report/download/${sts_vehicle_id}`, {
+    headers: {
+      Authorization: `${cookies().get("jwt")?.value}`,
+    },
+  });
+  redirect(`${baseURL}/report/${sts_vehicle_id}`);
+};
 
 export async function Logout() {
   cookies().delete("jwt");

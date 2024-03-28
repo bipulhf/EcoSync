@@ -28,13 +28,7 @@ export default function STSList({ sts }: Props) {
               <td className="min-w-[10rem]">{sts.ward}</td>
               <td className="min-w-[10rem]">{sts.capacity} Tons</td>
               <td className="min-w-[10rem]">
-                {distance(
-                  sts.latitude,
-                  sts.longitude,
-                  sts.landfill.latitude,
-                  sts.landfill.longitude
-                ).toFixed(2)}{" "}
-                km
+                {(sts.distance_meter / 1000).toFixed(2)} km
               </td>
               <td className="min-w-[10rem]">
                 <Link
