@@ -5,20 +5,37 @@ import Link from "next/link";
 import VehicleInLandfill from "@/components/dashboard/vehicle_in_landfill";
 import VehicleGoingToLandfill from "@/components/dashboard/vehicle_going_to_landfill";
 import TotalWasteStoredThisWeek from "@/components/dashboard/total_waste_stored_landfill";
+import { cookies } from "next/headers";
 
 const getData = async () => {
-  const { id } = await extractUserInfo();
-  const { capacity } = await (
-    await fetch(`${baseURL}/landfill/${id}/week-waste`, { cache: "no-cache" })
-  ).json();
-  const sts_vehicle = await (
-    await fetch(`${baseURL}/landfill/${id}/vehicle`, { cache: "no-cache" })
-  ).json();
-  const landfill_vehicle = await (
-    await fetch(`${baseURL}/sts/vehicle`, { cache: "no-cache" })
+  const { weekly_waste_amount } = await (
+    await fetch(`${baseURL}/landfill/weekly-waste`, {
+      cache: "no-store",
+      headers: {
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
   ).json();
 
-  return { capacity, sts_vehicle, landfill_vehicle };
+  const sts_vehicle = await (
+    await fetch(`${baseURL}/sts/left`, {
+      cache: "no-store",
+      headers: {
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
+  ).json();
+
+  const landfill_vehicle = await (
+    await fetch(`${baseURL}/landfill/vehicle`, {
+      cache: "no-store",
+      headers: {
+        Authorization: `${cookies().get("jwt")?.value}`,
+      },
+    })
+  ).json();
+
+  return { capacity: weekly_waste_amount, sts_vehicle, landfill_vehicle };
 };
 
 export default async function StsManager() {
@@ -28,7 +45,7 @@ export default async function StsManager() {
     <div className="w-full flex flex-col items-center text-center">
       <TotalWasteStoredThisWeek capacity={capacity} />
       <div className="my-5">
-        <Link href={"/landfill-manager/entry-vehicle"}>
+        <Link href={"/landfill_manager/entry_vehicle"}>
           <button className="bg-landfill text-white px-4 py-2 rounded-lg font-bold text-2xl hover:underline transition-all duration-300">
             Entry Vehicle
           </button>

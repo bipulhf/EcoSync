@@ -24,7 +24,10 @@ export default function EntryVehicle() {
 
   return (
     <>
-      <form className="text-landfill font-medium text-2xl w-[50%] mx-auto my-10">
+      <form
+        className="text-landfill font-medium text-2xl w-[50%] mx-auto my-10"
+        action={formAction}
+      >
         <h1 className="text-4xl text-landfill font-bold text-center my-10">
           Entry of vehicle leaving from Landfill
         </h1>

@@ -11,7 +11,7 @@ function Submit() {
     <div className="flex justify-center my-5">
       <button
         type="submit"
-        className={`bg-admin hover:underline transition-all duration-300 text-white font-bold py-2 px-4 rounded`}
+        className={`bg-black hover:underline transition-all duration-300 text-white font-bold py-2 px-4 rounded`}
         disabled={pending}
       >
         {pending ? "Updating..." : "Update"}

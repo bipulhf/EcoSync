@@ -250,7 +250,7 @@ export async function addVehicleSTS(prevState: any, formData: FormData) {
   const vehicle_number = formData.get("vehicle_number");
   const waste_volume = formData.get("waste_volume");
 
-  const data = await fetch(`${baseURL}/auth/create`, {
+  const data = await fetch(`${baseURL}/sts/vehicle`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -275,7 +275,7 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
   const vehicle_number = formData.get("vehicle_number");
   const waste_volume = formData.get("waste_volume");
 
-  const data = await fetch(`${baseURL}/auth/create`, {
+  const data = await fetch(`${baseURL}/landfill/vehicle`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -288,7 +288,8 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
   });
 
   if (data.status === 200) {
-    redirect(`/admin`);
+    revalidatePath("/landfill_manager");
+    redirect(`/landfill_manager`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -297,9 +298,14 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
 
 export async function leftSTS(formData: FormData) {
   const id = formData.get("id");
-  const data = await fetch(`${baseURL}/sts/vehicle/${id}`, { method: "PUT" });
+  const data = await fetch(`${baseURL}/sts/vehicle/${id}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `${cookies().get("jwt")?.value}`,
+    },
+  });
   if (data.status === 200) {
-    revalidatePath("/sts-manager");
+    revalidatePath("/sts_manager");
   }
 }
 
@@ -307,9 +313,12 @@ export async function leftLandfill(formData: FormData) {
   const id = formData.get("id");
   const data = await fetch(`${baseURL}/landfill/vehicle/${id}`, {
     method: "PUT",
+    headers: {
+      Authorization: `${cookies().get("jwt")?.value}`,
+    },
   });
   if (data.status === 200) {
-    revalidatePath("/landfill-manager");
+    revalidatePath("/landfill_manager");
   }
 }
 

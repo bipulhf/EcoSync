@@ -1,3 +1,19 @@
+"use client";
+
+import { useFormStatus } from "react-dom";
+
+function Button() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      className="mx-2 px-3 py-2 text-white text-xl bg-sts_text rounded-lg hover:bg-sts_primary transition-all duration-300"
+    >
+      {pending ? "Updating" : "Left STS"}
+    </button>
+  );
+}
+
 export default function VechiclesInSTS({
   sts_vehicle,
   leftSTS,
@@ -7,7 +23,7 @@ export default function VechiclesInSTS({
 }) {
   return (
     <div className="border-2 border-sts_text rounded-lg p-3 my-5">
-      <h2 className="text-2xl">Vechicles in STS:</h2>
+      <h2 className="text-2xl font-bold">Vechicles in STS:</h2>
       {sts_vehicle.map((vehicle: any) => (
         <form
           action={leftSTS}
@@ -22,12 +38,7 @@ export default function VechiclesInSTS({
           | <span className="mx-2">{vehicle.vehicle.vehicle_number}</span> |{" "}
           <span className="mx-2">{vehicle.vehicle.driver_name}</span> |{" "}
           <span className="mx-2">{vehicle.vehicle.driver_mobile}</span>
-          <button
-            type="submit"
-            className="mx-2 px-3 py-2 text-white text-xl bg-sts_text rounded-lg hover:bg-sts_primary transition-all duration-300"
-          >
-            Left STS
-          </button>
+          <Button />
         </form>
       ))}
     </div>

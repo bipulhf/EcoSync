@@ -53,7 +53,7 @@ export default async function StsManager() {
         </h2>
       </div>
       <div className="my-5">
-        <Link href={"/sts-manager/entry-vehicle"}>
+        <Link href={"/sts_manager/entry_vehicle"}>
           <button className="bg-sts_text text-white px-4 py-2 rounded-lg font-bold text-2xl hover:bg-sts_primary transition-all duration-300">
             Entry Vehicle
           </button>

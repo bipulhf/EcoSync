@@ -1,4 +1,5 @@
 import { distance } from "@/utils/distance";
+import Link from "next/link";
 
 interface Props {
   sts: Array<any>;
@@ -36,9 +37,14 @@ export default function STSList({ sts }: Props) {
                 km
               </td>
               <td className="min-w-[10rem]">
-                <button className="bg-admin text-white px-2 py-1 rounded-lg font-bold text-lg hover:underline transition-all duration-300">
-                  Show on Map
-                </button>
+                <Link
+                  href={`https://www.google.com/maps/@${sts.latitude},${sts.longitude}`}
+                  target="_blank"
+                >
+                  <button className="bg-admin text-white px-2 py-1 rounded-lg font-bold text-lg hover:underline transition-all duration-300">
+                    Show on Map
+                  </button>
+                </Link>
               </td>
             </tr>
           ))}
