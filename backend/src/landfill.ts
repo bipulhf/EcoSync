@@ -124,7 +124,7 @@ export const vehicleLandfillEntry = async (req: Request, res: Response) => {
     const landfillVehicle = await prisma.landfill_Vehicle.updateMany({
       where: {
         vehicle_number,
-        waste_volume,
+        waste_volume: parseFloat(waste_volume),
         arrival_time: null,
       },
       data: {
@@ -171,6 +171,9 @@ export const vehicleInLandfill = async (req: Request, res: Response) => {
           not: null,
         },
         departure_time: null,
+      },
+      include: {
+        vehicle: true,
       },
     });
 
@@ -302,6 +305,9 @@ export const vehicleLeftLandfill = async (req: Request, res: Response) => {
         arrival_time: {
           not: null,
         },
+      },
+      include: {
+        vehicle: true,
       },
       orderBy: {
         departure_time: "desc",

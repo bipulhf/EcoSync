@@ -8,7 +8,7 @@ export const checkRole = (token: string, role: string): boolean => {
     if (decoded.role === role) return true;
     return false;
   } catch (error) {
-    return false;
+    throw new Error("Invalid token");
   }
 };
 

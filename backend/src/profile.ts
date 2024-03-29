@@ -1,9 +1,7 @@
 import { prisma } from "./db";
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { getUserId } from "./helpers/getRole";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
+import { hashSync } from "bcrypt";
 
 export const getLoggedInUser = async (req: Request, res: Response) => {
   try {
@@ -38,7 +36,6 @@ export const updateLoggedInUser = async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization as string;
     const currentUserId = getUserId(token);
-
     const oldUser = await prisma.user.findFirst({
       where: {
         id: currentUserId,
@@ -51,6 +48,7 @@ export const updateLoggedInUser = async (req: Request, res: Response) => {
 
     if (!oldUser) return res.status(404).json({ error: "User not found" });
 
+    const newPass = password ? hashSync(password, 10) : oldUser.password;
     const user = await prisma.user.update({
       where: {
         id: currentUserId,
@@ -61,7 +59,7 @@ export const updateLoggedInUser = async (req: Request, res: Response) => {
         email,
         mobile,
         profile_photo: profile_photo ? profile_photo : oldUser.profile_photo,
-        password: password ? password : oldUser.password,
+        password: newPass,
       },
     });
 

@@ -31,8 +31,9 @@ import {
   vehicleStsEntry,
   vehicleStsUpdate,
 } from "./sts";
-import { addVehicle, deleteVehicleByNumber, getAllVehicles, getVehicleByNumber, updateVehicle } from "./vehicle";
+import { addVehicle } from "./vehicle";
 import { getLoggedInUser, updateLoggedInUser } from "./profile";
+import { createReport, getReport } from "./report";
 
 const router_shifat = Router();
 
@@ -66,8 +67,7 @@ router_shifat.get("/landfill/weekly-waste", weeklyWasteAmount);
 router_shifat.get("/landfill/left", vehicleLeftLandfill);
 router_shifat.put("/landfill/vehicle/:id", vehicleLandfillUpdate);
 router_shifat.get("/landfill/:id", getLandfill);
-router_shifat.get("/vehicle", getAllVehicles)
-router_shifat.get("/vehicle/:number", getVehicleByNumber)
-router_shifat.put("/vehicle/:number", updateVehicle)
-router_shifat.delete("/vehicle/:number", deleteVehicleByNumber)
+router_shifat.get("/report", getReport);
+router_shifat.get("/report/:sts_vehicle_id", createReport);
+
 export default router_shifat;

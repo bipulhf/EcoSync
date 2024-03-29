@@ -38,15 +38,17 @@ model Token {
 }
 
 model Sts {
-  id          Int           @id @default(autoincrement())
-  ward        Int
-  capacity    Float
-  latitude    Float
-  longitude   Float
-  landfill_id Int
-  landfill    Landfill      @relation(fields: [landfill_id], references: [id], onDelete: Cascade)
-  manager     User[]
-  sts_vehicle Sts_Vehicle[]
+  id                Int           @id @default(autoincrement())
+  ward              Int
+  capacity          Float
+  latitude          Float
+  longitude         Float
+  distance_meter    Int
+  possible_time_sec Int
+  landfill_id       Int
+  landfill          Landfill      @relation(fields: [landfill_id], references: [id], onDelete: Cascade)
+  manager           User[]
+  sts_vehicle       Sts_Vehicle[]
 }
 
 model Landfill {

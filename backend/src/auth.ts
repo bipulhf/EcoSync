@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import { mailOptions, mailTransporter } from "./helpers/mailTransporter";
 import { prisma } from "./db";
 import { userRole } from "./globals";
-import { User } from "@prisma/client";
 import { checkRole, getUserId } from "./helpers/getRole";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -13,14 +12,22 @@ const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
 
 export const updateUser = async (req: Request, res: Response) => {
   const userId = parseInt(req.params.id);
-  const { first_name, last_name, email, profile_photo, mobile, role } =
-    req.body;
+  const {
+    first_name,
+    last_name,
+    email,
+    profile_photo,
+    password,
+    mobile,
+    role,
+    sts_id,
+    landfill_id,
+  } = req.body;
 
   try {
     const token = req.headers.authorization as string;
-    const currentUserId = getUserId(token);
 
-    if (!checkRole(token, userRole.admin) && currentUserId !== userId) {
+    if (!checkRole(token, userRole.admin)) {
       return res.status(403).json({
         message:
           "Permission Denined, Only System Admin or Owner Can Update User",
@@ -51,9 +58,14 @@ export const updateUser = async (req: Request, res: Response) => {
         first_name,
         last_name,
         email,
-        profile_photo,
+        profile_photo: profile_photo
+          ? profile_photo
+          : existingUser.profile_photo,
+        password: password ? hashSync(password, 10) : existingUser.password,
         mobile,
         role,
+        sts_id: sts_id ? +sts_id : null,
+        landfill_id: landfill_id ? +landfill_id : null,
       },
     });
 
@@ -66,7 +78,8 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const token = req.headers.authorization as string;
+    const token = (req.headers.authorization as string) || req.cookies.jwt;
+    res.setHeader("Access-Control-Allow-Credentials", "true");
 
     if (!checkRole(token, userRole.admin)) {
       return res.status(403).json({
@@ -134,7 +147,8 @@ export const getUser = async (req: Request, res: Response) => {
         profile_photo: true,
         mobile: true,
         role: true,
-        token: true,
+        sts_id: true,
+        landfill_id: true,
       },
     });
 
@@ -247,7 +261,11 @@ export const resetPassword = async (req: Request, res: Response) => {
       html: `<p>Your password reset token is: <b>${resetToken}</b></p>`,
     };
 
-    await mailTransporter.sendMail(mail);
+    try {
+      await mailTransporter.sendMail(mail);
+    } catch (e) {
+      return res.status(500).json({ message: "SMTP Server Failed" });
+    }
 
     return res
       .status(200)
@@ -337,8 +355,8 @@ export const createUser = async (req: Request, res: Response) => {
         "https://beforeigosolutions.com/wp-content/uploads/2021/12/dummy-profile-pic-300x300-1.png",
       mobile: mobile,
       role: role,
-      sts_id,
-      landfill_id,
+      sts_id: sts_id != null ? +sts_id : null,
+      landfill_id: landfill_id != null ? +landfill_id : null,
     },
   });
 
@@ -348,8 +366,11 @@ export const createUser = async (req: Request, res: Response) => {
     subject: "Welcome to EcoSync",
     html: `<p>Hi ${first_name}!</p><p>System Admin has created an account for you on EcoSync.</p><p>Please login with the credientials below and reset the password right after you logging in.</p><p>Email: ${user.email}</p><p>Password: <b>${password}</b></p>`,
   };
-
-  await mailTransporter.sendMail(mail);
+  try {
+    await mailTransporter.sendMail(mail);
+  } catch (e) {
+    return res.status(500).json({ message: "SMTP Server Failed" });
+  }
 
   return res.status(200).json({ message: "User created successfully" });
 };
@@ -374,6 +395,9 @@ export const login = async (req: Request, res: Response) => {
       userId: user.id,
       name: user.first_name,
       role: user.role,
+      profile_photo: user.profile_photo,
+      sts_id: user.sts_id,
+      landfill_id: user.landfill_id,
     };
 
     const token = jwt.sign(payload, JWT_SECRET, {

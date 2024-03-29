@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "./db";
 import { checkRole, getUserId } from "./helpers/getRole";
 import { userRole } from "./globals";
+import { getDistance } from "./helpers/getDistance";
 
 export const getAllSts = async (req: Request, res: Response) => {
   const managerId = req.query.managerId;
@@ -59,6 +60,9 @@ export const getSts = async (req: Request, res: Response) => {
       where: {
         id,
       },
+      include: {
+        landfill: true,
+      },
     });
 
     if (!sts) {
@@ -80,14 +84,25 @@ export const createSts = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    console.log(ward, capacity, latitude, longitude, landfill_id);
+    const landfill = await prisma.landfill.findFirst({
+      where: { id: parseInt(landfill_id) },
+      select: { latitude: true, longitude: true },
+    });
+
+    const distance = await getDistance(
+      { latitude, longitude },
+      { latitude: landfill!.latitude, longitude: landfill!.longitude }
+    );
+
     const sts = await prisma.sts.create({
       data: {
-        ward,
-        capacity,
-        latitude,
-        longitude,
-        landfill_id,
+        ward: parseInt(ward),
+        capacity: parseFloat(capacity),
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        distance_meter: distance.distanceInMeter,
+        possible_time_sec: distance.timeInSeconds,
+        landfill_id: parseInt(landfill_id),
       },
     });
 
@@ -118,15 +133,15 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
       return res
         .status(403)
         .json({ message: "You don't have any assigned STS" });
-    } else if (user.sts_id !== sts_id) {
+    } else if (user.sts_id != sts_id) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
     const stsVehicle = await prisma.sts_Vehicle.create({
       data: {
-        sts_id,
+        sts_id: parseInt(sts_id),
         vehicle_number,
-        waste_volume,
+        waste_volume: parseFloat(waste_volume),
       },
     });
 
@@ -162,6 +177,9 @@ export const vehicleInSts = async (req: Request, res: Response) => {
       where: {
         sts_id: user.sts_id,
         departure_time: null,
+      },
+      include: {
+        vehicle: true,
       },
     });
 
@@ -240,9 +258,20 @@ export const vehicleLeftSts = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "User Not Found" });
     }
 
-    const vehicleLeftSts = await prisma.landfill_Vehicle.findMany({
+    const tmp = await prisma.landfill_Vehicle.findMany({
       where: {
         arrival_time: null,
+      },
+    });
+
+    const vehicleLeftSts = await prisma.sts_Vehicle.findMany({
+      where: {
+        id: {
+          in: tmp.map((x) => x.sts_vehicle_id),
+        },
+      },
+      include: {
+        vehicle: true,
       },
     });
 
