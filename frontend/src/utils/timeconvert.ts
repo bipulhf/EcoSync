@@ -28,3 +28,19 @@ export function getTimeFromDate(date: Date): string {
     return `${day}/${month} - ${hours}:${minutes}:${seconds} ${amPm}`;
   }
 }
+export function convertTo24HourFormat(time12Hour: string): string {
+  const [time, period] = time12Hour.split(" ");
+
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (period === "PM" && hours !== 12) {
+    hours += 12;
+  } else if (period === "AM" && hours === 12) {
+    hours = 0;
+  }
+
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}`;
+}

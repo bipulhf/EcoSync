@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { baseURL } from "../../files";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { convertTo24HourFormat } from "./timeconvert";
 
 export async function registration(prevState: any, formData: FormData) {
   const first_name = formData.get("first_name");
@@ -220,6 +221,48 @@ export async function stsRegistration(prevState: any, formData: FormData) {
       latitude,
       longitude,
       landfill_id,
+    }),
+  });
+
+  if (data.status === 200) {
+    redirect(`/admin`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function landfillRegistration(prevState: any, formData: FormData) {
+  const city_corporation = formData.get("city_corporation");
+  let start_time = formData.get("start_time");
+  const latitude = formData.get("latitude");
+  const longitude = formData.get("longitude");
+  let end_time = formData.get("end_time");
+
+  if (
+    !city_corporation ||
+    !start_time ||
+    !latitude ||
+    !longitude ||
+    !end_time
+  ) {
+    return { message: "All fields are required" };
+  }
+  start_time = convertTo24HourFormat(start_time as string);
+  end_time = convertTo24HourFormat(end_time as string);
+
+  const data = await fetch(`${baseURL}/landfill`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${cookies().get("jwt")?.value}`,
+    },
+    body: JSON.stringify({
+      city_corporation,
+      start_time,
+      latitude,
+      longitude,
+      end_time,
     }),
   });
 

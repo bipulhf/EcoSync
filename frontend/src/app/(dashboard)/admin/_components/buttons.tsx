@@ -23,6 +23,11 @@ export default function Buttons() {
           Add STS
         </button>
       </Link>
+      <Link href={"/admin/landfill-registration"}>
+        <button className="px-8 py-2 bg-landfill rounded-lg hover:underline">
+          Add Landfill
+        </button>
+      </Link>
       <Link href={"/admin/report"}>
         <button className="px-8 py-2 bg-admin rounded-lg hover:underline">
           Billing Report

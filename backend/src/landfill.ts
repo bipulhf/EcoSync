@@ -77,20 +77,21 @@ export const createLandfill = async (req: Request, res: Response) => {
     const token = req.headers.authorization as string;
     let { city_corporation, start_time, latitude, longitude, end_time } =
       req.body;
-
     if (!checkRole(token, userRole.admin)) {
       return res.status(403).json({ message: "Forbidden" });
     }
-
+    console.log(city_corporation, start_time, latitude, longitude, end_time);
     const landfill = await prisma.landfill.create({
       data: {
         city_corporation,
-        latitude,
-        longitude,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
         start_time: formatTime(start_time),
         end_time: formatTime(end_time),
       },
     });
+
+    console.log(landfill);
 
     return res.status(200).json(landfill);
   } catch (error) {
@@ -262,19 +263,33 @@ export const weeklyWasteAmount = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const landfillVehicles = await prisma.landfill_Vehicle.findMany({
-      where: {
-        landfill_id: 1,
-        departure_time: {
-          gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
-        },
-      },
-    });
-
     let weekly_waste_amount = 0;
-    landfillVehicles.forEach((vehicle) => {
-      weekly_waste_amount += vehicle.waste_volume;
-    });
+
+    if (user.role === userRole.admin) {
+      const landfillVehicles = await prisma.landfill_Vehicle.findMany({
+        where: {
+          departure_time: {
+            gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+          },
+        },
+      });
+      landfillVehicles?.forEach((vehicle) => {
+        weekly_waste_amount += vehicle.waste_volume;
+      });
+    }
+    if (user.landfill_id) {
+      const landfillVehicles = await prisma.landfill_Vehicle.findMany({
+        where: {
+          landfill_id: user.landfill_id,
+          departure_time: {
+            gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+          },
+        },
+      });
+      landfillVehicles?.forEach((vehicle) => {
+        weekly_waste_amount += vehicle.waste_volume;
+      });
+    }
 
     return res.status(200).json({ weekly_waste_amount });
   } catch (error) {
