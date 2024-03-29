@@ -71,6 +71,7 @@ export default function VechicleRegistrationForm() {
                 <option value={3}>3 Ton</option>
                 <option value={5}>5 Ton</option>
                 <option value={7}>7 Ton</option>
+                <option value={15}>15 Ton</option>
               </select>
             </div>
             <div className="mb-4 flex w-full items-center">

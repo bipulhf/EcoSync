@@ -8,23 +8,27 @@ import {
   useMap,
 } from "@vis.gl/react-google-maps";
 
+interface Props {
+  sts_position: { lat: number; lng: number };
+  landfill_position: { lat: number; lng: number };
+}
+
 export default function ShowDirection({
-  setOpen,
-  sts_postition,
+  sts_position,
   landfill_position,
-}: any) {
+}: Props) {
   return (
     <>
       <APIProvider apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY as string}>
         <Map
-          style={{ width: "85vw", height: "75vh" }}
+          style={{ width: "85vw", height: "70vh" }}
           defaultCenter={landfill_position}
           defaultZoom={12}
           gestureHandling={"greedy"}
           zoomControl={true}
         >
           <Direction
-            sts_postition={sts_postition}
+            sts_position={sts_position}
             landfill_position={landfill_position}
           />
         </Map>
@@ -33,7 +37,7 @@ export default function ShowDirection({
   );
 }
 
-function Direction({ sts_postition, landfill_position }: any) {
+function Direction({ sts_position, landfill_position }: any) {
   const map = useMap();
   const routesLib = useMapsLibrary("routes");
   const [directionService, setDirectionService] =
@@ -52,7 +56,7 @@ function Direction({ sts_postition, landfill_position }: any) {
     if (!directionService || !directionRenderer) return;
     directionService
       .route({
-        origin: { lat: sts_postition.lat, lng: sts_postition.lng },
+        origin: { lat: sts_position.lat, lng: sts_position.lng },
         destination: { lat: landfill_position.lat, lng: landfill_position.lng },
         travelMode: google.maps.TravelMode.DRIVING,
       })
