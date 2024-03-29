@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+
 import cookieParser from "cookie-parser";
 import router_shifat from "./router_shifat";
 import cors from "cors";

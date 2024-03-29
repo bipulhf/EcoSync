@@ -260,7 +260,6 @@ export const resetPassword = async (req: Request, res: Response) => {
       subject: "Password Reset Token",
       html: `<p>Your password reset token is: <b>${resetToken}</b></p>`,
     };
-
     try {
       await mailTransporter.sendMail(mail);
     } catch (e) {
@@ -331,7 +330,6 @@ export const createUser = async (req: Request, res: Response) => {
       .status(401)
       .json({ message: "Unauthorized, Only System Admin can create users" });
   }
-
   const { first_name, last_name, email, mobile, role, sts_id, landfill_id } =
     req.body;
 
@@ -419,6 +417,7 @@ export const authenticateToken = async (req: Request, res: Response) => {
 
   try {
     const userId = getUserId(token);
+
     const user = await prisma.user.findFirst({ where: { id: userId } });
 
     if (!user) {
