@@ -17,8 +17,8 @@ export default function MultipleLocation({ sts }: any) {
       <Map
         defaultZoom={11}
         defaultCenter={{
-          lat: sts[0].latitude || 23.7593748,
-          lng: sts[0].longitude || 90.3185111,
+          lat: sts[0]?.latitude || 23.7593748,
+          lng: sts[0]?.longitude || 90.3185111,
         }}
         style={{ width: "100vwh", height: "25vh" }}
         disableDefaultUI={true}

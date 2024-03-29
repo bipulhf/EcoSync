@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:14
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ecosync
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 24553
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:24553@db:5432/ecosync
+      - JWT_SECRET=abcd
+      - JWT_EXPIRATION_MINUTES=6000
+      - SMTP_EMAIL=lastnightplayerz@gmail.com
+      - SMTP_PASSWORD=wqqrzonbrirymbiw
+      - MAP_API_KEY=AIzaSyBPtcH0dxsphaU97PSSPJzpnv9-jFh1N7Y
+    depends_on:
+      - db
+    command: sh -c "npm run db && npm run dev"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_JWT_SECRET=abcd
+      - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LetA6gpAAAAAB0UeYQn-tYQbyfdTTyicgGM4hsJ
+      - RECAPTCHA_SECRET_KEY=6LetA6gpAAAAALKN-ao5A3SG0HmHuwrGxxAr9ig9
+      - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dlytk4hxw
+      - NEXT_PUBLIC_CLOUDINARY_API_KEY=431474174791375
+      - NEXT_PUBLIC_CLOUDINARY_API_SECRET=M4aOhooY_gWfoyPN02YMBPn4hSs
+      - NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=ewzfkmdr
+      - NEXT_PUBLIC_MAP_API_KEY=AIzaSyBPtcH0dxsphaU97PSSPJzpnv9-jFh1N7Y
+    depends_on:
+      - backend
+    links:
+      - backend

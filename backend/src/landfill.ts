@@ -247,19 +247,13 @@ export const weeklyWasteAmount = async (req: Request, res: Response) => {
         landfill_id: true,
       },
     });
-    console.log(user);
 
     if (!user) {
       return res.status(403).json({ message: "User Not Found" });
-    } else if (!user.landfill_id) {
+    } else if (!user.landfill_id && !checkRole(token, userRole.admin)) {
       return res
         .status(403)
         .json({ message: "You don't have any assigned Landfill" });
-    } else if (
-      !checkRole(token, userRole.admin) &&
-      !checkRole(token, userRole.landfill_manager)
-    ) {
-      return res.status(403).json({ message: "Forbidden" });
     } else if (
       landfillId &&
       !checkRole(token, userRole.admin) &&
@@ -270,7 +264,7 @@ export const weeklyWasteAmount = async (req: Request, res: Response) => {
 
     const landfillVehicles = await prisma.landfill_Vehicle.findMany({
       where: {
-        landfill_id: landfillId ? +landfillId : user.landfill_id,
+        landfill_id: 1,
         departure_time: {
           gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
         },

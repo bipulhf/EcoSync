@@ -82,7 +82,7 @@ model Sts_Vehicle {
   vehicle_number   String
   vehicle          Vehicle           @relation(fields: [vehicle_number], references: [vehicle_number], onDelete: Cascade)
   waste_volume     Float
-  arrival_time     DateTime          @default(now())
+  arrival_time     DateTime
   departure_time   DateTime?
   Landfill_Vehicle Landfill_Vehicle?
 

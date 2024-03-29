@@ -1,5 +1,6 @@
 "use client";
 
+import { getTimeFromDate } from "@/utils/timeconvert";
 import { useFormStatus } from "react-dom";
 
 function Button() {
@@ -32,8 +33,7 @@ export default function VechiclesInSTS({
         >
           <input name="id" value={vehicle.id} type="hidden" />
           <span className="mx-2">
-            Arrived at:{" "}
-            <b>{new Date(vehicle.arrival_time).toLocaleTimeString()}</b>
+            Arrived at: <b>{getTimeFromDate(new Date(vehicle.arrival_time))}</b>
           </span>{" "}
           | <span className="mx-2">{vehicle.vehicle.vehicle_number}</span> |{" "}
           <span className="mx-2">{vehicle.vehicle.driver_name}</span> |{" "}
@@ -41,6 +41,9 @@ export default function VechiclesInSTS({
           <Button />
         </form>
       ))}
+      {sts_vehicle.length === 0 && (
+        <h2 className="text-xl font-medium">No vehicle to show</h2>
+      )}
     </div>
   );
 }

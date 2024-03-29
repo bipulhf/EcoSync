@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { baseURL } from "../../../../../../files";
-import { revalidatePath } from "next/cache";
 
 function Submit() {
   const { pending } = useFormStatus();

@@ -10,25 +10,22 @@ import MultipleLocation from "./_components/multiple_location";
 const getData = async () => {
   const vehicle_going_to_landfill = await (
     await fetch(`${baseURL}/sts/left`, {
-      method: "GET",
+      cache: "no-store",
       headers: {
         Authorization: `${cookies().get("jwt")?.value}`,
       },
-      cache: "no-store",
     })
   ).json();
   const vehicle_coming_from_landfill = await (
     await fetch(`${baseURL}/landfill/left`, {
-      method: "GET",
+      cache: "no-store",
       headers: {
         Authorization: `${cookies().get("jwt")?.value}`,
       },
-      cache: "no-store",
     })
   ).json();
   const sts = await (
     await fetch(`${baseURL}/sts`, {
-      method: "GET",
       headers: {
         Authorization: `${cookies().get("jwt")?.value}`,
       },
@@ -36,11 +33,10 @@ const getData = async () => {
   ).json();
   const { weekly_waste_amount } = await (
     await fetch(`${baseURL}/landfill/weekly-waste`, {
-      method: "GET",
+      cache: "no-store",
       headers: {
         Authorization: `${cookies().get("jwt")?.value}`,
       },
-      cache: "no-store",
     })
   ).json();
 

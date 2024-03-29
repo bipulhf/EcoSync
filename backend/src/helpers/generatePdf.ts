@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit";
 import fs, { WriteStream } from "fs";
+import { getTimeFromDate } from "./date";
 
 export const generatePdf = ({ sts_vehicle }: any, stream: WriteStream) => {
   const doc = new PDFDocument({ size: "A4" });
@@ -25,9 +26,9 @@ export const generatePdf = ({ sts_vehicle }: any, stream: WriteStream) => {
     .font("Helvetica")
     .fontSize(20)
     .text(
-      `STS Arrival Time: ${new Date(
-        sts_vehicle.arrival_time
-      ).toLocaleString()}`,
+      `STS Arrival Time: ${getTimeFromDate(
+        new Date(sts_vehicle.arrival_time)
+      )}`,
       50,
       310
     );
@@ -35,9 +36,9 @@ export const generatePdf = ({ sts_vehicle }: any, stream: WriteStream) => {
     .font("Helvetica")
     .fontSize(20)
     .text(
-      `STS Departure Time: ${new Date(
-        sts_vehicle.departure_time
-      ).toLocaleString()}`,
+      `STS Departure Time: ${getTimeFromDate(
+        new Date(sts_vehicle.departure_time)
+      )}`,
       50,
       350
     );
@@ -49,9 +50,9 @@ export const generatePdf = ({ sts_vehicle }: any, stream: WriteStream) => {
     .font("Helvetica")
     .fontSize(20)
     .text(
-      `Landfill Arrival Time: ${new Date(
-        sts_vehicle.Landfill_Vehicle.arrival_time
-      ).toLocaleString()}`,
+      `Landfill Arrival Time: ${getTimeFromDate(
+        new Date(sts_vehicle.Landfill_Vehicle.arrival_time)
+      )}`,
       50,
       430
     );
@@ -59,9 +60,9 @@ export const generatePdf = ({ sts_vehicle }: any, stream: WriteStream) => {
     .font("Helvetica")
     .fontSize(20)
     .text(
-      `Landfill Departure Time: ${new Date(
-        sts_vehicle.Landfill_Vehicle.departure_time
-      ).toLocaleString()}`,
+      `Landfill Departure Time: ${getTimeFromDate(
+        new Date(sts_vehicle.Landfill_Vehicle.departure_time)
+      )}`,
       50,
       470
     );

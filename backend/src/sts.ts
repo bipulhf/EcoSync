@@ -142,6 +142,7 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
         sts_id: parseInt(sts_id),
         vehicle_number,
         waste_volume: parseFloat(waste_volume),
+        arrival_time: new Date(),
       },
     });
 

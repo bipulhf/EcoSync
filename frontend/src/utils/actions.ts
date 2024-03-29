@@ -165,6 +165,7 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
   const email = formData.get("email");
   const mobile = formData.get("mobile");
   const password = formData.get("password");
+  const profile_photo = formData.get("photo");
   const role = formData.get("role");
   const sts_id = formData.get("sts_id");
   const landfill_id = formData.get("landfill_id");
@@ -181,6 +182,7 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
       email,
       mobile,
       password,
+      profile_photo,
       role,
       sts_id,
       landfill_id,
@@ -366,7 +368,7 @@ export const downloadReport = async (sts_vehicle_id: string) => {
       Authorization: `${cookies().get("jwt")?.value}`,
     },
   });
-  redirect(`${baseURL}/report/${sts_vehicle_id}`);
+  redirect(`http://localhost:8000/report/${sts_vehicle_id}`);
 };
 
 export async function Logout() {

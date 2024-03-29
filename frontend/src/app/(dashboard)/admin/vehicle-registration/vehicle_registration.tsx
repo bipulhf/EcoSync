@@ -84,7 +84,7 @@ export default function VechicleRegistrationForm() {
                 name="driver_name"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Vehicle Number"
+                placeholder="Enter Driver Name"
               />
             </div>
             <div className="mb-4 flex w-full items-center">

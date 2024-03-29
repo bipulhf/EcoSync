@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { baseURL } from "../../../../../../files";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { downloadReport } from "@/utils/actions";
+import { getTimeFromDate } from "@/utils/timeconvert";
 
 interface Props {
   query: string;
@@ -16,7 +14,7 @@ interface Props {
 export default function ReportTable({ query, type, pageNo }: Props) {
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
-  const [index, setIndex] = useState(pageNo);
+  const [index, setIndex] = useState(pageNo || 1);
 
   useEffect(() => {
     setIndex(pageNo);
@@ -24,18 +22,20 @@ export default function ReportTable({ query, type, pageNo }: Props) {
 
   useEffect(() => {
     if (query) {
-      fetch(`${baseURL}/report?pageNo=${pageNo}&query=${query}&type=${type}`, {
-        credentials: "include",
-      })
+      fetch(
+        `http://localhost:8000/report?pageNo=${pageNo}&query=${query}&type=${type}`,
+        {
+          credentials: "include",
+        }
+      )
         .then((res) => res.json())
         .then((data) => {
           setItems(data.data);
           setHasMore(!data.isLast);
           setIndex(index + 1);
-          console.log(data);
         });
     } else {
-      fetch(`${baseURL}/report?pageNo=${pageNo}`, {
+      fetch(`http://localhost:8000/report?pageNo=1`, {
         credentials: "include",
       })
         .then((res) => res.json())
@@ -45,14 +45,14 @@ export default function ReportTable({ query, type, pageNo }: Props) {
           setIndex(index + 1);
         });
     }
-  }, [query]);
+  }, [query, type]);
 
   const fetchMoreData = async () => {
     let data: any;
     if (query) {
       data = await (
         await fetch(
-          `${baseURL}/report?pageNo=${index}&query=${query}&type=${type}`,
+          `http://localhost:8000/report?pageNo=${index}&query=${query}&type=${type}`,
           {
             credentials: "include",
           }
@@ -64,7 +64,7 @@ export default function ReportTable({ query, type, pageNo }: Props) {
       setIndex((prevIndex) => prevIndex + 1);
     } else {
       data = await (
-        await fetch(`${baseURL}/report?pageNo=${index}`, {
+        await fetch(`http://localhost:8000/report?pageNo=${index}`, {
           credentials: "include",
         })
       ).json();
@@ -114,29 +114,29 @@ export default function ReportTable({ query, type, pageNo }: Props) {
                 </td>
                 <td className="py-4">
                   {item.arrival_time
-                    ? new Date(item.arrival_time).toLocaleString()
+                    ? getTimeFromDate(new Date(item.arrival_time))
                     : "Not Arrived"}
                 </td>
                 <td className="py-4">
                   {item.departure_time
-                    ? new Date(item.departure_time).toLocaleString()
+                    ? getTimeFromDate(new Date(item.departure_time))
                     : "In STS"}
                 </td>
                 <td className="py-4">
                   {item.Landfill_Vehicle
                     ? item.Landfill_Vehicle.arrival_time
-                      ? new Date(
-                          item.Landfill_Vehicle.arrival_time
-                        ).toLocaleString()
+                      ? getTimeFromDate(
+                          new Date(item.Landfill_Vehicle.arrival_time)
+                        )
                       : "Not Arrived"
                     : "Not Arrived"}
                 </td>
                 <td className="py-4">
                   {item.Landfill_Vehicle
                     ? item.Landfill_Vehicle.departure_time
-                      ? new Date(
-                          item.Landfill_Vehicle.departure_time
-                        ).toLocaleString()
+                      ? getTimeFromDate(
+                          new Date(item.Landfill_Vehicle.departure_time)
+                        )
                       : "In Landfill"
                     : "Not Arrived"}
                 </td>
