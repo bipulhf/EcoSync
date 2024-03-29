@@ -6,30 +6,100 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL") 
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  first_name String
-  last_name String 
-  email     String   @unique
-  password  String
+  id            Int       @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  email         String    @unique
+  password      String
   profile_photo String? //cloud_image_link
-  mobile    String?  
-  role          String    @default("UNASSIGNED")
-  token    Token?  
-}  
-
+  mobile        String
+  role          String    @default("unassigned")
+  token         Token?
+  sts_id        Int?
+  sts           Sts?      @relation(fields: [sts_id], references: [id], onDelete: SetNull)
+  landfill_id   Int?
+  landfill      Landfill? @relation(fields: [landfill_id], references: [id], onDelete: SetNull)
+}
 
 model Token {
-  id         Int       @id @default(autoincrement())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  body      String?
-  valid      Boolean   @default(true)
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  body       String?
+  valid      Boolean  @default(true)
   expiration DateTime
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int      @unique
+}
+
+model Sts {
+  id                Int           @id @default(autoincrement())
+  ward              Int
+  capacity          Float
+  latitude          Float
+  longitude         Float
+  distance_meter    Int
+  possible_time_sec Int
+  landfill_id       Int
+  landfill          Landfill      @relation(fields: [landfill_id], references: [id], onDelete: Cascade)
+  manager           User[]
+  sts_vehicle       Sts_Vehicle[]
+}
+
+model Landfill {
+  id               Int                @id @default(autoincrement())
+  city_corporation String
+  latitude         Float
+  longitude        Float
+  start_time       DateTime           @db.Time
+  end_time         DateTime           @db.Time
+  manager          User[]
+  sts              Sts[]
+  landfill_vehicle Landfill_Vehicle[]
+}
+
+model Vehicle {
+  vehicle_number     String             @id
+  type               String
+  capacity           Float
+  driver_name        String
+  driver_mobile      String
+  cost_per_km_load   Float
+  cost_per_km_unload Float
+  sts_vehicle        Sts_Vehicle[]
+  landfill_vehicle   Landfill_Vehicle[]
+}
+
+model Sts_Vehicle {
+  id               Int               @id @default(autoincrement())
+  sts_id           Int
+  sts              Sts               @relation(fields: [sts_id], references: [id], onDelete: Cascade)
+  vehicle_number   String
+  vehicle          Vehicle           @relation(fields: [vehicle_number], references: [vehicle_number], onDelete: Cascade)
+  waste_volume     Float
+  arrival_time     DateTime          @default(now())
+  departure_time   DateTime?
+  Landfill_Vehicle Landfill_Vehicle?
+
+  @@index([sts_id, vehicle_number], name: "sts_vehicle_unique")
+}
+
+model Landfill_Vehicle {
+  id             Int         @id @default(autoincrement())
+  landfill_id    Int
+  landfill       Landfill    @relation(fields: [landfill_id], references: [id], onDelete: Cascade)
+  vehicle_number String
+  vehicle        Vehicle     @relation(fields: [vehicle_number], references: [vehicle_number], onDelete: Cascade)
+  sts_vehicle_id Int         @unique
+  sts_vehicle    Sts_Vehicle @relation(fields: [sts_vehicle_id], references: [id], onDelete: Cascade)
+  waste_volume   Float
+  arrival_time   DateTime?
+  departure_time DateTime?
+
+  @@index([landfill_id, vehicle_number], name: "landfill_vehicle_unique")
 }
