@@ -1,4 +1,3 @@
-import extractUserInfo from "@/utils/verify";
 import Buttons from "./_components/buttons";
 import { baseURL } from "../../../../files";
 import VehicleGoingToLandfill from "@/components/dashboard/vehicle_going_to_landfill";
@@ -6,6 +5,7 @@ import VehicleComingFromLandfill from "@/components/dashboard/vehicle_coming_fro
 import TotalWasteStoredThisWeek from "@/components/dashboard/total_waste_stored_landfill";
 import STSList from "./_components/sts_list";
 import { cookies } from "next/headers";
+import MultipleLocation from "./_components/multiple_location";
 
 const getData = async () => {
   const vehicle_going_to_landfill = await (
@@ -63,6 +63,7 @@ export default async function Admin() {
   return (
     <div className="pb-10 mt-5 mx-10">
       <Buttons />
+      <MultipleLocation sts={sts} />
       <div className="flex">
         <div className="w-[50%] mr-5 text-center">
           <TotalWasteStoredThisWeek capacity={weekly_waste_amount} />

@@ -31,12 +31,9 @@ export default function STSList({ sts }: Props) {
                 {(sts.distance_meter / 1000).toFixed(2)} km
               </td>
               <td className="min-w-[10rem]">
-                <Link
-                  href={`https://www.google.com/maps/@${sts.latitude},${sts.longitude}`}
-                  target="_blank"
-                >
+                <Link href={`/admin/show_direction/${sts.id}`} target="_blank">
                   <button className="bg-admin text-white px-2 py-1 rounded-lg font-bold text-lg hover:underline transition-all duration-300">
-                    Show on Map
+                    Show Direction
                   </button>
                 </Link>
               </td>

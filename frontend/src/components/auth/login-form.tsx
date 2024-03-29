@@ -3,6 +3,11 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { login } from "@/utils/actions";
 import Link from "next/link";
+import {
+  GoogleReCaptcha,
+  GoogleReCaptchaProvider,
+} from "react-google-recaptcha-v3";
+import { useEffect, useState } from "react";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -20,6 +25,14 @@ function Submit() {
 
 export default function LoginForm() {
   const [state, formAction] = useFormState(login, null);
+  const [token, setToken] = useState("");
+  const [refreshReCaptcha, setRefreshReCaptcha] = useState(false);
+
+  useEffect(() => {
+    if (state?.message === "Recaptcha verification failed") {
+      setRefreshReCaptcha(true);
+    }
+  }, [state]);
 
   return (
     <>
@@ -56,6 +69,15 @@ export default function LoginForm() {
           className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-admin text-admin text-2xl"
           placeholder="********"
         />
+        <input type="hidden" name="token" value={token} />
+        <GoogleReCaptchaProvider
+          reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+        >
+          <GoogleReCaptcha
+            onVerify={setToken}
+            refreshReCaptcha={refreshReCaptcha}
+          />
+        </GoogleReCaptchaProvider>
         <Submit />
         <Link
           href="/reset-password"

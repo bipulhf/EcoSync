@@ -42,6 +42,18 @@ export async function registration(prevState: any, formData: FormData) {
 export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email");
   const password = formData.get("password");
+  const token = formData.get("token");
+
+  const recaptcha = await (
+    await fetch(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`
+    )
+  ).json();
+  console.log(recaptcha);
+
+  if (recaptcha.success === false) {
+    return { message: "Recaptcha verification failed" };
+  }
 
   const data = await fetch(`${baseURL}/auth/login`, {
     method: "POST",
@@ -64,6 +76,18 @@ export async function login(prevState: any, formData: FormData) {
 
 export async function resetPassword(prevState: any, formData: FormData) {
   const email = formData.get("email");
+  const token = formData.get("token");
+
+  const recaptcha = await (
+    await fetch(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`
+    )
+  ).json();
+
+  if (recaptcha.success === false) {
+    return { message: "Recaptcha verification failed" };
+  }
+
   const data = await fetch(`${baseURL}/auth/reset-password/initiate`, {
     method: "POST",
     headers: {
@@ -108,6 +132,7 @@ export async function updateUser(prevState: any, formData: FormData) {
   const email = formData.get("email");
   const mobile = formData.get("mobile");
   const password = formData.get("password");
+  const profile_photo = formData.get("photo");
 
   const data = await fetch(`${baseURL}/profile`, {
     method: "PUT",
@@ -115,7 +140,14 @@ export async function updateUser(prevState: any, formData: FormData) {
       "Content-Type": "application/json",
       Authorization: `${cookies().get("jwt")?.value}`,
     },
-    body: JSON.stringify({ first_name, last_name, email, mobile, password }),
+    body: JSON.stringify({
+      first_name,
+      last_name,
+      email,
+      mobile,
+      password,
+      profile_photo,
+    }),
   });
 
   if (data.status === 200) {

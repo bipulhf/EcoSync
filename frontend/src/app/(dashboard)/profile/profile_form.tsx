@@ -39,6 +39,9 @@ export default function ProfileForm({
     password: "",
   });
 
+  const [image, setImage] = useState(user.photo);
+  const [loading, setLoading] = useState(false);
+
   const [state, formAction] = useFormState(updateUser, null);
 
   return (
@@ -159,20 +162,55 @@ export default function ProfileForm({
               </label>
               <div className="my-10">
                 <img
-                  src={user.photo}
+                  src={image}
                   width={200}
                   height={200}
                   alt={`${user.first_name + " " + user.last_name}'s photo`}
                   className="rounded-full size-[200px] overflow-hidden"
                 />
+                <input type="hidden" name="photo" value={image} />
               </div>
               <input
                 type="file"
                 id="image"
                 name="image"
                 accept="image/*"
+                onChange={async (e) => {
+                  setLoading(true);
+                  const data = new FormData();
+                  data.append("file", e.target.files![0]);
+                  data.append(
+                    "upload_preset",
+                    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string
+                  );
+                  data.append(
+                    "cloud_name",
+                    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME as string
+                  );
+                  data.append("folder", "Cloudinary-React");
+
+                  try {
+                    const response = await fetch(
+                      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+                      {
+                        method: "POST",
+                        body: data,
+                      }
+                    );
+                    const res = await response.json();
+                    console.log(res);
+                    setUser({ ...user, photo: res.secure_url });
+                    setImage(res.secure_url);
+                    setLoading(false);
+                  } catch (error) {
+                    setLoading(false);
+                  }
+                }}
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
               />
+              <label htmlFor="image" className="block mb-2">
+                {loading ? "Uploading..." : ""}
+              </label>
             </div>
           </div>
         </div>
