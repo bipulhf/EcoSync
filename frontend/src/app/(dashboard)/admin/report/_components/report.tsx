@@ -171,6 +171,11 @@ export default function ReportTable({ query, type, pageNo }: Props) {
                 </td>
               </tr>
             ))}
+          {items.length === 0 && (
+            <td colSpan={11} className="py-4">
+              No data found
+            </td>
+          )}
         </tbody>
       </table>
     </InfiniteScroll>

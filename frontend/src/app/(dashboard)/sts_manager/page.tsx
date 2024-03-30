@@ -70,42 +70,48 @@ export default async function StsManager() {
           <VehicleComingFromLandfill landfill_vehicle={landfill_vehicle} />
         </div>
         <div>
-          <table className="text-2xl text-center border border-sts_text border-solid">
-            <thead>
-              <tr>
-                <th className="px-5 pb-2 border border-sts_text">
-                  Vehicle Number
-                </th>
-                <th className="px-5 pb-2 border border-sts_text">Type</th>
-                <th className="px-5 pb-2 border border-sts_text">Capacity</th>
-                <th className="px-5 pb-2 border border-sts_text">
-                  Driver Name
-                </th>
-                <th className="px-5 pb-2 border border-sts_text">
-                  Driver Mobile
-                </th>
-              </tr>
-            </thead>
-            {sts.vehicle.map((vehicle: any) => (
-              <tr key={vehicle.vehicle_number}>
-                <td className="px-5 pb-2 border border-sts_text">
-                  {vehicle.vehicle_number}
-                </td>
-                <td className="px-5 pb-2 border border-sts_text">
-                  {vehicle.type.toUpperCase()}
-                </td>
-                <td className="px-5 pb-2 border border-sts_text">
-                  {vehicle.capacity} Tons
-                </td>
-                <td className="px-5 pb-2 border border-sts_text">
-                  {vehicle.driver_name}
-                </td>
-                <td className="px-5 pb-2 border border-sts_text">
-                  {vehicle.driver_mobile}
-                </td>
-              </tr>
-            ))}
-          </table>
+          {sts.vehicle.length === 0 ? (
+            <h2 className="text-xl font-medium">No vehicle to show</h2>
+          ) : (
+            <table className="text-2xl text-center border border-sts_text border-solid">
+              <thead>
+                <tr>
+                  <th className="px-5 pb-2 border border-sts_text">
+                    Vehicle Number
+                  </th>
+                  <th className="px-5 pb-2 border border-sts_text">Type</th>
+                  <th className="px-5 pb-2 border border-sts_text">Capacity</th>
+                  <th className="px-5 pb-2 border border-sts_text">
+                    Driver Name
+                  </th>
+                  <th className="px-5 pb-2 border border-sts_text">
+                    Driver Mobile
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sts.vehicle.map((vehicle: any) => (
+                  <tr key={vehicle.vehicle_number}>
+                    <td className="px-5 pb-2 border border-sts_text">
+                      {vehicle.vehicle_number}
+                    </td>
+                    <td className="px-5 pb-2 border border-sts_text">
+                      {vehicle.type.toUpperCase()}
+                    </td>
+                    <td className="px-5 pb-2 border border-sts_text">
+                      {vehicle.capacity} Tons
+                    </td>
+                    <td className="px-5 pb-2 border border-sts_text">
+                      {vehicle.driver_name}
+                    </td>
+                    <td className="px-5 pb-2 border border-sts_text">
+                      {vehicle.driver_mobile}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
