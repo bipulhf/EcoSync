@@ -122,6 +122,21 @@ export const vehicleLandfillEntry = async (req: Request, res: Response) => {
         .json({ message: "You don't have any assigned Landfill" });
     }
 
+    const landfillVehicleId = await prisma.landfill_Vehicle.findFirst({
+      where: {
+        vehicle_number,
+        landfill_id: user.landfill_id,
+        arrival_time: null,
+      },
+      select: {
+        landfill_id: true,
+      },
+    });
+
+    if (landfillVehicleId?.landfill_id !== user.landfill_id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     const landfillVehicle = await prisma.landfill_Vehicle.updateMany({
       where: {
         vehicle_number,
@@ -306,23 +321,61 @@ export const vehicleLeftLandfill = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "User Not Found" });
     }
 
-    const vehicleLeftLandfill = await prisma.landfill_Vehicle.findMany({
-      where: {
-        departure_time: {
-          not: null,
+    const [user] = await prisma.$transaction([
+      prisma.user.findFirst({
+        where: {
+          id: userId,
         },
-        arrival_time: {
-          not: null,
+        select: {
+          sts_id: true,
+          role: true,
         },
-      },
-      include: {
-        vehicle: true,
-      },
-      orderBy: {
-        departure_time: "desc",
-      },
-      take: 10,
-    });
+      }),
+    ]);
+
+    let vehicleLeftLandfill;
+    if (user?.role === userRole.admin) {
+      vehicleLeftLandfill = await prisma.landfill_Vehicle.findMany({
+        where: {
+          departure_time: {
+            not: null,
+          },
+          arrival_time: {
+            not: null,
+          },
+        },
+        include: {
+          vehicle: true,
+        },
+        orderBy: {
+          departure_time: "desc",
+        },
+        take: 10,
+      });
+    } else if (user?.sts_id) {
+      vehicleLeftLandfill = await prisma.landfill_Vehicle.findMany({
+        where: {
+          departure_time: {
+            not: null,
+          },
+          arrival_time: {
+            not: null,
+          },
+          vehicle: {
+            sts_id: user.sts_id,
+          },
+        },
+        include: {
+          vehicle: true,
+        },
+        orderBy: {
+          departure_time: "desc",
+        },
+        take: 10,
+      });
+    } else {
+      return res.status(403).json({ message: "Forbidden" });
+    }
 
     return res.status(200).json(vehicleLeftLandfill);
   } catch (error) {

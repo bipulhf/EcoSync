@@ -275,6 +275,7 @@ export async function landfillRegistration(prevState: any, formData: FormData) {
 }
 
 export async function vehicleRegistration(prevState: any, formData: FormData) {
+  const sts_id = formData.get("sts_id");
   const vehicle_number = formData.get("vehicle_number");
   const type = formData.get("vehicle_type");
   const capacity = formData.get("capacity");
@@ -290,6 +291,7 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
       Authorization: `${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
+      sts_id,
       vehicle_number,
       type,
       capacity,

@@ -49,6 +49,7 @@ model Sts {
   landfill          Landfill      @relation(fields: [landfill_id], references: [id], onDelete: Cascade)
   manager           User[]
   sts_vehicle       Sts_Vehicle[]
+  vehicle           Vehicle[]
 }
 
 model Landfill {
@@ -71,6 +72,8 @@ model Vehicle {
   driver_mobile      String
   cost_per_km_load   Float
   cost_per_km_unload Float
+  sts_id             Int
+  sts                Sts                @relation(fields: [sts_id], references: [id], onDelete: Cascade)
   sts_vehicle        Sts_Vehicle[]
   landfill_vehicle   Landfill_Vehicle[]
 }

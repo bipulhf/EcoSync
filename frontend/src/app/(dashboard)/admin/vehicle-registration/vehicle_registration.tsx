@@ -30,6 +30,19 @@ export default function VechicleRegistrationForm() {
         <div className="flex justify-around items-center">
           <div className="w-full mr-10">
             <div className="mb-4 flex w-full items-center">
+              <label htmlFor="sts_id" className="w-[30%] block mb-2">
+                STS ID
+              </label>
+              <input
+                type="text"
+                id="sts_id"
+                name="sts_id"
+                required
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                placeholder="Enter STS ID"
+              />
+            </div>
+            <div className="mb-4 flex w-full items-center">
               <label htmlFor="vehicle_number" className="w-[30%] block mb-2">
                 Vechicle Number
               </label>

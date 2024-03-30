@@ -12,7 +12,9 @@ export const getAllSts = async (req: Request, res: Response) => {
       if (!checkRole(token, userRole.admin)) {
         return res.status(403).json({ message: "Forbidden" });
       }
-      const sts = await prisma.sts.findMany({ include: { landfill: true } });
+      const sts = await prisma.sts.findMany({
+        include: { landfill: true, vehicle: true },
+      });
       return res.status(200).json(sts);
     } catch (error) {
       return res.status(500).json({ message: "Server Error" });
@@ -118,14 +120,24 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
     const userId = getUserId(token);
     const { sts_id, vehicle_number, waste_volume } = req.body;
 
-    const user = await prisma.user.findFirst({
-      where: {
-        id: userId,
-      },
-      select: {
-        sts_id: true,
-      },
-    });
+    const [user, vehicle] = await prisma.$transaction([
+      prisma.user.findFirst({
+        where: {
+          id: userId,
+        },
+        select: {
+          sts_id: true,
+        },
+      }),
+      prisma.vehicle.findFirst({
+        where: {
+          vehicle_number,
+        },
+        select: {
+          sts_id: true,
+        },
+      }),
+    ]);
 
     if (!user) {
       return res.status(403).json({ message: "Forbidden" });
@@ -135,6 +147,10 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
         .json({ message: "You don't have any assigned STS" });
     } else if (user.sts_id != sts_id) {
       return res.status(403).json({ message: "Forbidden" });
+    } else if (vehicle?.sts_id != sts_id) {
+      return res
+        .status(403)
+        .json({ message: "The vehicle belong to another STS" });
     }
 
     const stsVehicle = await prisma.sts_Vehicle.create({

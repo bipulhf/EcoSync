@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "./db";
 import { checkRole } from "./helpers/getRole";
+import { userRole } from "./globals";
 
 export const addVehicle = async (req: Request, res: Response) => {
   try {
@@ -10,6 +11,7 @@ export const addVehicle = async (req: Request, res: Response) => {
     }
 
     const {
+      sts_id,
       vehicle_number,
       type,
       capacity,
@@ -21,6 +23,7 @@ export const addVehicle = async (req: Request, res: Response) => {
 
     const vehicle = await prisma.vehicle.create({
       data: {
+        sts_id: +sts_id,
         vehicle_number,
         type,
         capacity: parseFloat(capacity),
@@ -36,7 +39,6 @@ export const addVehicle = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
-import { userRole } from "./globals";
 
 export const getAllVehicles = async (req: Request, res: Response) => {
   try {
