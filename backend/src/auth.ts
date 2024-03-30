@@ -191,6 +191,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
         landfill_id: true,
         token: true,
       },
+      orderBy: {
+        id: "asc",
+      },
     });
 
     return res.status(200).json(users);

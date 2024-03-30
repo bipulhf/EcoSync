@@ -31,7 +31,13 @@ import {
   vehicleStsEntry,
   vehicleStsUpdate,
 } from "./sts";
-import { addVehicle } from "./vehicle";
+import {
+  addVehicle,
+  deleteVehicleByNumber,
+  getAllVehicles,
+  getVehicleByNumber,
+  updateVehicle,
+} from "./vehicle";
 import { getLoggedInUser, updateLoggedInUser } from "./profile";
 import { createReport, getReport } from "./report";
 
@@ -52,6 +58,10 @@ router_shifat.put("/users/:id", updateUser);
 router_shifat.get("/profile", getLoggedInUser);
 router_shifat.put("/profile", updateLoggedInUser);
 router_shifat.post("/vehicle", addVehicle);
+router_shifat.get("/vehicle", getAllVehicles);
+router_shifat.get("/vehicle/:number", getVehicleByNumber);
+router_shifat.put("/vehicle/:number", updateVehicle);
+router_shifat.delete("/vehicle/:number", deleteVehicleByNumber);
 router_shifat.get("/sts", getAllSts);
 router_shifat.post("/sts", createSts);
 router_shifat.get("/sts/vehicle", vehicleInSts);

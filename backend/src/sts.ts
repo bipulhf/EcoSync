@@ -255,15 +255,35 @@ export const vehicleLeftSts = async (req: Request, res: Response) => {
     const token = req.headers.authorization as string;
     const userId = getUserId(token);
 
-    if (!userId) {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        role: true,
+        landfill_id: true,
+      },
+    });
+    if (!user?.landfill_id && user?.role != userRole.admin) {
       return res.status(403).json({ message: "User Not Found" });
     }
 
-    const tmp = await prisma.landfill_Vehicle.findMany({
-      where: {
-        arrival_time: null,
-      },
-    });
+    let tmp;
+
+    if (user?.role == userRole.admin) {
+      tmp = await prisma.landfill_Vehicle.findMany({
+        where: {
+          arrival_time: null,
+        },
+      });
+    } else {
+      tmp = await prisma.landfill_Vehicle.findMany({
+        where: {
+          landfill_id: user!.landfill_id!,
+          arrival_time: null,
+        },
+      });
+    }
 
     const vehicleLeftSts = await prisma.sts_Vehicle.findMany({
       where: {

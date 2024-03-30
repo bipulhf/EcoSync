@@ -6,7 +6,12 @@ import { hashSync } from "bcrypt";
 export const getLoggedInUser = async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization as string;
-    const currentUserId = getUserId(token);
+    let currentUserId: number;
+    try {
+      currentUserId = getUserId(token);
+    } catch (error) {
+      return res.status(401).json({ error: "Token Invalid" });
+    }
     const user = await prisma.user.findFirst({
       where: {
         id: currentUserId,
@@ -35,7 +40,12 @@ export const updateLoggedInUser = async (req: Request, res: Response) => {
     req.body;
   try {
     const token = req.headers.authorization as string;
-    const currentUserId = getUserId(token);
+    let currentUserId: number;
+    try {
+      currentUserId = getUserId(token);
+    } catch (error) {
+      return res.status(401).json({ error: "Token Invalid" });
+    }
     const oldUser = await prisma.user.findFirst({
       where: {
         id: currentUserId,

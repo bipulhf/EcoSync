@@ -133,11 +133,13 @@ export default function ReportTable({ query, type, pageNo }: Props) {
                 </td>
                 <td className="py-4">
                   {item.Landfill_Vehicle
-                    ? item.Landfill_Vehicle.departure_time
-                      ? getTimeFromDate(
-                          new Date(item.Landfill_Vehicle.departure_time)
-                        )
-                      : "In Landfill"
+                    ? item.Landfill_Vehicle.arrival_time
+                      ? item.Landfill_Vehicle.departure_time
+                        ? getTimeFromDate(
+                            new Date(item.Landfill_Vehicle.departure_time)
+                          )
+                        : "In Landfill"
+                      : "Not Arrived"
                     : "Not Arrived"}
                 </td>
                 <td className="py-4">{item.vehicle.capacity}</td>

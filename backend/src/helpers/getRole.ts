@@ -13,6 +13,10 @@ export const checkRole = (token: string, role: string): boolean => {
 };
 
 export const getUserId = (token: string): number => {
-  const decoded = jwt.verify(token, JWT_SECRET) as any;
-  return decoded.userId;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return decoded.userId;
+  } catch (error) {
+    throw new Error("Invalid token");
+  }
 };
