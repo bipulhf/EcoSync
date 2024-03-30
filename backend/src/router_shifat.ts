@@ -24,6 +24,7 @@ import {
 } from "./landfill";
 import {
   createSts,
+  fleetOptimization,
   getAllSts,
   getSts,
   vehicleInSts,
@@ -68,6 +69,7 @@ router_shifat.get("/sts/vehicle", vehicleInSts);
 router_shifat.post("/sts/vehicle", vehicleStsEntry);
 router_shifat.get("/sts/left", vehicleLeftSts);
 router_shifat.put("/sts/vehicle/:id", vehicleStsUpdate);
+router_shifat.get("/sts/:id/fleet", fleetOptimization);
 router_shifat.get("/sts/:id", getSts);
 router_shifat.get("/landfill", getAllLandfill);
 router_shifat.post("/landfill", createLandfill);

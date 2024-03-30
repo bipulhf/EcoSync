@@ -13,7 +13,7 @@ export const getAllSts = async (req: Request, res: Response) => {
         return res.status(403).json({ message: "Forbidden" });
       }
       const sts = await prisma.sts.findMany({
-        include: { landfill: true, vehicle: true },
+        include: { landfill: true },
       });
       return res.status(200).json(sts);
     } catch (error) {
@@ -35,6 +35,9 @@ export const getAllSts = async (req: Request, res: Response) => {
               id: +managerId,
             },
           },
+        },
+        include: {
+          vehicle: true,
         },
       });
 
@@ -314,6 +317,96 @@ export const vehicleLeftSts = async (req: Request, res: Response) => {
 
     return res.status(200).json(vehicleLeftSts);
   } catch (error) {
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const fleetOptimization = async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization as string;
+    const sts_id = parseInt(req.params.id as string);
+    const userId = getUserId(token);
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        sts_id: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(403).json({ message: "User Not Found" });
+    } else if (user.sts_id != sts_id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    let currentDate = new Date();
+    currentDate.setHours(5, 0, 0, 0);
+
+    const [sts_vechile, vehicle_trip] = await prisma.$transaction([
+      prisma.vehicle.findMany({
+        where: {
+          sts_id,
+        },
+        orderBy: [
+          {
+            cost_per_km_load: "asc",
+          },
+          {
+            capacity: "desc",
+          },
+        ],
+      }),
+      prisma.landfill_Vehicle.findMany({
+        where: {
+          vehicle: {
+            sts_id,
+          },
+          OR: [
+            { arrival_time: null },
+            {
+              departure_time: {
+                gte: currentDate,
+              },
+            },
+          ],
+        },
+      }),
+    ]);
+
+    const vehicles: {
+      trip: number;
+      cost_loaded: number;
+      vehicle_number: string;
+      type: string;
+      capacity: number;
+      driver_name: string;
+      driver_mobile: string;
+      cost_per_km_load: number;
+      cost_per_km_unload: number;
+      sts_id: number;
+    }[] = [];
+
+    sts_vechile.forEach((vehicle) => {
+      const tmp = {
+        ...vehicle,
+        trip: 3,
+        cost_loaded: vehicle.cost_per_km_unload + vehicle.cost_per_km_load,
+        travelling: false,
+      };
+      vehicle_trip.forEach((trip) => {
+        if (trip.vehicle_number == vehicle.vehicle_number) {
+          tmp.trip -= 1;
+          tmp.travelling = trip.departure_time ? false : true;
+        }
+      });
+      if (tmp.trip) vehicles.push(tmp);
+    });
+
+    return res.status(200).json(vehicles);
+  } catch (e) {
     return res.status(500).json({ message: "Server Error" });
   }
 };
