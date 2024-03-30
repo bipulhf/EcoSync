@@ -69,7 +69,7 @@ export default async function StsManager() {
           <VechiclesInSTS sts_vehicle={sts_vehicle} leftSTS={leftSTS} />
           <VehicleComingFromLandfill landfill_vehicle={landfill_vehicle} />
         </div>
-        <div>
+        <div className="ml-10">
           {sts.vehicle.length === 0 ? (
             <h2 className="text-xl font-medium">No vehicle to show</h2>
           ) : (

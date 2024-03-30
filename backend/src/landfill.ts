@@ -133,6 +133,8 @@ export const vehicleLandfillEntry = async (req: Request, res: Response) => {
       },
     });
 
+    console.log(landfillVehicleId?.landfill_id, user.landfill_id);
+
     if (landfillVehicleId?.landfill_id !== user.landfill_id) {
       return res.status(403).json({ message: "Forbidden" });
     }
@@ -148,7 +150,7 @@ export const vehicleLandfillEntry = async (req: Request, res: Response) => {
       },
     });
 
-    if (!landfillVehicle) {
+    if (!landfillVehicle.count) {
       return res.status(404).json({ message: "Vehicle Not Found" });
     }
 

@@ -123,7 +123,7 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
     const userId = getUserId(token);
     const { sts_id, vehicle_number, waste_volume } = req.body;
 
-    const [user, vehicle] = await prisma.$transaction([
+    const [user, vehicle, vehicleIn] = await prisma.$transaction([
       prisma.user.findFirst({
         where: {
           id: userId,
@@ -140,6 +140,12 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
           sts_id: true,
         },
       }),
+      prisma.sts_Vehicle.findFirst({
+        where: {
+          vehicle_number,
+          departure_time: null,
+        },
+      }),
     ]);
 
     if (!user) {
@@ -154,6 +160,8 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
       return res
         .status(403)
         .json({ message: "The vehicle belong to another STS" });
+    } else if (vehicleIn) {
+      return res.status(403).json({ message: "Vehicle already in STS" });
     }
 
     const stsVehicle = await prisma.sts_Vehicle.create({
@@ -387,6 +395,7 @@ export const fleetOptimization = async (req: Request, res: Response) => {
       cost_per_km_load: number;
       cost_per_km_unload: number;
       sts_id: number;
+      per_ton: number;
     }[] = [];
 
     sts_vechile.forEach((vehicle) => {
@@ -395,6 +404,7 @@ export const fleetOptimization = async (req: Request, res: Response) => {
         trip: 3,
         cost_loaded: vehicle.cost_per_km_unload + vehicle.cost_per_km_load,
         travelling: false,
+        per_ton: 0,
       };
       vehicle_trip.forEach((trip) => {
         if (trip.vehicle_number == vehicle.vehicle_number) {
@@ -402,11 +412,23 @@ export const fleetOptimization = async (req: Request, res: Response) => {
           tmp.travelling = trip.departure_time ? false : true;
         }
       });
-      if (tmp.trip) vehicles.push(tmp);
+      if (tmp.trip) {
+        tmp.per_ton = tmp.cost_loaded / (tmp.trip * tmp.capacity);
+        vehicles.push(tmp);
+      }
     });
+
+    vehicles.sort(comparator);
 
     return res.status(200).json(vehicles);
   } catch (e) {
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
+function comparator(a: any, b: any) {
+  if (a.per_ton == b.per_ton) {
+    return b.capacity - a.capacity;
+  }
+  return a.per_ton - b.per_ton;
+}
