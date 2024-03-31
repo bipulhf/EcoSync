@@ -33,6 +33,10 @@ export const updateUser = async (req: Request, res: Response) => {
         message:
           "Permission Denined, Only System Admin or Owner Can Update User",
       });
+    } else if (userId == adminId) {
+      return res
+        .status(403)
+        .json({ message: "Update your info from profile on the header above" });
     }
   } catch (error) {
     return res
@@ -41,10 +45,6 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 
   try {
-  
-    if(userId == adminId) {
-      return res.status(403).json({ message: "Update your info from profile on the header above" });
-    }
     const existingUser = await prisma.user.findFirst({
       where: {
         id: userId,
@@ -55,23 +55,22 @@ export const updateUser = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if(sts_id) {
+    if (sts_id) {
       const sts = await prisma.sts.findFirst({
         where: {
-          id: +sts_id
-        }
+          id: +sts_id,
+        },
       });
-      if(!sts) {
+      if (!sts) {
         return res.status(403).json({ message: "STS does not exist" });
       }
-    }
-    else if(landfill_id) {
+    } else if (landfill_id) {
       const sts = await prisma.landfill.findFirst({
         where: {
-          id: +landfill_id
-        }
+          id: +landfill_id,
+        },
       });
-      if(!sts) {
+      if (!sts) {
         return res.status(403).json({ message: "Lanfill does not exist" });
       }
     }
@@ -371,24 +370,23 @@ export const createUser = async (req: Request, res: Response) => {
   }
 
   const password = generateRandomPassword(10);
-  
-  if(sts_id) {
+
+  if (sts_id) {
     const sts = await prisma.sts.findFirst({
       where: {
-        id: +sts_id
-      }
+        id: +sts_id,
+      },
     });
-    if(!sts) {
+    if (!sts) {
       return res.status(403).json({ message: "STS does not exist" });
     }
-  }
-  else if(landfill_id) {
+  } else if (landfill_id) {
     const sts = await prisma.landfill.findFirst({
       where: {
-        id: +landfill_id
-      }
+        id: +landfill_id,
+      },
     });
-    if(!sts) {
+    if (!sts) {
       return res.status(403).json({ message: "Lanfill does not exist" });
     }
   }
@@ -438,8 +436,10 @@ export const login = async (req: Request, res: Response) => {
     if (!compareSync(password, user.password)) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    if(user.role == userRole.unassigned) {
-      return res.status(401).json({ message: "Ask admin to assign you a role" });
+    if (user.role == userRole.unassigned) {
+      return res
+        .status(401)
+        .json({ message: "Ask admin to assign you a role" });
     }
 
     const payload = {
