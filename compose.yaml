@@ -24,6 +24,7 @@ services:
       - SMTP_EMAIL=lastnightplayerz@gmail.com
       - SMTP_PASSWORD=wqqrzonbrirymbiw
       - MAP_API_KEY=AIzaSyBPtcH0dxsphaU97PSSPJzpnv9-jFh1N7Y
+      - TZ=Asia/Dhaka
     depends_on:
       - db
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; npm run db && npm run dev'
@@ -42,6 +43,7 @@ services:
       - NEXT_PUBLIC_CLOUDINARY_API_SECRET=M4aOhooY_gWfoyPN02YMBPn4hSs
       - NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=ewzfkmdr
       - NEXT_PUBLIC_MAP_API_KEY=AIzaSyBPtcH0dxsphaU97PSSPJzpnv9-jFh1N7Y
+      - TZ=Asia/Dhaka
     depends_on:
       - backend
     links:

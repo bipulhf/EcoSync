@@ -315,7 +315,7 @@ export const vehicleLeftSts = async (req: Request, res: Response) => {
     const vehicleLeftSts = await prisma.sts_Vehicle.findMany({
       where: {
         id: {
-          in: tmp.map((x) => x.sts_vehicle_id),
+          in: tmp.map((x: any) => x.sts_vehicle_id),
         },
       },
       include: {
@@ -398,7 +398,7 @@ export const fleetOptimization = async (req: Request, res: Response) => {
       per_ton: number;
     }[] = [];
 
-    sts_vechile.forEach((vehicle) => {
+    sts_vechile.forEach((vehicle: any) => {
       const tmp = {
         ...vehicle,
         trip: 3,
@@ -406,7 +406,7 @@ export const fleetOptimization = async (req: Request, res: Response) => {
         travelling: false,
         per_ton: 0,
       };
-      vehicle_trip.forEach((trip) => {
+      vehicle_trip.forEach((trip: any) => {
         if (trip.vehicle_number == vehicle.vehicle_number) {
           tmp.trip -= 1;
           tmp.travelling = trip.departure_time ? false : true;
