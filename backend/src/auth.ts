@@ -26,6 +26,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
   try {
     const token = req.headers.authorization as string;
+    const adminId = getUserId(token);
 
     if (!checkRole(token, userRole.admin)) {
       return res.status(403).json({
@@ -40,6 +41,10 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 
   try {
+  
+    if(userId == adminId) {
+      return res.status(403).json({ message: "Update your info from profile on the header above" });
+    }
     const existingUser = await prisma.user.findFirst({
       where: {
         id: userId,
@@ -48,6 +53,27 @@ export const updateUser = async (req: Request, res: Response) => {
 
     if (!existingUser) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    if(sts_id) {
+      const sts = await prisma.sts.findFirst({
+        where: {
+          id: +sts_id
+        }
+      });
+      if(!sts) {
+        return res.status(403).json({ message: "STS does not exist" });
+      }
+    }
+    else if(landfill_id) {
+      const sts = await prisma.landfill.findFirst({
+        where: {
+          id: +landfill_id
+        }
+      });
+      if(!sts) {
+        return res.status(403).json({ message: "Lanfill does not exist" });
+      }
     }
 
     const updatedUser = await prisma.user.update({
