@@ -88,11 +88,11 @@ export const createSts = async (req: Request, res: Response) => {
     if (!checkRole(token, userRole.admin)) {
       return res.status(403).json({ message: "Forbidden" });
     }
-    
+
     const lat = latitude.split(".");
     const lng = longitude.split(".");
-    
-    if(lat.length > 2 || lng.length > 2) {
+
+    if (lat.length > 2 || lng.length > 2) {
       return res.status(400).json({ message: "Latitude/Longitude error" });
     }
 
@@ -100,8 +100,8 @@ export const createSts = async (req: Request, res: Response) => {
       where: { id: parseInt(landfill_id) },
       select: { latitude: true, longitude: true },
     });
-    
-    if(!landfill) {
+
+    if (!landfill) {
       return res.status(403).json({ message: "Landfill not found" });
     }
 
@@ -425,7 +425,9 @@ export const fleetOptimization = async (req: Request, res: Response) => {
         trip: 3,
         cost_loaded: vehicle.cost_per_km_unload + vehicle.cost_per_km_load,
         travelling: false,
-        per_ton: 0,
+        per_ton:
+          (vehicle.cost_per_km_unload + vehicle.cost_per_km_load) /
+          (3 * vehicle.capacity),
       };
       vehicle_trip.forEach((trip: any) => {
         if (trip.vehicle_number == vehicle.vehicle_number) {
