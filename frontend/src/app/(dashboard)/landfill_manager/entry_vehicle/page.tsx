@@ -64,7 +64,9 @@ export default function EntryVehicle() {
         </div>
       </form>
       {state?.message && (
-        <p className="text-red text-2xl font-medium mt-4">{state.message}</p>
+        <p className="text-red text-2xl font-medium mt-4 text-center">
+          {state.message}
+        </p>
       )}
     </>
   );

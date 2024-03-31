@@ -123,7 +123,7 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
     const userId = getUserId(token);
     const { sts_id, vehicle_number, waste_volume } = req.body;
 
-    const [user, vehicle, vehicleIn] = await prisma.$transaction([
+    const [user, vehicle, vehicleIn, vehicleOut] = await prisma.$transaction([
       prisma.user.findFirst({
         where: {
           id: userId,
@@ -146,6 +146,12 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
           departure_time: null,
         },
       }),
+      prisma.landfill_Vehicle.findFirst({
+        where: {
+          vehicle_number,
+          arrival_time: null,
+        },
+      }),
     ]);
 
     if (!user) {
@@ -162,6 +168,10 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
         .json({ message: "The vehicle belong to another STS" });
     } else if (vehicleIn) {
       return res.status(403).json({ message: "Vehicle already in STS" });
+    } else if (vehicleOut) {
+      return res
+        .status(403)
+        .json({ message: "Vehicle already left STS. On the way to landfill." });
     }
 
     const stsVehicle = await prisma.sts_Vehicle.create({

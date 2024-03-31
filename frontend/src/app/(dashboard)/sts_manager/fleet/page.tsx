@@ -2,6 +2,7 @@ import { getTimeFromDate } from "@/utils/timeconvert";
 import extractUserInfo from "@/utils/verify";
 import { cookies } from "next/headers";
 import { baseURL } from "../../../../../files";
+import Link from "next/link";
 
 const getData = async () => {
   const { sts_id } = await extractUserInfo();
@@ -52,7 +53,11 @@ export default async function Fleet() {
           {sts.map((vehicle: any) => (
             <tr key={vehicle.vehicle_number}>
               <td className="px-5 pb-2 border-2 border-sts_text">
-                {vehicle.vehicle_number}
+                <Link
+                  href={`/sts_manager/entry_vehicle?vehicle_number=${vehicle.vehicle_number}`}
+                >
+                  {vehicle.vehicle_number}
+                </Link>
               </td>
               <td className="px-5 pb-2 border-2 border-sts_text">
                 {vehicle.type.toUpperCase()}

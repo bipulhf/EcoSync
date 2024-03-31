@@ -1,6 +1,7 @@
 "use client";
 
 import { addVehicleSTS } from "@/utils/actions";
+import { useSearchParams } from "next/navigation";
 import { useFormState, useFormStatus } from "react-dom";
 
 function Submit() {
@@ -21,6 +22,7 @@ function Submit() {
 
 export default function EntryVehicle() {
   const [state, formAction] = useFormState(addVehicleSTS, null);
+  const vehicle_number = useSearchParams().get("vehicle_number") || "";
 
   return (
     <>
@@ -49,14 +51,26 @@ export default function EntryVehicle() {
           <label htmlFor="vehicle_number" className="w-[30%] block mb-2">
             Vehicle Number:
           </label>
-          <input
-            type="text"
-            id="vehicle_number"
-            name="vehicle_number"
-            required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sts_text"
-            placeholder="Enter Vehicle Number"
-          />
+          {vehicle_number ? (
+            <input
+              type="text"
+              id="vehicle_number"
+              name="vehicle_number"
+              required
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sts_text"
+              placeholder="Enter Vehicle Number"
+              value={vehicle_number}
+            />
+          ) : (
+            <input
+              type="text"
+              id="vehicle_number"
+              name="vehicle_number"
+              required
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sts_text"
+              placeholder="Enter Vehicle Number"
+            />
+          )}
         </div>
 
         <div className="mb-4 flex w-full items-center">
@@ -77,7 +91,9 @@ export default function EntryVehicle() {
         </div>
       </form>
       {state?.message && (
-        <p className="text-red text-2xl font-medium mt-4">{state.message}</p>
+        <p className="text-red text-2xl font-medium mt-4 text-center">
+          {state.message}
+        </p>
       )}
     </>
   );
