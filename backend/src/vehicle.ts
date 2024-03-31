@@ -20,6 +20,17 @@ export const addVehicle = async (req: Request, res: Response) => {
       cost_per_km_load,
       cost_per_km_unload,
     } = req.body;
+    
+    if(sts_id) {
+      const sts = await prisma.sts.findFirst({
+        where: {
+          id: +sts_id
+        }
+      });
+      if(!sts) {
+        return res.status(403).json({ message: "STS does not exist" });
+      }
+    }
 
     const vehicle = await prisma.vehicle.create({
       data: {

@@ -345,6 +345,27 @@ export const createUser = async (req: Request, res: Response) => {
   }
 
   const password = generateRandomPassword(10);
+  
+  if(sts_id) {
+    const sts = await prisma.sts.findFirst({
+      where: {
+        id: +sts_id
+      }
+    });
+    if(!sts) {
+      return res.status(403).json({ message: "STS does not exist" });
+    }
+  }
+  else if(landfill_id) {
+    const sts = await prisma.landfill.findFirst({
+      where: {
+        id: +landfill_id
+      }
+    });
+    if(!sts) {
+      return res.status(403).json({ message: "Lanfill does not exist" });
+    }
+  }
 
   user = await prisma.user.create({
     data: {
@@ -390,6 +411,9 @@ export const login = async (req: Request, res: Response) => {
 
     if (!compareSync(password, user.password)) {
       return res.status(401).json({ message: "Invalid credentials" });
+    }
+    if(user.role == userRole.unassigned) {
+      return res.status(401).json({ message: "Ask admin to assign you a role" });
     }
 
     const payload = {

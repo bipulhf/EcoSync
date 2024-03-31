@@ -88,11 +88,22 @@ export const createSts = async (req: Request, res: Response) => {
     if (!checkRole(token, userRole.admin)) {
       return res.status(403).json({ message: "Forbidden" });
     }
+    
+    const lat = latitude.split(".");
+    const lng = longitude.split(".");
+    
+    if(lat.length > 2 || lng.length > 2) {
+      return res.status(400).json({ message: "Latitude/Longitude error" });
+    }
 
     const landfill = await prisma.landfill.findFirst({
       where: { id: parseInt(landfill_id) },
       select: { latitude: true, longitude: true },
     });
+    
+    if(!landfill) {
+      return res.status(403).json({ message: "Landfill not found" });
+    }
 
     const distance = await getDistance(
       { latitude, longitude },

@@ -27,7 +27,7 @@ services:
       - TZ=Asia/Dhaka
     depends_on:
       - db
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; npm run db && npm run dev'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; pnpm run db && pnpm run dev'
   frontend:
     build:
       context: ./frontend

@@ -5,9 +5,8 @@ WORKDIR /app/frontend
 COPY package.json .
 COPY package-lock.json .
 
-RUN npm install -g npm@10.5.0
-RUN npm install
+RUN npm install -g pnpm && pnpm install
 
 COPY . .
-RUN npm run build
-CMD [ "npm", "start" ]
+RUN pnpm run build
+CMD [ "pnpm", "start" ]
