@@ -9,6 +9,7 @@ import {
   LandfillTable,
   PermissionTable,
   RoleTable,
+  UserRoleTable,
   UserTable,
 } from "./drizzle/schema";
 import { permissions } from "./helpers/permissions";
@@ -59,12 +60,20 @@ app.listen(port, async () => {
 
       if (!user && !landfill) {
         console.log("Inserting default user and landfill...");
-        await tx.insert(UserTable).values({
-          first_name: "EcoSync",
-          last_name: "Admin",
-          email: "admin@ecosync.com",
-          password: hashSync("admin", 10),
-          mobile: "01234567891",
+        const [user] = await tx
+          .insert(UserTable)
+          .values({
+            first_name: "EcoSync",
+            last_name: "Admin",
+            email: "admin@ecosync.com",
+            password: hashSync("admin", 10),
+            mobile: "01234567891",
+          })
+          .returning({ id: UserTable.id });
+
+        await tx.insert(UserRoleTable).values({
+          user_id: user.id,
+          role: userRole.admin,
         });
 
         await tx.insert(LandfillTable).values({

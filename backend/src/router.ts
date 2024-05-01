@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { prisma } from "./db";
 import {
   createUser,
   login,
@@ -11,7 +10,7 @@ import {
   getUser,
   deleteUser,
   updateUser,
-} from "./auth";
+} from "./services/auth";
 import {
   getAllLandfill,
   getLandfill,
@@ -41,11 +40,17 @@ import {
 } from "./vehicle";
 import { getLoggedInUser, updateLoggedInUser } from "./profile";
 import { createReport, getReport } from "./report";
+import { middleware } from "./middleware";
+import { rolePermissions } from "./globals";
 
 const router = Router();
 
-router.post("/users", createUser);
-router.post("/auth/create", createUser);
+router.post("/users", middleware(rolePermissions.CREATE_USER), createUser);
+router.post(
+  "/auth/create",
+  middleware(rolePermissions.CREATE_USER),
+  createUser
+);
 
 router.post("/auth/login", login);
 router.post("/authenticate", authenticateToken);

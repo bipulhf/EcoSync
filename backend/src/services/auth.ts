@@ -2,13 +2,22 @@ import e, { Request, RequestHandler, Response } from "express";
 import { compareSync, hashSync } from "bcrypt";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { mailOptions, mailTransporter } from "./helpers/mailTransporter";
-import { prisma } from "./db";
-import { userRole } from "./globals";
-import { checkRole, getUserId } from "./helpers/getRole";
+import { mailOptions, mailTransporter } from "../helpers/mailTransporter";
+import { prisma } from "../db";
+import { userRole } from "../globals";
+import {
+  checkRole,
+  extractPermissions,
+  extractRole,
+  getUserId,
+} from "../helpers/getRole";
+import { db } from "../drizzle/db";
+import { UserTable } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
+const emailPattern: RegExp = /^[\w\.-]+@[\w\.-]+\.\w+$/;
 
 export const updateUser = async (req: Request, res: Response) => {
   const userId = parseInt(req.params.id);
@@ -353,11 +362,7 @@ export const logout = async (req: Request, res: Response) => {};
 
 export const createUser = async (req: Request, res: Response) => {
   const token = req.headers.authorization as string;
-  if (!checkRole(token, userRole.admin)) {
-    return res
-      .status(401)
-      .json({ message: "Unauthorized, Only System Admin can create users" });
-  }
+
   const { first_name, last_name, email, mobile, role, sts_id, landfill_id } =
     req.body;
 
@@ -423,10 +428,29 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
-    let user = await prisma.user.findFirst({
-      where: { email },
+    if (emailPattern.test(email) == false) {
+      res.status(400).json({ message: "Invalid email" });
+    }
+
+    let user = await db.query.UserTable.findFirst({
+      with: {
+        roles: {
+          with: {
+            role: {
+              with: {
+                permissions: {
+                  columns: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      where: (model) => eq(model.email, email),
     });
 
     if (!user) {
@@ -436,7 +460,11 @@ export const login = async (req: Request, res: Response) => {
     if (!compareSync(password, user.password)) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    if (user.role == userRole.unassigned) {
+
+    const roles = extractRole(user.roles);
+    const permissions = extractPermissions(user.roles);
+
+    if (roles.includes(userRole.unassigned)) {
       return res
         .status(401)
         .json({ message: "Ask admin to assign you a role" });
@@ -445,7 +473,8 @@ export const login = async (req: Request, res: Response) => {
     const payload = {
       userId: user.id,
       name: user.first_name,
-      role: user.role,
+      roles,
+      permissions,
       profile_photo: user.profile_photo,
       sts_id: user.sts_id,
       landfill_id: user.landfill_id,
@@ -455,7 +484,7 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: `${JWT_EXPIRATION_MINUTES}m`,
     });
 
-    return res.status(200).json({ token, role: user.role });
+    return res.status(200).json({ token });
   } catch (error) {
     return res.status(501).json({ message: "Internal Error" });
   }
