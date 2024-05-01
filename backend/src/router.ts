@@ -6,10 +6,6 @@ import {
   resetPassword,
   resetPasswordConfirm,
   changePassword,
-  getAllUsers,
-  getUser,
-  deleteUser,
-  updateUser,
 } from "./services/auth";
 import {
   getAllLandfill,
@@ -42,6 +38,7 @@ import { getLoggedInUser, updateLoggedInUser } from "./profile";
 import { createReport, getReport } from "./report";
 import { middleware } from "./middleware";
 import { rolePermissions } from "./globals";
+import { getAllUsers, getUser, deleteUser, updateUser } from "./services/user";
 
 const router = Router();
 
@@ -124,8 +121,16 @@ router.get(
 router.put("/sts/vehicle/:id", vehicleStsUpdate);
 router.get("/sts/:id/fleet", fleetOptimization);
 router.get("/sts/:id", getSts);
-router.get("/landfill", getAllLandfill);
-router.post("/landfill", createLandfill);
+router.get(
+  "/landfill",
+  middleware([rolePermissions.READ_LANDFILL]),
+  getAllLandfill
+);
+router.post(
+  "/landfill",
+  middleware([rolePermissions.CREATE_LANDFILL]),
+  createLandfill
+);
 router.get("/landfill/vehicle", vehicleInLandfill);
 router.post("/landfill/vehicle", vehicleLandfillEntry);
 router.get("/landfill/weekly-waste", weeklyWasteAmount);
