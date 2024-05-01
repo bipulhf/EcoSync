@@ -18,7 +18,26 @@ export const RoleTable = pgTable("roles", {
 
 export const RoleTableRelations = relations(RoleTable, ({ many }) => ({
   roles: many(UserRoleTable),
+  permissions: many(PermissionTable),
 }));
+
+export const PermissionTable = pgTable("permissions", {
+  id: serial("id").primaryKey(),
+  permission: varchar("permission", { length: 255 }).notNull().unique(),
+  role_id: integer("role_id")
+    .notNull()
+    .references(() => RoleTable.id, { onDelete: "cascade" }),
+});
+
+export const PermissionTableRelations = relations(
+  PermissionTable,
+  ({ one }) => ({
+    role: one(RoleTable, {
+      fields: [PermissionTable.role_id],
+      references: [RoleTable.id],
+    }),
+  })
+);
 
 export const UserTable = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -196,7 +215,7 @@ export const StsVehicleTable = pgTable(
       .references(() => LandfillVehicleTable.id, { onDelete: "cascade" }),
   },
   (table) => ({
-    sts_vehicle_index: index("landfill_vehicle_index").on(
+    sts_vehicle_index: index("sts_vehicle_index").on(
       table.sts_id,
       table.vehicle_number
     ),
