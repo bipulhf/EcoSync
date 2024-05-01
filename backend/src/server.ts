@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import router_shifat from "./router_shifat";
+import router from "./router";
 
 const app = express();
 
@@ -17,6 +17,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use("/", router_shifat);
+app.use("/", router);
 
 export default app;

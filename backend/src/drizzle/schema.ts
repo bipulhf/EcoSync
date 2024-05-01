@@ -12,8 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const RoleTable = pgTable("roles", {
-  id: serial("id").primaryKey(),
-  role: varchar("role", { length: 255 }).notNull().unique(),
+  role: varchar("role", { length: 255 }).notNull().primaryKey(),
 });
 
 export const RoleTableRelations = relations(RoleTable, ({ many }) => ({
@@ -24,17 +23,17 @@ export const RoleTableRelations = relations(RoleTable, ({ many }) => ({
 export const PermissionTable = pgTable("permissions", {
   id: serial("id").primaryKey(),
   permission: varchar("permission", { length: 255 }).notNull().unique(),
-  role_id: integer("role_id")
+  role_name: varchar("role_name", { length: 255 })
     .notNull()
-    .references(() => RoleTable.id, { onDelete: "cascade" }),
+    .references(() => RoleTable.role, { onDelete: "cascade" }),
 });
 
 export const PermissionTableRelations = relations(
   PermissionTable,
   ({ one }) => ({
     role: one(RoleTable, {
-      fields: [PermissionTable.role_id],
-      references: [RoleTable.id],
+      fields: [PermissionTable.role_name],
+      references: [RoleTable.role],
     }),
   })
 );
@@ -101,12 +100,12 @@ export const UserRoleTable = pgTable(
     user_id: integer("user_id")
       .notNull()
       .references(() => UserTable.id, { onDelete: "cascade" }),
-    role_id: integer("role_id")
+    role: varchar("role", { length: 255 })
       .notNull()
-      .references(() => RoleTable.id, { onDelete: "cascade" }),
+      .references(() => RoleTable.role, { onDelete: "cascade" }),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.user_id, table.role_id] }),
+    pk: primaryKey({ columns: [table.user_id, table.role] }),
   })
 );
 
@@ -116,8 +115,8 @@ export const UserRoleTableRelations = relations(UserRoleTable, ({ one }) => ({
     references: [UserTable.id],
   }),
   role: one(RoleTable, {
-    fields: [UserRoleTable.role_id],
-    references: [RoleTable.id],
+    fields: [UserRoleTable.role],
+    references: [RoleTable.role],
   }),
 }));
 

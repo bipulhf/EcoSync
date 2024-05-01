@@ -2,51 +2,82 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import app from "./server";
-import { prisma } from "./db";
 import { hashSync } from "bcrypt";
 import { formatTime } from "./helpers/date";
+import { db } from "./drizzle/db";
+import {
+  LandfillTable,
+  PermissionTable,
+  RoleTable,
+  UserTable,
+} from "./drizzle/schema";
+import { permissions } from "./helpers/permissions";
+import { userRole } from "./globals";
 
-app.listen(8000, async () => {
-  console.log("Server started on http://localhost:8000");
+const port = +(process.env.PORT as string) || 8000;
+
+app.listen(port, async () => {
+  console.log(`Server started on http://localhost:${port}`);
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        email: "admin@ecosync.com",
-      },
-    });
+    await db.transaction(async (tx) => {
+      const [user] = await tx
+        .select({ id: UserTable.id })
+        .from(UserTable)
+        .limit(1);
 
-    const landfill = await prisma.landfill.findFirst({
-      where: {
-        id: 1,
-      },
-    });
+      const [landfill] = await tx
+        .select({ id: LandfillTable.id })
+        .from(LandfillTable)
+        .limit(1);
+      const [role] = await tx
+        .select({ role: RoleTable.role })
+        .from(RoleTable)
+        .limit(1);
+      const [permission] = await tx
+        .select({ id: PermissionTable.id })
+        .from(PermissionTable)
+        .limit(1);
 
-    if (!user)
-      await prisma.user.create({
-        data: {
+      if (!role && !permission) {
+        console.log("Inserting default role and permission...");
+        await tx.insert(RoleTable).values([
+          {
+            role: userRole.admin,
+          },
+          {
+            role: userRole.sts_manager,
+          },
+          {
+            role: userRole.landfill_manager,
+          },
+          {
+            role: userRole.unassigned,
+          },
+        ]);
+        await tx.insert(PermissionTable).values(permissions);
+      }
+
+      if (!user && !landfill) {
+        console.log("Inserting default user and landfill...");
+        await tx.insert(UserTable).values({
           first_name: "EcoSync",
           last_name: "Admin",
           email: "admin@ecosync.com",
           password: hashSync("admin", 10),
-          profile_photo:
-            "https://beforeigosolutions.com/wp-content/uploads/2021/12/dummy-profile-pic-300x300-1.png",
           mobile: "01234567891",
-          role: "admin",
-          sts_id: null,
-          landfill_id: null,
-        },
-      });
+        });
 
-    if (!landfill)
-      await prisma.landfill.create({
-        data: {
+        await tx.insert(LandfillTable).values({
           latitude: 23.7995223,
           longitude: 90.2961618,
           city_corporation: "Dhaka North City Corporation",
           start_time: formatTime("08:00"),
           end_time: formatTime("22:00"),
-        },
-      });
+        });
+      } else {
+        return;
+      }
+    });
   } catch (e) {
     console.log(e);
   }
