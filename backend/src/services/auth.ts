@@ -12,7 +12,7 @@ import {
   getUserId,
 } from "../helpers/getRole";
 import { db } from "../drizzle/db";
-import { UserRoleTable, UserTable } from "../drizzle/schema";
+import { TokenTable, UserRoleTable, UserTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -237,7 +237,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 };
 
 export const changePassword = async (req: Request, res: Response) => {
-  const token = req.headers.authorization as string;
+  const token = (req.headers.authorization as string).split(" ")[1];
 
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
@@ -246,7 +246,9 @@ export const changePassword = async (req: Request, res: Response) => {
 
     const { oldPassword, newPassword } = req.body;
 
-    const user = await prisma.user.findFirst({ where: { id: userId } });
+    const user = await db.query.UserTable.findFirst({
+      where: eq(UserTable.id, userId),
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -258,10 +260,11 @@ export const changePassword = async (req: Request, res: Response) => {
 
     const hashedPassword = hashSync(newPassword, 10);
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { password: hashedPassword },
-    });
+    await db
+      .update(UserTable)
+      .set({ password: hashedPassword })
+      .where(eq(UserTable.id, user.id))
+      .execute();
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
@@ -272,8 +275,12 @@ export const changePassword = async (req: Request, res: Response) => {
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
-    const user = await prisma.user.findUnique({
-      where: { email },
+
+    if (!emailPattern.test(email))
+      return res.status(400).json({ message: "Invalid email" });
+
+    const user = await db.query.UserTable.findFirst({
+      where: (model) => eq(model.email, email),
     });
 
     if (!user) {
@@ -281,15 +288,23 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 
     const resetToken = generateEmailToken();
-
     const expiration = new Date(Date.now() + 3600000);
 
-    // Update the existing token or create a new one if it doesn't exist
-    await prisma.token.upsert({
-      where: { userId: user.id },
-      update: { body: resetToken, expiration: expiration },
-      create: { body: resetToken, expiration: expiration, userId: user.id },
-    });
+    await db
+      .insert(TokenTable)
+      .values({
+        user_id: user.id,
+        body: resetToken,
+        expiration: expiration,
+      })
+      .onConflictDoUpdate({
+        target: TokenTable.user_id,
+        set: {
+          body: resetToken,
+          expiration: expiration,
+        },
+      })
+      .execute();
 
     const mail = {
       ...mailOptions,
@@ -315,9 +330,11 @@ export const resetPasswordConfirm = async (req: Request, res: Response) => {
   const { email, token, newPassword } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { token: true },
+    const user = await db.query.UserTable.findFirst({
+      where: (model) => eq(model.email, email),
+      with: {
+        token: true,
+      },
     });
 
     if (!user) {
@@ -332,15 +349,18 @@ export const resetPasswordConfirm = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         // Update user's password
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { password: hashedPassword },
-        });
+        await db.transaction(async (tx) => {
+          await tx
+            .update(UserTable)
+            .set({ password: hashedPassword })
+            .where(eq(UserTable.id, user.id))
+            .execute();
 
-        // Invalidate the token
-        await prisma.token.update({
-          where: { id: user.token.id },
-          data: { valid: false },
+          // Invalidate the token
+          await tx
+            .delete(TokenTable)
+            .where(eq(TokenTable.user_id, user.id))
+            .execute();
         });
 
         return res
@@ -515,7 +535,7 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const authenticateToken = async (req: Request, res: Response) => {
-  const token = req.headers.authorization;
+  const token = (req.headers.authorization as string).split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Invalid Token" });
@@ -524,7 +544,9 @@ export const authenticateToken = async (req: Request, res: Response) => {
   try {
     const userId = getUserId(token);
 
-    const user = await prisma.user.findFirst({ where: { id: userId } });
+    const user = await db.query.UserTable.findFirst({
+      where: (model) => eq(model.id, userId),
+    });
 
     if (!user) {
       return res.status(401).json({ message: "Invalid Token" });

@@ -82,6 +82,10 @@ export const permissions = [
     role_name: userRole.sts_manager,
   },
   {
+    permission: rolePermissions.READ_STS,
+    role_name: userRole.sts_manager,
+  },
+  {
     permission: rolePermissions.READ_PROFILE,
     role_name: userRole.landfill_manager,
   },
@@ -95,6 +99,10 @@ export const permissions = [
   },
   {
     permission: rolePermissions.READ_STS,
+    role_name: userRole.landfill_manager,
+  },
+  {
+    permission: rolePermissions.READ_LANDFILL,
     role_name: userRole.landfill_manager,
   },
 ];

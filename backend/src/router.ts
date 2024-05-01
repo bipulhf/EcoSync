@@ -45,10 +45,10 @@ import { rolePermissions } from "./globals";
 
 const router = Router();
 
-router.post("/users", middleware(rolePermissions.CREATE_USER), createUser);
+router.post("/users", middleware([rolePermissions.CREATE_USER]), createUser);
 router.post(
   "/auth/create",
-  middleware(rolePermissions.CREATE_USER),
+  middleware([rolePermissions.CREATE_USER]),
   createUser
 );
 
@@ -56,23 +56,71 @@ router.post("/auth/login", login);
 router.post("/authenticate", authenticateToken);
 router.post("/auth/reset-password/initiate", resetPassword);
 router.post("/auth/reset-password/confirm", resetPasswordConfirm);
-router.post("/auth/change-password", changePassword);
-router.get("/users", getAllUsers);
-router.get("/users/:id", getUser);
-router.delete("/users/:id", deleteUser);
-router.put("/users/:id", updateUser);
-router.get("/profile", getLoggedInUser);
-router.put("/profile", updateLoggedInUser);
-router.post("/vehicle", addVehicle);
-router.get("/vehicle", getAllVehicles);
-router.get("/vehicle/:number", getVehicleByNumber);
-router.put("/vehicle/:number", updateVehicle);
-router.delete("/vehicle/:number", deleteVehicleByNumber);
-router.get("/sts", getAllSts);
-router.post("/sts", createSts);
-router.get("/sts/vehicle", vehicleInSts);
-router.post("/sts/vehicle", vehicleStsEntry);
-router.get("/sts/left", vehicleLeftSts);
+router.post(
+  "/auth/change-password",
+  middleware([rolePermissions.UPDATE_PROFILE]),
+  changePassword
+);
+router.get("/users", middleware([rolePermissions.READ_USER]), getAllUsers);
+router.get("/users/:id", middleware([rolePermissions.READ_USER]), getUser);
+router.delete(
+  "/users/:id",
+  middleware([rolePermissions.DELETE_USER]),
+  deleteUser
+);
+router.put("/users/:id", middleware([rolePermissions.UPDATE_USER]), updateUser);
+router.get(
+  "/profile",
+  middleware([rolePermissions.READ_PROFILE]),
+  getLoggedInUser
+);
+router.put(
+  "/profile",
+  middleware([rolePermissions.UPDATE_PROFILE]),
+  updateLoggedInUser
+);
+router.post(
+  "/vehicle",
+  middleware([rolePermissions.CREATE_VEHICLE]),
+  addVehicle
+);
+router.get(
+  "/vehicle",
+  middleware([rolePermissions.READ_VEHICLE]),
+  getAllVehicles
+);
+router.get(
+  "/vehicle/:number",
+  middleware([rolePermissions.READ_VEHICLE]),
+  getVehicleByNumber
+);
+router.put(
+  "/vehicle/:number",
+  middleware([rolePermissions.UPDATE_VEHICLE]),
+  updateVehicle
+);
+router.delete(
+  "/vehicle/:number",
+  middleware([rolePermissions.DELETE_VEHICLE]),
+  deleteVehicleByNumber
+);
+router.get("/sts", middleware([rolePermissions.READ_STS]), getAllSts);
+router.post("/sts", middleware([rolePermissions.CREATE_STS]), createSts);
+router.get(
+  "/sts/vehicle",
+  middleware([rolePermissions.READ_STS]),
+  vehicleInSts
+);
+router.post(
+  "/sts/vehicle",
+  middleware([rolePermissions.STS_VEHICLE_UPDATE]),
+  vehicleStsEntry
+);
+router.get(
+  "/sts/left",
+  middleware([rolePermissions.STS_VEHICLE_UPDATE]),
+  vehicleLeftSts
+);
 router.put("/sts/vehicle/:id", vehicleStsUpdate);
 router.get("/sts/:id/fleet", fleetOptimization);
 router.get("/sts/:id", getSts);
