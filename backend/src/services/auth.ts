@@ -12,7 +12,7 @@ import {
   getUserId,
 } from "../helpers/getRole";
 import { db } from "../drizzle/db";
-import { UserTable } from "../drizzle/schema";
+import { UserRoleTable, UserTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -361,69 +361,93 @@ export const resetPasswordConfirm = async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {};
 
 export const createUser = async (req: Request, res: Response) => {
-  const token = req.headers.authorization as string;
-
-  const { first_name, last_name, email, mobile, role, sts_id, landfill_id } =
-    req.body;
-
-  let user = await prisma.user.findFirst({
-    where: { email },
-  });
-
-  if (user) {
-    return res.status(409).json({ message: "User already exists" });
-  }
-
-  const password = generateRandomPassword(10);
-
-  if (sts_id) {
-    const sts = await prisma.sts.findFirst({
-      where: {
-        id: +sts_id,
-      },
-    });
-    if (!sts) {
-      return res.status(403).json({ message: "STS does not exist" });
-    }
-  } else if (landfill_id) {
-    const sts = await prisma.landfill.findFirst({
-      where: {
-        id: +landfill_id,
-      },
-    });
-    if (!sts) {
-      return res.status(403).json({ message: "Lanfill does not exist" });
-    }
-  }
-
-  user = await prisma.user.create({
-    data: {
-      first_name: first_name,
-      last_name: last_name,
-      email: email,
-      password: hashSync(password, 10),
-      profile_photo:
-        "https://beforeigosolutions.com/wp-content/uploads/2021/12/dummy-profile-pic-300x300-1.png",
-      mobile: mobile,
-      role: role,
-      sts_id: sts_id != null ? +sts_id : null,
-      landfill_id: landfill_id != null ? +landfill_id : null,
-    },
-  });
-
-  const mail = {
-    ...mailOptions,
-    to: email,
-    subject: "Welcome to EcoSync",
-    html: `<p>Hi ${first_name}!</p><p>System Admin has created an account for you on EcoSync.</p><p>Please login with the credientials below and reset the password right after you logging in.</p><p>Email: ${user.email}</p><p>Password: <b>${password}</b></p>`,
-  };
   try {
-    await mailTransporter.sendMail(mail);
-  } catch (e) {
-    return res.status(500).json({ message: "SMTP Server Failed" });
-  }
+    let { first_name, last_name, email, mobile, roles, sts_id, landfill_id } =
+      req.body;
 
-  return res.status(200).json({ message: "User created successfully" });
+    (sts_id = +sts_id), (landfill_id = +landfill_id);
+
+    if (!first_name || !last_name || !email || !mobile || !roles) {
+      return res.status(400).json({ message: "All fields are required" });
+    } else if (
+      (roles.includes(userRole.sts_manager) && !sts_id) ||
+      (roles.includes(userRole.landfill_manager) && !landfill_id)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "STS or Landfill ID is required" });
+    } else if (mobile.length != 11 || mobile[0] !== "0" || mobile[1] !== "1") {
+      return res.status(400).json({ message: "Invalid mobile number" });
+    } else if (emailPattern.test(email) == false) {
+      return res.status(400).json({ message: "Invalid email" });
+    }
+    const password = generateRandomPassword(10);
+
+    const present = await db.transaction(async (db) => {
+      const user = await db.query.UserTable.findFirst({
+        where: (model) => eq(model.email, email),
+      });
+      let sts;
+      if (sts_id)
+        sts = await db.query.StsTable.findFirst({
+          where: (model) => eq(model.id, sts_id),
+        });
+      let landfill;
+      if (landfill_id)
+        landfill = await db.query.LandfillTable.findFirst({
+          where: (model) => eq(model.id, landfill_id),
+        });
+      return { user, sts, landfill };
+    });
+
+    if (present.user) {
+      return res.status(409).json({ message: "User already exists" });
+    } else if (!present.sts && sts_id)
+      return res.status(404).json({ message: "STS not found" });
+    else if (!present.landfill && landfill_id)
+      return res.status(404).json({ message: "Landfill not found" });
+
+    const newUser = await db.transaction(async (tx) => {
+      const [user] = await tx
+        .insert(UserTable)
+        .values({
+          first_name: first_name,
+          last_name: last_name,
+          email: email,
+          password: hashSync(password, 10),
+          mobile: mobile,
+          sts_id: sts_id ? sts_id : null,
+          landfill_id: landfill_id ? landfill_id : null,
+        })
+        .returning({
+          id: UserTable.id,
+        });
+      console.log(user);
+      roles.forEach(
+        async (role: string) =>
+          await tx
+            .insert(UserRoleTable)
+            .values({ user_id: user.id, role: role })
+            .execute()
+      );
+      return user;
+    });
+
+    const mail = {
+      ...mailOptions,
+      to: email,
+      subject: "Welcome to EcoSync",
+      html: `<p>Hi ${first_name}!</p><p>System Admin has created an account for you on EcoSync.</p><p>Please login with the credientials below and reset the password right after you logging in.</p><p>Email: ${email}</p><p>Password: <b>${password}</b></p>`,
+    };
+    try {
+      await mailTransporter.sendMail(mail);
+    } catch (e) {
+      return res.status(500).json({ message: "SMTP Server Failed" });
+    }
+    return res.status(200).json({ message: "User created successfully" });
+  } catch (e) {
+    return res.status(501).json({ message: "Internal Server Error" });
+  }
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -431,7 +455,7 @@ export const login = async (req: Request, res: Response) => {
     let { email, password } = req.body;
 
     if (emailPattern.test(email) == false) {
-      res.status(400).json({ message: "Invalid email" });
+      return res.status(400).json({ message: "Invalid email" });
     }
 
     let user = await db.query.UserTable.findFirst({

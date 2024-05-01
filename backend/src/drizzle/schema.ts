@@ -62,7 +62,7 @@ export const UserTable = pgTable("users", {
   sts_id: integer("sts_id").references(() => StsTable.id, {
     onDelete: "set null",
   }),
-  landfill_id: integer("landfill_id").references(() => StsTable.id, {
+  landfill_id: integer("landfill_id").references(() => LandfillTable.id, {
     onDelete: "set null",
   }),
   mobile: varchar("mobile", { length: 11 }).notNull().unique(),
@@ -165,14 +165,11 @@ export const LandfillTable = pgTable("landfills", {
   end_time: timestamp("end_time").notNull(),
 });
 
-export const LandfillTableRelations = relations(
-  LandfillTable,
-  ({ one, many }) => ({
-    manager: many(UserTable),
-    sts: many(StsTable),
-    landfill_vehicle: many(LandfillVehicleTable),
-  })
-);
+export const LandfillTableRelations = relations(LandfillTable, ({ many }) => ({
+  manager: many(UserTable),
+  sts: many(StsTable),
+  landfill_vehicle: many(LandfillVehicleTable),
+}));
 
 export const VehicleTable = pgTable("vehicles", {
   vehicle_number: varchar("vehicle_number", { length: 15 })
