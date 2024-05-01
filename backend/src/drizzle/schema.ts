@@ -8,6 +8,7 @@ import {
   real,
   serial,
   timestamp,
+  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -20,13 +21,22 @@ export const RoleTableRelations = relations(RoleTable, ({ many }) => ({
   permissions: many(PermissionTable),
 }));
 
-export const PermissionTable = pgTable("permissions", {
-  id: serial("id").primaryKey(),
-  permission: varchar("permission", { length: 255 }).notNull().unique(),
-  role_name: varchar("role_name", { length: 255 })
-    .notNull()
-    .references(() => RoleTable.role, { onDelete: "cascade" }),
-});
+export const PermissionTable = pgTable(
+  "permissions",
+  {
+    id: serial("id").primaryKey(),
+    permission: varchar("permission", { length: 255 }).notNull(),
+    role_name: varchar("role_name", { length: 255 })
+      .notNull()
+      .references(() => RoleTable.role, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    unique_role_permission: unique("unique_role_permission").on(
+      table.permission,
+      table.role_name
+    ),
+  })
+);
 
 export const PermissionTableRelations = relations(
   PermissionTable,
