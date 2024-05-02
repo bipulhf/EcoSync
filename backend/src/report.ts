@@ -18,7 +18,7 @@ export const getReport = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Bad Request" });
       }
 
-      if (!checkRole(token, userRole.admin)) {
+      if (!checkRole(token, userRole.ADMIN)) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
@@ -203,7 +203,7 @@ export const getReport = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Bad Request" });
       }
 
-      if (!checkRole(token, userRole.admin)) {
+      if (!checkRole(token, userRole.ADMIN)) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
@@ -279,7 +279,7 @@ export const createReport = async (req: Request, res: Response) => {
   try {
     const token = (req.headers.authorization as string) || req.cookies.jwt;
 
-    if (!checkRole(token, userRole.admin) || !sts_vehicle_id) {
+    if (!checkRole(token, userRole.ADMIN) || !sts_vehicle_id) {
       return res.status(403).json({ message: "Forbidden" });
     }
 

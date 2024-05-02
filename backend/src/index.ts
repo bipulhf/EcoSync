@@ -43,16 +43,16 @@ app.listen(port, async () => {
         console.log("Inserting default role and permission...");
         await tx.insert(RoleTable).values([
           {
-            role: userRole.admin,
+            role: userRole.ADMIN,
           },
           {
-            role: userRole.sts_manager,
+            role: userRole.STS_MANAGER,
           },
           {
-            role: userRole.landfill_manager,
+            role: userRole.LANDFILL_MANAGER,
           },
           {
-            role: userRole.unassigned,
+            role: userRole.UNASSIGNED,
           },
         ]);
         await tx.insert(PermissionTable).values(permissions);
@@ -73,7 +73,7 @@ app.listen(port, async () => {
 
         await tx.insert(UserRoleTable).values({
           user_id: user.id,
-          role: userRole.admin,
+          role: userRole.ADMIN,
         });
 
         await tx.insert(LandfillTable).values({

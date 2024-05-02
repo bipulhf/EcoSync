@@ -10,7 +10,7 @@ export const getAllLandfill = async (req: Request, res: Response) => {
     try {
       const token = req.headers.authorization as string;
 
-      if (!checkRole(token, userRole.admin)) {
+      if (!checkRole(token, userRole.ADMIN)) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
@@ -53,7 +53,7 @@ export const getLandfill = async (req: Request, res: Response) => {
     const token = req.headers.authorization as string;
     const id = parseInt(req.params.id);
 
-    if (!checkRole(token, userRole.admin)) {
+    if (!checkRole(token, userRole.ADMIN)) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -77,17 +77,17 @@ export const createLandfill = async (req: Request, res: Response) => {
     const token = req.headers.authorization as string;
     let { city_corporation, start_time, latitude, longitude, end_time } =
       req.body;
-    if (!checkRole(token, userRole.admin)) {
+    if (!checkRole(token, userRole.ADMIN)) {
       return res.status(403).json({ message: "Forbidden" });
     }
-    
+
     const lat = latitude.split(".");
     const lng = longitude.split(".");
-    
-    if(lat.length > 2 || lng.length > 2) {
+
+    if (lat.length > 2 || lng.length > 2) {
       return res.status(400).json({ message: "Latitude/Longitude error" });
     }
-    
+
     const landfill = await prisma.landfill.create({
       data: {
         city_corporation,
@@ -275,13 +275,13 @@ export const weeklyWasteAmount = async (req: Request, res: Response) => {
 
     if (!user) {
       return res.status(403).json({ message: "User Not Found" });
-    } else if (!user.landfill_id && !checkRole(token, userRole.admin)) {
+    } else if (!user.landfill_id && !checkRole(token, userRole.ADMIN)) {
       return res
         .status(403)
         .json({ message: "You don't have any assigned Landfill" });
     } else if (
       landfillId &&
-      !checkRole(token, userRole.admin) &&
+      !checkRole(token, userRole.ADMIN) &&
       user.landfill_id !== +landfillId
     ) {
       return res.status(403).json({ message: "Forbidden" });
@@ -289,7 +289,7 @@ export const weeklyWasteAmount = async (req: Request, res: Response) => {
 
     let weekly_waste_amount = 0;
 
-    if (user.role === userRole.admin) {
+    if (user.role === userRole.ADMIN) {
       const landfillVehicles = await prisma.landfill_Vehicle.findMany({
         where: {
           departure_time: {
@@ -343,7 +343,7 @@ export const vehicleLeftLandfill = async (req: Request, res: Response) => {
     ]);
 
     let vehicleLeftLandfill;
-    if (user?.role === userRole.admin) {
+    if (user?.role === userRole.ADMIN) {
       vehicleLeftLandfill = await prisma.landfill_Vehicle.findMany({
         where: {
           departure_time: {

@@ -167,8 +167,8 @@ export const createUser = async (req: Request, res: Response) => {
     if (!first_name || !last_name || !email || !mobile || !roles) {
       return res.status(400).json({ message: "All fields are required" });
     } else if (
-      (roles.includes(userRole.sts_manager) && !sts_id) ||
-      (roles.includes(userRole.landfill_manager) && !landfill_id)
+      (roles.includes(userRole.STS_MANAGER) && !sts_id) ||
+      (roles.includes(userRole.LANDFILL_MANAGER) && !landfill_id)
     ) {
       return res
         .status(400)
@@ -284,7 +284,7 @@ export const login = async (req: Request, res: Response) => {
     const roles = extractRole(user.roles);
     const permissions = extractPermissions(user.roles);
 
-    if (roles.includes(userRole.unassigned)) {
+    if (roles.includes(userRole.UNASSIGNED)) {
       return res
         .status(401)
         .json({ message: "Ask admin to assign you a role" });

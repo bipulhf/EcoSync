@@ -34,7 +34,7 @@ import {
   getVehicleByNumber,
   updateVehicle,
 } from "./vehicle";
-import { getLoggedInUser, updateLoggedInUser } from "./profile";
+import { getLoggedInUser, updateLoggedInUser } from "./services/profile";
 import { createReport, getReport } from "./report";
 import { middleware } from "./middleware";
 import { rolePermissions } from "./globals";
@@ -55,25 +55,29 @@ router.post("/auth/reset-password/initiate", resetPassword);
 router.post("/auth/reset-password/confirm", resetPasswordConfirm);
 router.post(
   "/auth/change-password",
-  middleware([rolePermissions.UPDATE_PROFILE]),
+  middleware([rolePermissions.UPDATE_USER_SELF]),
   changePassword
 );
-router.get("/users", middleware([rolePermissions.READ_USER]), getAllUsers);
-router.get("/users/:id", middleware([rolePermissions.READ_USER]), getUser);
+router.get("/users", middleware([rolePermissions.READ_USER_ALL]), getAllUsers);
+router.get("/users/:id", middleware([rolePermissions.READ_USER_ALL]), getUser);
 router.delete(
   "/users/:id",
   middleware([rolePermissions.DELETE_USER]),
   deleteUser
 );
-router.put("/users/:id", middleware([rolePermissions.UPDATE_USER]), updateUser);
+router.put(
+  "/users/:id",
+  middleware([rolePermissions.UPDATE_USER_ALL]),
+  updateUser
+);
 router.get(
   "/profile",
-  middleware([rolePermissions.READ_PROFILE]),
+  middleware([rolePermissions.READ_USER_SELF]),
   getLoggedInUser
 );
 router.put(
   "/profile",
-  middleware([rolePermissions.UPDATE_PROFILE]),
+  middleware([rolePermissions.UPDATE_USER_SELF]),
   updateLoggedInUser
 );
 router.post(
@@ -83,12 +87,12 @@ router.post(
 );
 router.get(
   "/vehicle",
-  middleware([rolePermissions.READ_VEHICLE]),
+  middleware([rolePermissions.READ_VEHICLE_ALL]),
   getAllVehicles
 );
 router.get(
   "/vehicle/:number",
-  middleware([rolePermissions.READ_VEHICLE]),
+  middleware([rolePermissions.READ_VEHICLE_SELF]),
   getVehicleByNumber
 );
 router.put(
@@ -101,11 +105,11 @@ router.delete(
   middleware([rolePermissions.DELETE_VEHICLE]),
   deleteVehicleByNumber
 );
-router.get("/sts", middleware([rolePermissions.READ_STS]), getAllSts);
+router.get("/sts", middleware([rolePermissions.READ_STS_ALL]), getAllSts);
 router.post("/sts", middleware([rolePermissions.CREATE_STS]), createSts);
 router.get(
   "/sts/vehicle",
-  middleware([rolePermissions.READ_STS]),
+  middleware([rolePermissions.READ_VEHICLE_SELF]),
   vehicleInSts
 );
 router.post(
@@ -115,15 +119,33 @@ router.post(
 );
 router.get(
   "/sts/left",
-  middleware([rolePermissions.STS_VEHICLE_UPDATE]),
+  middleware([
+    rolePermissions.READ_VEHICLE_SELF,
+    rolePermissions.READ_VEHICLE_ALL,
+  ]),
   vehicleLeftSts
 );
-router.put("/sts/vehicle/:id", vehicleStsUpdate);
-router.get("/sts/:id/fleet", fleetOptimization);
-router.get("/sts/:id", getSts);
+router.put(
+  "/sts/vehicle/:id",
+  middleware([rolePermissions.STS_VEHICLE_UPDATE]),
+  vehicleStsUpdate
+);
+router.get(
+  "/sts/:id/fleet",
+  middleware([
+    rolePermissions.READ_VEHICLE_SELF,
+    rolePermissions.READ_STS_SELF,
+  ]),
+  fleetOptimization
+);
+router.get(
+  "/sts/:id",
+  middleware([rolePermissions.READ_STS_ALL, rolePermissions.READ_STS_SELF]),
+  getSts
+);
 router.get(
   "/landfill",
-  middleware([rolePermissions.READ_LANDFILL]),
+  middleware([rolePermissions.READ_LANDFILL_ALL]),
   getAllLandfill
 );
 router.post(
@@ -131,13 +153,50 @@ router.post(
   middleware([rolePermissions.CREATE_LANDFILL]),
   createLandfill
 );
-router.get("/landfill/vehicle", vehicleInLandfill);
-router.post("/landfill/vehicle", vehicleLandfillEntry);
-router.get("/landfill/weekly-waste", weeklyWasteAmount);
-router.get("/landfill/left", vehicleLeftLandfill);
-router.put("/landfill/vehicle/:id", vehicleLandfillUpdate);
-router.get("/landfill/:id", getLandfill);
-router.get("/report", getReport);
-router.get("/report/:sts_vehicle_id", createReport);
+router.get(
+  "/landfill/vehicle",
+  middleware([
+    rolePermissions.READ_VEHICLE_SELF,
+    rolePermissions.READ_VEHICLE_ALL,
+  ]),
+  vehicleInLandfill
+);
+router.post(
+  "/landfill/vehicle",
+  middleware([rolePermissions.LANDFILL_VEHICLE_UPDATE]),
+  vehicleLandfillEntry
+);
+router.get(
+  "/landfill/weekly-waste",
+  middleware([rolePermissions.READ_LANDFILL_SELF]),
+  weeklyWasteAmount
+);
+router.get(
+  "/landfill/left",
+  middleware([
+    rolePermissions.READ_VEHICLE_SELF,
+    rolePermissions.READ_VEHICLE_ALL,
+  ]),
+  vehicleLeftLandfill
+);
+router.put(
+  "/landfill/vehicle/:id",
+  middleware([rolePermissions.LANDFILL_VEHICLE_UPDATE]),
+  vehicleLandfillUpdate
+);
+router.get(
+  "/landfill/:id",
+  middleware([
+    rolePermissions.READ_LANDFILL_SELF,
+    rolePermissions.READ_LANDFILL_ALL,
+  ]),
+  getLandfill
+);
+router.get("/report", middleware([rolePermissions.READ_REPORT]), getReport);
+router.get(
+  "/report/:sts_vehicle_id",
+  middleware([rolePermissions.CREATE_REPORT]),
+  createReport
+);
 
 export default router;

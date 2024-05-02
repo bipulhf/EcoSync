@@ -9,7 +9,7 @@ export const getAllSts = async (req: Request, res: Response) => {
   if (!managerId) {
     try {
       const token = req.headers.authorization as string;
-      if (!checkRole(token, userRole.admin)) {
+      if (!checkRole(token, userRole.ADMIN)) {
         return res.status(403).json({ message: "Forbidden" });
       }
       const sts = await prisma.sts.findMany({
@@ -57,7 +57,7 @@ export const getSts = async (req: Request, res: Response) => {
     const token = req.headers.authorization as string;
     const id = parseInt(req.params.id);
 
-    if (!checkRole(token, userRole.admin)) {
+    if (!checkRole(token, userRole.ADMIN)) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -85,7 +85,7 @@ export const createSts = async (req: Request, res: Response) => {
     const token = req.headers.authorization as string;
     const { ward, capacity, latitude, longitude, landfill_id } = req.body;
 
-    if (!checkRole(token, userRole.admin)) {
+    if (!checkRole(token, userRole.ADMIN)) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -312,13 +312,13 @@ export const vehicleLeftSts = async (req: Request, res: Response) => {
         landfill_id: true,
       },
     });
-    if (!user?.landfill_id && user?.role != userRole.admin) {
+    if (!user?.landfill_id && user?.role != userRole.ADMIN) {
       return res.status(403).json({ message: "User Not Found" });
     }
 
     let tmp;
 
-    if (user?.role == userRole.admin) {
+    if (user?.role == userRole.ADMIN) {
       tmp = await prisma.landfill_Vehicle.findMany({
         where: {
           arrival_time: null,
