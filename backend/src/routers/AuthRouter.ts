@@ -7,11 +7,8 @@ import {
   resetPassword,
   resetPasswordConfirm,
   changePassword,
-} from "../services/auth";
-import { InvalidAccess } from "../errors/InvalidAccess";
-import { InvalidType } from "../errors/InvalidType";
-import { InvalidCredentials } from "../errors/InvalideCredentials";
-import { ResourceNotFound } from "../errors/ResourceNotFound";
+} from "../services/AuthService";
+import getErrorType from "../error";
 
 const authRouter = Router();
 
@@ -21,24 +18,63 @@ authRouter.post("/auth/login", async (req, res) => {
     const token = await getToken({ email, password });
     return res.status(200).json({ token });
   } catch (error) {
-    if (
-      error instanceof InvalidAccess ||
-      error instanceof ResourceNotFound ||
-      error instanceof InvalidType ||
-      error instanceof InvalidCredentials
-    ) {
-      return res.status(error.errorCode).json({ message: error.message });
-    } else return res.status(500).json({ message: "Internal Server Error" });
+    const err = getErrorType(error);
+    return res.status(err.errorCode).json({ message: err.message });
   }
 });
 
-authRouter.post("/authenticate", authenticateToken);
-authRouter.post("/auth/reset-password/initiate", resetPassword);
-authRouter.post("/auth/reset-password/confirm", resetPasswordConfirm);
+authRouter.post("/authenticate", async (req, res) => {
+  try {
+    const token = (req.headers.authorization as string).split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Invalid Token" });
+    }
+    const user = await authenticateToken(token);
+    return res.status(200).json(user);
+  } catch (error) {
+    const err = getErrorType(error);
+    return res.status(err.errorCode).json({ message: err.message });
+  }
+});
+
+authRouter.post("/auth/reset-password/initiate", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const message = await resetPassword(email);
+    return res.status(200).json(message);
+  } catch (error) {
+    const err = getErrorType(error);
+    return res.status(err.errorCode).json({ message: err.message });
+  }
+});
+
+authRouter.post("/auth/reset-password/confirm", async (req, res) => {
+  try {
+    const { email, token, newPassword } = req.body;
+    const message = await resetPasswordConfirm({ email, token, newPassword });
+
+    return res.status(200).json(message);
+  } catch (error) {
+    const err = getErrorType(error);
+    return res.status(err.errorCode).json({ message: err.message });
+  }
+});
+
 authRouter.post(
   "/auth/change-password",
   middleware([rolePermissions.UPDATE_USER_SELF]),
-  changePassword
+  async (req, res) => {
+    try {
+      const token = (req.headers.authorization as string).split(" ")[1];
+      if (!token) return res.status(401).json({ message: "Unauthorized" });
+      const { oldPassword, newPassword } = req.body;
+      const message = await changePassword(token, oldPassword, newPassword);
+      return res.status(200).json(message);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 
 export default authRouter;

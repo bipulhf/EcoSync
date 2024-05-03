@@ -1,50 +1,178 @@
 import { Router } from "express";
 import { rolePermissions } from "../globals";
 import { middleware } from "../middleware";
-import { createUser } from "../services/auth";
-import { getLoggedInUser, updateLoggedInUser } from "../services/profile";
-import { getAllUsers, getUser, deleteUser, updateUser } from "../services/user";
+import {
+  getLoggedInUser,
+  updateLoggedInUser,
+} from "../services/ProfileService";
+import {
+  getAllUsers,
+  getUser,
+  deleteUser,
+  updateUser,
+  createUser,
+} from "../services/UserService";
+import getErrorType from "../error";
+import { getUserId } from "../helpers/getRole";
 
 const userRouter = Router();
+const emailPattern: RegExp = /^[\w\.-]+@[\w\.-]+\.\w+$/;
+
 userRouter.post(
-  "/users",
+  ["/users", "/auth/create"],
   middleware([rolePermissions.CREATE_USER]),
-  createUser
-);
-userRouter.post(
-  "/auth/create",
-  middleware([rolePermissions.CREATE_USER]),
-  createUser
+  async (req, res) => {
+    try {
+      let { first_name, last_name, email, mobile, roles, sts_id, landfill_id } =
+        req.body;
+      const message = await createUser({
+        first_name,
+        last_name,
+        email,
+        mobile,
+        roles,
+        sts_id,
+        landfill_id,
+      });
+      return res.status(201).json(message);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 
 userRouter.get(
   "/users",
   middleware([rolePermissions.READ_USER_ALL]),
-  getAllUsers
+  async (req, res) => {
+    try {
+      const users = await getAllUsers();
+      return res.status(200).json(users);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 userRouter.get(
   "/users/:id",
   middleware([rolePermissions.READ_USER_ALL]),
-  getUser
+  async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await getUser(userId);
+      return res.status(200).json(user);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
+
 userRouter.delete(
   "/users/:id",
   middleware([rolePermissions.DELETE_USER]),
-  deleteUser
+  async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const message = await deleteUser(userId);
+      return res.status(200).json(message);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
+
 userRouter.put(
   "/users/:id",
   middleware([rolePermissions.UPDATE_USER_ALL]),
-  updateUser
+  async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const {
+        first_name,
+        last_name,
+        email,
+        profile_photo,
+        password,
+        mobile,
+        roles,
+        sts_id,
+        landfill_id,
+      } = req.body;
+      const token = (req.headers.authorization as string).split(" ")[1];
+      const adminId = getUserId(token);
+
+      if (userId == adminId) {
+        return res.status(403).json({
+          message: "Update your info from your profile (on the header).",
+        });
+      }
+      const user = await updateUser({
+        userId,
+        first_name,
+        last_name,
+        email,
+        profile_photo,
+        password,
+        mobile,
+        roles,
+        sts_id: +sts_id,
+        landfill_id: +landfill_id,
+      });
+      return res.status(201).json(user);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
+
 userRouter.get(
   "/profile",
   middleware([rolePermissions.READ_USER_SELF]),
-  getLoggedInUser
+  async (req, res) => {
+    try {
+      const token = (req.headers.authorization as string).split(" ")[1];
+      let currentUserId = getUserId(token);
+      const user = await getLoggedInUser(currentUserId);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 userRouter.put(
   "/profile",
   middleware([rolePermissions.UPDATE_USER_SELF]),
-  updateLoggedInUser
+  async (req, res) => {
+    try {
+      const { first_name, last_name, email, mobile, profile_photo, password } =
+        req.body;
+      if (!first_name || !last_name || !email || !mobile) {
+        return res.status(400).json({ message: "All fields are required" });
+      } else if (emailPattern.test(email) == false) {
+        return res.status(400).json({ message: "Invalid email" });
+      }
+      const token = (req.headers.authorization as string).split(" ")[1];
+      let currentUserId = getUserId(token);
+      const user = await updateLoggedInUser({
+        currentUserId,
+        first_name,
+        last_name,
+        email,
+        mobile,
+        profile_photo,
+        password,
+      });
+      return res.status(201).json(user);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
+
 export default userRouter;

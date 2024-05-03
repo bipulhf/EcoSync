@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { InvalidType } from "../errors/InvalidType";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -29,6 +30,6 @@ export const getUserId = (token: string): number => {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     return decoded.userId;
   } catch (error) {
-    throw new Error("Invalid token");
+    throw new InvalidType("Token", 401);
   }
 };
