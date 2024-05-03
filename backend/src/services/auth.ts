@@ -8,6 +8,11 @@ import { extractPermissions, extractRole, getUserId } from "../helpers/getRole";
 import { db } from "../drizzle/db";
 import { TokenTable, UserRoleTable, UserTable } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { getUserByEmailWithPermissions } from "../repository/UserRepository";
+import { InvalidAccess } from "../errors/InvalidAccess";
+import { InvalidType } from "../errors/InvalidType";
+import { InvalidCredentials } from "../errors/InvalideCredentials";
+import { ResourceNotFound } from "../errors/ResourceNotFound";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
@@ -246,48 +251,27 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const getToken = async ({ email, password }: any) => {
   try {
-    let { email, password } = req.body;
-
     if (emailPattern.test(email) == false) {
-      return res.status(400).json({ message: "Invalid email" });
+      throw new InvalidType("Email", 400);
     }
 
-    let user = await db.query.UserTable.findFirst({
-      with: {
-        roles: {
-          with: {
-            role: {
-              with: {
-                permissions: {
-                  columns: {
-                    permission: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      where: (model) => eq(model.email, email),
-    });
+    let user = await getUserByEmailWithPermissions(email);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      throw new ResourceNotFound("User", email);
     }
 
     if (!compareSync(password, user.password)) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      throw new InvalidCredentials();
     }
 
     const roles = extractRole(user.roles);
     const permissions = extractPermissions(user.roles);
 
     if (roles.includes(userRole.UNASSIGNED)) {
-      return res
-        .status(401)
-        .json({ message: "Ask admin to assign you a role" });
+      throw new InvalidAccess();
     }
 
     const payload = {
@@ -304,9 +288,9 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: `${JWT_EXPIRATION_MINUTES}m`,
     });
 
-    return res.status(200).json({ token });
+    return token;
   } catch (error) {
-    return res.status(501).json({ message: "Internal Error" });
+    throw error;
   }
 };
 

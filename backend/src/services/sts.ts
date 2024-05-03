@@ -161,13 +161,13 @@ export const vehicleStsEntry = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Vehicle doesn't belong to you" });
     }
 
-    const stsVehicle = await db.insert(StsVehicleTable).values({
-      sts_id: txn.user.sts_id,
-      vehicle_number,
-      waste_volume: parseFloat(waste_volume),
-    });
+    // const stsVehicle = await db.insert(StsVehicleTable).values({
+    //   sts_id: txn.user.sts_id,
+    //   vehicle_number,
+    //   waste_volume: parseFloat(waste_volume),
+    // });
 
-    return res.status(200).json(stsVehicle);
+    return res.status(200).json(null);
   } catch (error) {
     return res.status(500).json({ message: "Server Error" });
   }

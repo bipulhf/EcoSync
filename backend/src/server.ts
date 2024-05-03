@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import authRouter from "./routers/authRouter";
-import userRouter from "./routers/userRouter";
-import vehicleRouter from "./routers/vehicleRouter";
-import stsRouter from "./routers/stsRouter";
-import landfillRouter from "./routers/landfillRouter";
-import reportRouter from "./routers/reportRouter";
+import authRouter from "./routers/AuthRouter";
+import userRouter from "./routers/UserRouter";
+import vehicleRouter from "./routers/VehicleRouter";
+import stsRouter from "./routers/StsRouter";
+import landfillRouter from "./routers/LandfillRouter";
+import reportRouter from "./routers/ReportRouter";
 
 const app = express();
 
