@@ -11,7 +11,11 @@ export const middleware = (permission: string[]) => {
       ).split(" ")[1];
       const decoded = jwt.verify(token, JWT_SECRET) as any;
       permission.forEach((perm) => {
-        if (decoded.permissions.includes(perm)) return next();
+        if (decoded.permissions.includes(perm)) {
+          res.locals.permission = perm;
+          res.locals.userId = decoded.userId;
+          return next();
+        }
       });
       return res.status(403).json({ message: "Access Denied" });
     } catch (error) {

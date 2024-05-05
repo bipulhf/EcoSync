@@ -36,15 +36,7 @@ export async function getUserById(
     return await dbCon.query.UserTable.findFirst({
       where: (model: any) => eq(model.id, userId),
       columns: {
-        id: true,
-        email: true,
-        first_name: true,
-        last_name: true,
-        profile_photo: true,
-        mobile: true,
-        created_at: true,
-        sts_id: true,
-        landfill_id: true,
+        password: false,
       },
     });
   } catch (error) {

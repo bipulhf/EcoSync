@@ -9,7 +9,7 @@ import {
   vehicleLeftLandfill,
   vehicleLandfillUpdate,
   getLandfill,
-} from "../landfill";
+} from "../services/LandfillService";
 import { middleware } from "../middleware";
 
 const landfillRouter = Router();
@@ -19,11 +19,13 @@ landfillRouter.get(
   middleware([rolePermissions.READ_LANDFILL_ALL]),
   getAllLandfill
 );
+
 landfillRouter.post(
   "/landfill",
   middleware([rolePermissions.CREATE_LANDFILL]),
   createLandfill
 );
+
 landfillRouter.get(
   "/landfill/vehicle",
   middleware([
@@ -32,16 +34,19 @@ landfillRouter.get(
   ]),
   vehicleInLandfill
 );
+
 landfillRouter.post(
   "/landfill/vehicle",
   middleware([rolePermissions.LANDFILL_VEHICLE_UPDATE]),
   vehicleLandfillEntry
 );
+
 landfillRouter.get(
   "/landfill/weekly-waste",
   middleware([rolePermissions.READ_LANDFILL_SELF]),
   weeklyWasteAmount
 );
+
 landfillRouter.get(
   "/landfill/left",
   middleware([
@@ -50,11 +55,13 @@ landfillRouter.get(
   ]),
   vehicleLeftLandfill
 );
+
 landfillRouter.put(
   "/landfill/vehicle/:id",
   middleware([rolePermissions.LANDFILL_VEHICLE_UPDATE]),
   vehicleLandfillUpdate
 );
+
 landfillRouter.get(
   "/landfill/:id",
   middleware([

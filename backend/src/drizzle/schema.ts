@@ -257,6 +257,7 @@ export const LandfillVehicleTable = pgTable(
     waste_volume: real("waste_volume").notNull(),
     arrival_time: timestamp("arrival_time"),
     departure_time: timestamp("departure_time"),
+    left_sts: boolean("left_sts").default(false),
     vehicle_number: varchar("vehicle_number", { length: 15 })
       .notNull()
       .references(() => VehicleTable.vehicle_number, { onDelete: "cascade" }),

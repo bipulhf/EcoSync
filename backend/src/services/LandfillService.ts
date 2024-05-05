@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { prisma } from "./db";
-import { formatTime } from "./helpers/date";
-import { checkRole, getUserId } from "./helpers/getRole";
-import { userRole } from "./globals";
+import { prisma } from "../db";
+import { formatTime } from "../helpers/date";
+import { checkRole, getUserId } from "../helpers/getRole";
+import { userRole } from "../globals";
 
 export const getAllLandfill = async (req: Request, res: Response) => {
   const managerId = req.query.managerId;
