@@ -2,11 +2,11 @@ import { Router } from "express";
 import { rolePermissions } from "../globals";
 import { middleware } from "../middleware";
 import {
-  getToken,
-  authenticateToken,
-  resetPassword,
-  resetPasswordConfirm,
-  changePassword,
+  getTokenService,
+  authenticateTokenService,
+  resetPasswordService,
+  resetPasswordConfirmSerice,
+  changePasswordService,
 } from "../services/AuthService";
 import getErrorType from "../error";
 
@@ -15,7 +15,7 @@ const authRouter = Router();
 authRouter.post("/auth/login", async (req, res) => {
   try {
     let { email, password } = req.body;
-    const token = await getToken({ email, password });
+    const token = await getTokenService({ email, password });
     return res.status(200).json({ token });
   } catch (error) {
     const err = getErrorType(error);
@@ -29,7 +29,7 @@ authRouter.post("/authenticate", async (req, res) => {
     if (!token) {
       return res.status(401).json({ message: "Invalid Token" });
     }
-    const user = await authenticateToken(token);
+    const user = await authenticateTokenService(token);
     return res.status(200).json(user);
   } catch (error) {
     const err = getErrorType(error);
@@ -40,7 +40,7 @@ authRouter.post("/authenticate", async (req, res) => {
 authRouter.post("/auth/reset-password/initiate", async (req, res) => {
   try {
     const { email } = req.body;
-    const message = await resetPassword(email);
+    const message = await resetPasswordService(email);
     return res.status(200).json(message);
   } catch (error) {
     const err = getErrorType(error);
@@ -51,7 +51,11 @@ authRouter.post("/auth/reset-password/initiate", async (req, res) => {
 authRouter.post("/auth/reset-password/confirm", async (req, res) => {
   try {
     const { email, token, newPassword } = req.body;
-    const message = await resetPasswordConfirm({ email, token, newPassword });
+    const message = await resetPasswordConfirmSerice({
+      email,
+      token,
+      newPassword,
+    });
 
     return res.status(200).json(message);
   } catch (error) {
@@ -68,7 +72,11 @@ authRouter.post(
       const token = (req.headers.authorization as string).split(" ")[1];
       if (!token) return res.status(401).json({ message: "Unauthorized" });
       const { oldPassword, newPassword } = req.body;
-      const message = await changePassword(token, oldPassword, newPassword);
+      const message = await changePasswordService(
+        token,
+        oldPassword,
+        newPassword
+      );
       return res.status(200).json(message);
     } catch (error) {
       const err = getErrorType(error);

@@ -2,15 +2,15 @@ import { Router } from "express";
 import { rolePermissions } from "../globals";
 import { middleware } from "../middleware";
 import {
-  getLoggedInUser,
-  updateLoggedInUser,
+  getLoggedInUserService,
+  updateLoggedInUserService,
 } from "../services/ProfileService";
 import {
-  getAllUsers,
-  getUser,
+  getAllUsersService,
+  getUserService,
   deleteUser,
-  updateUser,
-  createUser,
+  updateUserService,
+  createUserService,
 } from "../services/UserService";
 import getErrorType from "../error";
 import { getUserId } from "../helpers/getRole";
@@ -25,7 +25,7 @@ userRouter.post(
     try {
       let { first_name, last_name, email, mobile, roles, sts_id, landfill_id } =
         req.body;
-      const message = await createUser({
+      const message = await createUserService({
         first_name,
         last_name,
         email,
@@ -47,7 +47,7 @@ userRouter.get(
   middleware([rolePermissions.READ_USER_ALL]),
   async (req, res) => {
     try {
-      const users = await getAllUsers();
+      const users = await getAllUsersService();
       return res.status(200).json(users);
     } catch (error) {
       const err = getErrorType(error);
@@ -61,7 +61,7 @@ userRouter.get(
   async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
-      const user = await getUser(userId);
+      const user = await getUserService(userId);
       return res.status(200).json(user);
     } catch (error) {
       const err = getErrorType(error);
@@ -110,7 +110,7 @@ userRouter.put(
           message: "Update your info from your profile (on the header).",
         });
       }
-      const user = await updateUser({
+      const user = await updateUserService({
         userId,
         first_name,
         last_name,
@@ -137,7 +137,7 @@ userRouter.get(
     try {
       const token = (req.headers.authorization as string).split(" ")[1];
       let currentUserId = getUserId(token);
-      const user = await getLoggedInUser(currentUserId);
+      const user = await getLoggedInUserService(currentUserId);
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });
@@ -158,7 +158,7 @@ userRouter.put(
       }
       const token = (req.headers.authorization as string).split(" ")[1];
       let currentUserId = getUserId(token);
-      const user = await updateLoggedInUser({
+      const user = await updateLoggedInUserService({
         currentUserId,
         first_name,
         last_name,

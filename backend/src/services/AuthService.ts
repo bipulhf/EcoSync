@@ -23,7 +23,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
 const emailPattern: RegExp = /^[\w\.-]+@[\w\.-]+\.\w+$/;
 
-export const changePassword = async (
+export const changePasswordService = async (
   token: string,
   oldPassword: string,
   newPassword: string
@@ -45,7 +45,7 @@ export const changePassword = async (
   }
 };
 
-export const resetPassword = async (email: string) => {
+export const resetPasswordService = async (email: string) => {
   try {
     if (!emailPattern.test(email)) throw new InvalidType("Email");
     const user = await getUserByEmail(email);
@@ -74,7 +74,7 @@ export const resetPassword = async (email: string) => {
   }
 };
 
-export const resetPasswordConfirm = async ({
+export const resetPasswordConfirmSerice = async ({
   email,
   token,
   newPassword,
@@ -107,7 +107,7 @@ export const resetPasswordConfirm = async ({
 
 export const logout = async (req: Request, res: Response) => {};
 
-export const getToken = async ({ email, password }: any) => {
+export const getTokenService = async ({ email, password }: any) => {
   try {
     if (emailPattern.test(email) == false) throw new InvalidType("Email", 400);
 
@@ -142,7 +142,7 @@ export const getToken = async ({ email, password }: any) => {
   }
 };
 
-export const authenticateToken = async (token: string) => {
+export const authenticateTokenService = async (token: string) => {
   try {
     const userId = getUserId(token);
     const user = await getUserById(userId);

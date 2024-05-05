@@ -20,7 +20,7 @@ import { ResourceNotFound } from "../errors/ResourceNotFound";
 
 const emailPattern: RegExp = /^[\w\.-]+@[\w\.-]+\.\w+$/;
 
-export const createUser = async ({
+export const createUserService = async ({
   first_name,
   last_name,
   email,
@@ -85,7 +85,7 @@ export const createUser = async ({
     throw e;
   }
 };
-export const getAllUsers = async () => {
+export const getAllUsersService = async () => {
   try {
     const users = await getAllUsersWithRoles();
     return users;
@@ -93,7 +93,7 @@ export const getAllUsers = async () => {
     throw new Error("Error fetching users");
   }
 };
-export const getUser = async (user_id: number) => {
+export const getUserService = async (user_id: number) => {
   try {
     const user = await getUserByIdWithRole(user_id);
     if (!user) throw new ResourceNotFound("User", user_id);
@@ -113,7 +113,7 @@ export const deleteUser = async (user_id: number) => {
   }
 };
 
-export const updateUser = async ({
+export const updateUserService = async ({
   userId,
   first_name,
   last_name,

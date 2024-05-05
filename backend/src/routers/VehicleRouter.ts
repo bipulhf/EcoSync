@@ -2,38 +2,130 @@ import { Router } from "express";
 import { rolePermissions } from "../globals";
 import { middleware } from "../middleware";
 import {
-  addVehicle,
-  getAllVehicles,
-  getVehicleByNumber,
-  updateVehicle,
-  deleteVehicleByNumber,
-} from "../vehicle";
+  addVehicleService,
+  getAllVehiclesService,
+  getVehicleByNumberService,
+  updateVehicleService,
+  deleteVehicleByNumberService,
+  getVehicleByStsIdService,
+} from "../services/VehicleService";
+import getErrorType from "../error";
 
 const vehicleRouter = Router();
 
 vehicleRouter.post(
   "/vehicle",
   middleware([rolePermissions.CREATE_VEHICLE]),
-  addVehicle
+  async (req, res) => {
+    try {
+      let {
+        sts_id,
+        vehicle_number,
+        type,
+        capacity,
+        driver_name,
+        driver_mobile,
+        cost_per_km_loaded,
+        cost_per_km_unloaded,
+      } = req.body;
+      const vehicle = addVehicleService({
+        sts_id,
+        vehicle_number,
+        type,
+        capacity,
+        driver_name,
+        driver_mobile,
+        cost_per_km_loaded,
+        cost_per_km_unloaded,
+      });
+      return res.status(201).json(vehicle);
+    } catch (error) {
+      const err = getErrorType(error);
+
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 vehicleRouter.get(
   "/vehicle",
   middleware([rolePermissions.READ_VEHICLE_ALL]),
-  getAllVehicles
+  async (req, res) => {
+    try {
+      const vehicles = await getAllVehiclesService();
+      return res.status(200).json(vehicles);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
+
+vehicleRouter.get("/vehicle/sts/:sts_id", async (req, res) => {
+  try {
+    const sts_id = req.params.sts_id;
+    const vehicles = await getVehicleByStsIdService(+sts_id);
+    return res.status(200).json(vehicles);
+  } catch (error) {
+    const err = getErrorType(error);
+    return res.status(err.errorCode).json({ message: err.message });
+  }
+});
+
 vehicleRouter.get(
   "/vehicle/:number",
   middleware([rolePermissions.READ_VEHICLE_SELF]),
-  getVehicleByNumber
+  async (req, res) => {
+    try {
+      const vehicleNumber = req.params.number;
+      const vehicle = await getVehicleByNumberService(vehicleNumber);
+      return res.status(200).json(vehicle);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 vehicleRouter.put(
   "/vehicle/:number",
   middleware([rolePermissions.UPDATE_VEHICLE]),
-  updateVehicle
+  async (req, res) => {
+    try {
+      const oldVehicleNumber = req.params.number;
+      let {
+        type,
+        capacity,
+        driver_name,
+        driver_mobile,
+        cost_per_km_loaded,
+        cost_per_km_unloaded,
+      } = req.body;
+      const updatedVehicle = updateVehicleService(oldVehicleNumber, {
+        type,
+        capacity,
+        driver_name,
+        driver_mobile,
+        cost_per_km_loaded,
+        cost_per_km_unloaded,
+      });
+      return res.status(200).json(updatedVehicle);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 vehicleRouter.delete(
   "/vehicle/:number",
   middleware([rolePermissions.DELETE_VEHICLE]),
-  deleteVehicleByNumber
+  async (req, res) => {
+    try {
+      const vehicleNumber = req.params.number;
+      const message = await deleteVehicleByNumberService(vehicleNumber);
+      return res.status(200).json(message);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
 );
 export default vehicleRouter;

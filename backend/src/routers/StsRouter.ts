@@ -10,7 +10,7 @@ import {
   vehicleStsUpdate,
   fleetOptimization,
   getSts,
-} from "../services/sts";
+} from "../services/StsService";
 
 const stsRouter = Router();
 

@@ -11,15 +11,10 @@ export const getReport = async (req: Request, res: Response) => {
   const type = req.query.type as string;
   if (search && type) {
     try {
-      const token = (req.headers.authorization as string) || req.cookies.jwt;
       const pageNo = parseInt(req.query.pageNo as string);
 
       if (!pageNo) {
         return res.status(400).json({ message: "Bad Request" });
-      }
-
-      if (!checkRole(token, userRole.ADMIN)) {
-        return res.status(403).json({ message: "Forbidden" });
       }
 
       let report: any;

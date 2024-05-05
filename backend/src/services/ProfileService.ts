@@ -1,13 +1,8 @@
-import { Request, Response } from "express";
-import { getUserId } from "../helpers/getRole";
 import { hashSync } from "bcrypt";
-import { db } from "../drizzle/db";
-import { eq } from "drizzle-orm";
-import { UserTable } from "../drizzle/schema";
 import { getUserById, updateUserById } from "../repository/UserRepository";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
 
-export const getLoggedInUser = async (currentUserId: number) => {
+export const getLoggedInUserService = async (currentUserId: number) => {
   try {
     const user = await getUserById(currentUserId);
     if (!user) throw new ResourceNotFound("User", currentUserId);
@@ -17,7 +12,7 @@ export const getLoggedInUser = async (currentUserId: number) => {
   }
 };
 
-export const updateLoggedInUser = async ({
+export const updateLoggedInUserService = async ({
   currentUserId,
   first_name,
   last_name,
