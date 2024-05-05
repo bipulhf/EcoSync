@@ -1,8 +1,8 @@
 export class InvalidAccess extends Error {
   errorCode: number;
-  constructor() {
+  constructor(message?: string) {
     super();
-    this.message = `Forbidden.`;
+    this.message = message || `Forbidden.`;
     this.errorCode = 403;
     this.name = "InvalidAccess";
   }
