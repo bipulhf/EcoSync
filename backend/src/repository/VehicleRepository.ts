@@ -220,16 +220,6 @@ export async function didVehicleLeftSts(vehicle_number: string, tx?: any) {
   }
 }
 
-export async function vehicleEntryInLandfill(
-  vehicle_number: string,
-  waste_volume: number
-) {
-  try {
-  } catch (error) {
-    throw new ResourceNotFound("Vehicle", vehicle_number);
-  }
-}
-
 export async function getFleetList(sts_id: number) {
   try {
     return await db.transaction(async (tx) => {
@@ -277,5 +267,121 @@ export async function vehiclesThatLeftSts(landfill_id?: number) {
     }
   } catch (error) {
     throw new Error("Server error");
+  }
+}
+
+export async function vehiclesInLandfill(landfill_id: number) {
+  try {
+    return await db.query.LandfillVehicleTable.findMany({
+      where: (model, { and, eq, isNotNull, isNull }) =>
+        and(
+          eq(model.landfill_id, landfill_id),
+          and(isNotNull(model.arrival_time), isNull(model.departure_time))
+        ),
+      with: {
+        vehicle: true,
+      },
+    });
+  } catch (error) {
+    throw new ResourceNotFound("Landfill", landfill_id);
+  }
+}
+
+export async function getLandfillVehicleById(landfill_vehicle_id: number) {
+  try {
+    return await db.query.LandfillVehicleTable.findFirst({
+      where: (model, { eq }) => eq(model.id, landfill_vehicle_id),
+    });
+  } catch (error) {
+    throw new ResourceNotFound("Landfill Vehicle", landfill_vehicle_id);
+  }
+}
+
+export async function getLandfillVehicleByVehicleNumber(
+  vehicle_number: string,
+  landfill_id: number
+) {
+  try {
+    return await db.query.LandfillVehicleTable.findFirst({
+      where: (model, { and, eq, isNull }) =>
+        and(
+          eq(model.landfill_id, landfill_id),
+          and(
+            eq(model.vehicle_number, vehicle_number),
+            isNull(model.arrival_time)
+          )
+        ),
+    });
+  } catch (error) {
+    throw new ResourceNotFound("Vehicle", vehicle_number);
+  }
+}
+
+export async function vehicleEntryInLandfill(
+  vehicle_number: string,
+  waste_volume: number
+) {
+  try {
+    return db
+      .update(LandfillVehicleTable)
+      .set({
+        arrival_time: new Date(),
+      })
+      .where(
+        and(
+          eq(LandfillVehicleTable.vehicle_number, vehicle_number),
+          and(
+            eq(LandfillVehicleTable.waste_volume, waste_volume),
+            isNull(LandfillVehicleTable.arrival_time)
+          )
+        )
+      )
+      .returning()
+      .execute();
+  } catch (error) {
+    throw new ResourceNotFound("Vehicle", vehicle_number);
+  }
+}
+
+export async function vehicleLeavingLandfill(landfill_vehicle_id: number) {
+  try {
+    return await db
+      .update(LandfillVehicleTable)
+      .set({
+        departure_time: new Date(),
+      })
+      .where(eq(LandfillVehicleTable.id, landfill_vehicle_id))
+      .returning()
+      .execute();
+  } catch (error) {
+    throw new ResourceNotFound("Landfill Vehicle", landfill_vehicle_id);
+  }
+}
+
+export async function vehiclesThatLeftLandfill(sts_id?: number) {
+  try {
+    if (!sts_id) {
+      return await db.query.LandfillVehicleTable.findMany({
+        where: (model, { and, isNotNull }) =>
+          and(isNotNull(model.departure_time), isNotNull(model.arrival_time)),
+        with: {
+          vehicle: true,
+        },
+        orderBy: (model) => [model.departure_time],
+        limit: 10,
+      });
+    } else {
+      return await db.query.LandfillVehicleTable.findMany({
+        where: (model, { and, isNotNull }) =>
+          and(isNotNull(model.departure_time), isNotNull(model.arrival_time)),
+        with: {
+          vehicle: true,
+        },
+        orderBy: (model) => [model.departure_time],
+        limit: 10,
+      });
+    }
+  } catch (error) {
+    throw new Error("Error while fetching vehicles");
   }
 }
