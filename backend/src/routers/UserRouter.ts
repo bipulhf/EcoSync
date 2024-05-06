@@ -96,15 +96,12 @@ userRouter.put(
         last_name,
         email,
         profile_photo,
-        password,
         mobile,
         roles,
         sts_id,
         landfill_id,
       } = req.body;
-      const token = (req.headers.authorization as string).split(" ")[1];
-      const adminId = getUserId(token);
-
+      const adminId = res.locals.userId;
       if (userId == adminId) {
         return res.status(403).json({
           message: "Update your info from your profile (on the header).",
@@ -116,7 +113,6 @@ userRouter.put(
         last_name,
         email,
         profile_photo,
-        password,
         mobile,
         roles,
         sts_id: +sts_id,
@@ -138,6 +134,7 @@ userRouter.get(
       const token = (req.headers.authorization as string).split(" ")[1];
       let currentUserId = getUserId(token);
       const user = await getLoggedInUserService(currentUserId);
+      return res.status(200).json(user);
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });
@@ -156,10 +153,9 @@ userRouter.put(
       } else if (emailPattern.test(email) == false) {
         return res.status(400).json({ message: "Invalid email" });
       }
-      const token = (req.headers.authorization as string).split(" ")[1];
-      let currentUserId = getUserId(token);
+      const userId = res.locals.userId;
       const user = await updateLoggedInUserService({
-        currentUserId,
+        userId,
         first_name,
         last_name,
         email,

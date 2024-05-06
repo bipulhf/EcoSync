@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../drizzle/db";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
 import { StsTable } from "../drizzle/schema";
+import { InvalidAccess } from "../errors/InvalidAccess";
 
 export async function getAllSts(tx?: any) {
   try {
@@ -30,11 +31,20 @@ export async function getStsById(sts_id: number, tx?: any) {
 export async function getStsByManagerId(manager_id: number, tx?: any) {
   try {
     const dbCon = tx || db;
-    return await dbCon.query.StsTable.findMany({
-      where: (model: any) => eq(model.manager_id, manager_id),
+    return await dbCon.transaction(async (txInner: any) => {
+      const user = await txInner.query.UserTable.findFirst({
+        where: (model: any) => eq(model.id, manager_id),
+      });
+      if (!user?.sts_id)
+        throw new InvalidAccess("You don't have assigned STS.");
+      const sts_id = user.sts_id;
+      const sts = await txInner.query.StsTable.findFirst({
+        where: (model: any) => eq(model.id, sts_id),
+      });
+      return sts;
     });
   } catch (error) {
-    throw new ResourceNotFound("STS", manager_id);
+    throw new InvalidAccess(`STS for manager with id ${manager_id} not found`);
   }
 }
 

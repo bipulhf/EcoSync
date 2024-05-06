@@ -10,7 +10,7 @@ import {
   getUserByEmail,
   getUserById,
   getUserByIdWithRole,
-  insertUser,
+  createUser,
   updateUserAndRoleById,
 } from "../repository/UserRepository";
 import { getStsById } from "../repository/StsRepository";
@@ -34,14 +34,13 @@ export const createUserService = async ({
 
     if (!first_name || !last_name || !email || !mobile || !roles)
       throw new Error("Missing required fields");
-    else if (
-      (roles.includes(userRole.STS_MANAGER) && !sts_id) ||
-      (roles.includes(userRole.LANDFILL_MANAGER) && !landfill_id)
-    )
-      throw new Error("STS or Landfill ID is required for the role");
     else if (mobile.length != 11 || mobile[0] !== "0" || mobile[1] !== "1")
       throw new InvalidType("Mobile Number");
     else if (emailPattern.test(email) == false) throw new InvalidType("Email");
+    else if (roles.includes(userRole.STS_MANAGER) && !sts_id)
+      throw new Error("STS ID is required for the role");
+    else if (roles.includes(userRole.LANDFILL_MANAGER) && !landfill_id)
+      throw new Error("Landfill ID is required for the role");
 
     const password = generateRandomPassword(10);
     const present = await db.transaction(async (tx: any) => {
@@ -57,7 +56,7 @@ export const createUserService = async ({
     else if (!present.landfill && landfill_id)
       throw new ResourceNotFound("Landfill", landfill_id);
 
-    const newUser = await insertUser({
+    const newUser = await createUser({
       first_name,
       last_name,
       email,
@@ -119,7 +118,6 @@ export const updateUserService = async ({
   last_name,
   email,
   profile_photo,
-  password,
   mobile,
   roles,
   sts_id,
@@ -137,14 +135,12 @@ export const updateUserService = async ({
       if (!landfill) throw new ResourceNotFound("Landfill", landfill_id);
     }
     profile_photo = profile_photo ? profile_photo : existingUser.profile_photo;
-    password = password ? hashSync(password, 10) : existingUser.password;
     const updatedUser = await updateUserAndRoleById({
       userId,
       first_name,
       last_name,
       email,
       profile_photo,
-      password,
       mobile,
       roles,
       sts_id,

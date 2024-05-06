@@ -173,7 +173,6 @@ export async function updateUserAndRoleById(
     last_name,
     email,
     profile_photo,
-    password,
     mobile,
     roles,
     sts_id,
@@ -190,7 +189,6 @@ export async function updateUserAndRoleById(
           last_name,
           email,
           profile_photo,
-          password,
           mobile,
           sts_id: sts_id ? +sts_id : null,
           landfill_id: landfill_id ? +landfill_id : null,
@@ -220,47 +218,41 @@ export async function updateUserAndRoleById(
   }
 }
 
-export async function updateUserById(
-  {
-    userId,
-    first_name,
-    last_name,
-    email,
-    profile_photo,
-    password,
-    mobile,
-  }: any,
-  tx?: any
-) {
+export async function updateUserById({
+  userId,
+  first_name,
+  last_name,
+  email,
+  profile_photo,
+  password,
+  mobile,
+}: any) {
   try {
-    return await db.transaction(async (tx) => {
-      const [user] = await db
-        .update(UserTable)
-        .set({
-          first_name,
-          last_name,
-          email,
-          profile_photo,
-          password,
-          mobile,
-        })
-        .where(eq(UserTable.id, userId))
-        .returning({
-          id: UserTable.id,
-          first_name: UserTable.first_name,
-          last_name: UserTable.last_name,
-          email: UserTable.email,
-          profile_photo: UserTable.profile_photo,
-          mobile: UserTable.mobile,
-        });
-      return user;
-    });
+    return await db
+      .update(UserTable)
+      .set({
+        first_name,
+        last_name,
+        email,
+        profile_photo,
+        password,
+        mobile,
+      })
+      .where(eq(UserTable.id, userId))
+      .returning({
+        id: UserTable.id,
+        first_name: UserTable.first_name,
+        last_name: UserTable.last_name,
+        email: UserTable.email,
+        profile_photo: UserTable.profile_photo,
+        mobile: UserTable.mobile,
+      });
   } catch (error) {
     throw new ResourceNotFound("User", userId);
   }
 }
 
-export async function insertUser(
+export async function createUser(
   {
     first_name,
     last_name,
@@ -287,9 +279,7 @@ export async function insertUser(
           sts_id: sts_id ? sts_id : null,
           landfill_id: landfill_id ? landfill_id : null,
         })
-        .returning({
-          id: UserTable.id,
-        });
+        .returning();
       roles.forEach(
         async (role: string) =>
           await tx

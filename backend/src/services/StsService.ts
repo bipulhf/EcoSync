@@ -61,12 +61,9 @@ export const createStsService = async ({
   try {
     (ward = parseInt(ward)),
       (capacity = parseFloat(capacity)),
-      (landfill_id = parseInt(landfill_id));
-    const lat = latitude.split(".");
-    const lng = longitude.split(".");
-
-    if (lat.length != 2 || lng.length != 2)
-      throw new InvalidType("Latitude or Longitude");
+      (landfill_id = parseInt(landfill_id)),
+      (latitude = parseFloat(latitude)),
+      (longitude = parseFloat(longitude));
     const landfill = await getLandfillById(landfill_id);
     if (!landfill) throw new ResourceNotFound("Landfill", landfill_id);
 
