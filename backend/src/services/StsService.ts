@@ -1,6 +1,3 @@
-import { Request, Response } from "express";
-import { prisma } from "../db";
-import { getUserId } from "../helpers/getRole";
 import { rolePermissions, userRole } from "../globals";
 import { getDistance } from "../helpers/getDistance";
 import { db } from "../drizzle/db";
@@ -11,7 +8,6 @@ import {
   getStsByManagerId,
 } from "../repository/StsRepository";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
-import { InvalidType } from "../errors/InvalidType";
 import { getLandfillById } from "../repository/LandfillRepository";
 import { InvalidAccess } from "../errors/InvalidAccess";
 import {

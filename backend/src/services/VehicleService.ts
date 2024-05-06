@@ -1,7 +1,3 @@
-import { Request, Response } from "express";
-import { db } from "../drizzle/db";
-import { eq } from "drizzle-orm";
-import { VehicleTable } from "../drizzle/schema";
 import { InvalidType } from "../errors/InvalidType";
 import { getStsById } from "../repository/StsRepository";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
