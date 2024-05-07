@@ -6,6 +6,9 @@ import VehicleInLandfill from "@/components/dashboard/vehicle_in_landfill";
 import VehicleGoingToLandfill from "@/components/dashboard/vehicle_going_to_landfill";
 import TotalWasteStoredThisWeek from "@/components/dashboard/total_waste_stored_landfill";
 import { cookies } from "next/headers";
+import UserContent from "@/components/dashboard/UserContent";
+import UserFooter from "@/components/dashboard/UserFooter";
+import UserHeader from "@/components/dashboard/UserHeader";
 
 const getData = async () => {
   const { weekly_waste_amount } = await (
@@ -39,25 +42,29 @@ const getData = async () => {
 };
 
 export default async function StsManager() {
-  const { capacity, sts_vehicle, landfill_vehicle } = await getData();
+  // const { capacity, sts_vehicle, landfill_vehicle } = await getData();
 
   return (
-    <div className="w-full flex flex-col items-center text-center">
-      <TotalWasteStoredThisWeek capacity={capacity} />
-      <div className="my-5">
-        <Link href={"/landfill_manager/entry_vehicle"}>
-          <button className="bg-landfill text-white px-4 py-2 rounded-lg font-bold text-2xl hover:underline transition-all duration-300">
-            Entry Vehicle
-          </button>
-        </Link>
-      </div>
-      <VehicleInLandfill
-        landfill_vehicle={landfill_vehicle}
-        leftLandfill={leftLandfill}
-      />
-      <VehicleGoingToLandfill landfill_vehicle={sts_vehicle} />
-    </div>
+    <>
+      <UserContent />
+    </>
   );
 }
 
 export const fetchCache = "force-no-store";
+
+// <div className="w-full flex flex-col items-center text-center">
+//   <TotalWasteStoredThisWeek capacity={capacity} />
+//   <div className="my-5">
+//     <Link href={"/landfill_manager/entry_vehicle"}>
+//       <button className="bg-landfill text-white px-4 py-2 rounded-lg font-bold text-2xl hover:underline transition-all duration-300">
+//         Entry Vehicle
+//       </button>
+//     </Link>
+//   </div>
+//   <VehicleInLandfill
+//     landfill_vehicle={landfill_vehicle}
+//     leftLandfill={leftLandfill}
+//   />
+//   <VehicleGoingToLandfill landfill_vehicle={sts_vehicle} />
+// </div>

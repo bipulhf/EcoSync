@@ -19,7 +19,7 @@ export async function registration(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       first_name,
@@ -70,7 +70,7 @@ export async function login(prevState: any, formData: FormData) {
     cookies().set("jwt", token, {
       httpOnly: true,
     });
-    redirect(`/${roles[0]}`);
+    redirect(`/dashboard`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -137,11 +137,13 @@ export async function updateUser(prevState: any, formData: FormData) {
   const password = formData.get("password");
   const profile_photo = formData.get("photo");
 
+  console.log(first_name, last_name, email, mobile, password, profile_photo);
+
   const data = await fetch(`${baseURL}/profile`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       first_name,
@@ -154,7 +156,8 @@ export async function updateUser(prevState: any, formData: FormData) {
   });
 
   if (data.status === 200) {
-    redirect(`/admin/users`);
+    revalidatePath("/profile");
+    redirect(`/profile`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -177,7 +180,7 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       first_name,
@@ -215,7 +218,7 @@ export async function stsRegistration(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       ward,
@@ -257,7 +260,7 @@ export async function landfillRegistration(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       city_corporation,
@@ -290,7 +293,7 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       sts_id,
@@ -321,7 +324,7 @@ export async function addVehicleSTS(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       sts_id,
@@ -346,7 +349,7 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       vehicle_number,
@@ -368,7 +371,7 @@ export async function leftSTS(formData: FormData) {
   const data = await fetch(`${baseURL}/sts/vehicle/${id}`, {
     method: "PUT",
     headers: {
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
   });
   if (data.status === 200) {
@@ -381,7 +384,7 @@ export async function leftLandfill(formData: FormData) {
   const data = await fetch(`${baseURL}/landfill/vehicle/${id}`, {
     method: "PUT",
     headers: {
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
   });
   if (data.status === 200) {
@@ -399,7 +402,7 @@ export async function searchReport(prevState: any, formData: FormData) {
   const data = await (
     await fetch(`${baseURL}/report?pageNo=1&type=${type}&query=${query}`, {
       headers: {
-        Authorization: `${cookies().get("jwt")?.value}`,
+        Authorization: `Bearer ${cookies().get("jwt")?.value}`,
       },
     })
   ).json();
@@ -412,7 +415,7 @@ export async function searchReport(prevState: any, formData: FormData) {
 export const downloadReport = async (sts_vehicle_id: string) => {
   await fetch(`${baseURL}/report/download/${sts_vehicle_id}`, {
     headers: {
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
   });
   redirect(`http://localhost:8000/report/${sts_vehicle_id}`);

@@ -2,6 +2,8 @@ import extractUserInfo from "@/utils/verify";
 import type { Metadata } from "next";
 import { Layout } from "antd";
 import Sidebar from "@/components/dashboard/Sidebar";
+import UserHeader from "@/components/dashboard/UserHeader";
+import UserFooter from "@/components/dashboard/UserFooter";
 
 export const metadata: Metadata = {
   title: "EcoSync - Revolutionizing Waste Management",
@@ -16,10 +18,6 @@ export default async function DashboardLayout({
 }>) {
   const { id, name, sts_id, landfill_id, roles, permissions } =
     await extractUserInfo();
-  let bgColor = "#FFFFFF";
-  if (roles.includes("admin")) bgColor = "#F3F7FB";
-  else if (roles.includes("sts_manager")) bgColor = "#F8FFF6";
-  else if (roles.includes("landfill_manager")) bgColor = "#FFFFFF";
 
   return (
     roles && (
@@ -33,7 +31,11 @@ export default async function DashboardLayout({
             permissions={permissions}
             roles={roles}
           />
-          <Layout>{children}</Layout>
+          <Layout>
+            <UserHeader roles={roles} />
+            {children}
+            <UserFooter />
+          </Layout>
         </Layout>
       </main>
     )
