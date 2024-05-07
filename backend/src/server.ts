@@ -7,6 +7,7 @@ import vehicleRouter from "./routers/VehicleRouter";
 import stsRouter from "./routers/StsRouter";
 import landfillRouter from "./routers/LandfillRouter";
 import reportRouter from "./routers/ReportRouter";
+import rolePermissionRouter from "./routers/RolePermissionRouter";
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.use("/", vehicleRouter);
 app.use("/", stsRouter);
 app.use("/", landfillRouter);
 app.use("/", reportRouter);
+app.use("/", rolePermissionRouter);
 
 export default app;

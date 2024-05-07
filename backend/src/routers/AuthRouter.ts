@@ -15,8 +15,8 @@ const authRouter = Router();
 authRouter.post("/auth/login", async (req, res) => {
   try {
     let { email, password } = req.body;
-    const token = await getTokenService({ email, password });
-    return res.status(200).json({ token });
+    const result = await getTokenService({ email, password });
+    return res.status(200).json(result);
   } catch (error) {
     const err = getErrorType(error);
     return res.status(err.errorCode).json({ message: err.message });

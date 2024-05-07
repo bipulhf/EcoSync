@@ -74,6 +74,22 @@ export const permissions = [
     role_name: userRole.ADMIN,
   },
   {
+    permission: rolePermissions.CREATE_ROLES,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.READ_ROLES,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.UPDATE_ROLES,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.UPDATE_PERMISSIONS,
+    role_name: userRole.ADMIN,
+  },
+  {
     permission: rolePermissions.READ_USER_SELF,
     role_name: userRole.STS_MANAGER,
   },

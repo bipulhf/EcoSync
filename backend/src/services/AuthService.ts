@@ -136,7 +136,7 @@ export const getTokenService = async ({ email, password }: any) => {
       expiresIn: `${JWT_EXPIRATION_MINUTES}m`,
     });
 
-    return token;
+    return { token, roles };
   } catch (error) {
     throw error;
   }

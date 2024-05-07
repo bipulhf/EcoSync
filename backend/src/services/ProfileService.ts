@@ -5,6 +5,8 @@ import { ResourceNotFound } from "../errors/ResourceNotFound";
 export const getLoggedInUserService = async (currentUserId: number) => {
   try {
     const user = await getUserById(currentUserId);
+    const roles = user?.roles.map((role: any) => role.role);
+    user.roles = roles;
     if (!user) throw new ResourceNotFound("User", currentUserId);
     return user;
   } catch (error) {

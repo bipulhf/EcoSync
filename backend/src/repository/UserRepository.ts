@@ -33,10 +33,17 @@ export async function getUserById(
       return await dbCon.query.UserTable.findFirst({
         where: (model: any) => eq(model.id, userId),
       });
-    return await dbCon.query.UserTable.findFirst({
+    return await db.query.UserTable.findFirst({
       where: (model: any) => eq(model.id, userId),
       columns: {
         password: false,
+      },
+      with: {
+        roles: {
+          columns: {
+            role: true,
+          },
+        },
       },
     });
   } catch (error) {

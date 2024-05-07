@@ -128,7 +128,7 @@ userRouter.put(
 
 userRouter.get(
   "/profile",
-  middleware([rolePermissions.READ_USER_SELF]),
+  middleware([rolePermissions.READ_USER_SELF, rolePermissions.READ_USER_ALL]),
   async (req, res) => {
     try {
       const token = (req.headers.authorization as string).split(" ")[1];
@@ -143,7 +143,10 @@ userRouter.get(
 );
 userRouter.put(
   "/profile",
-  middleware([rolePermissions.UPDATE_USER_SELF]),
+  middleware([
+    rolePermissions.UPDATE_USER_SELF,
+    rolePermissions.UPDATE_USER_ALL,
+  ]),
   async (req, res) => {
     try {
       const { first_name, last_name, email, mobile, profile_photo, password } =
