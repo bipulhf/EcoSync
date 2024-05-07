@@ -1,11 +1,11 @@
 import UserContent from "@/components/dashboard/UserContent";
 import extractUserInfo from "@/utils/verify";
 
-export default async function StsManager() {
+export default async function Dashboard() {
   const { permissions } = await extractUserInfo();
   return (
     <>
-      <UserContent />
+      <UserContent permissions={permissions} />
     </>
   );
 }

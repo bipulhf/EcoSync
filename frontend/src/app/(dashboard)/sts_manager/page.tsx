@@ -2,7 +2,7 @@ import { baseURL } from "../../../../files";
 import extractUserInfo from "@/utils/verify";
 import { leftSTS } from "@/utils/actions";
 import Link from "next/link";
-import VehicleComingFromLandfill from "@/components/dashboard/vehicle_coming_from_landfill";
+import VehiclesComingFromLandfill from "@/components/dashboard/VehiclesComingFromLandfill";
 import VechiclesInSTS from "@/components/dashboard/vehicle_in_sts";
 import { cookies } from "next/headers";
 import UserContent from "@/components/dashboard/UserContent";

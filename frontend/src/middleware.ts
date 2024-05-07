@@ -26,17 +26,14 @@ export async function middleware(req: NextRequest, res: NextResponse) {
     };
 
     if (roles && name && permissions) {
-      const isAllowed = roles.includes(req.nextUrl.pathname.split("/")[1]);
-
       if (
         req.nextUrl.pathname === "/login" ||
         req.nextUrl.pathname === "/reset-password"
       ) {
-        return NextResponse.redirect(new URL(`/${roles[0]}`, req.url));
-      } else if (isAllowed || req.nextUrl.pathname === "/profile") {
+        return NextResponse.redirect(new URL(`/dashboard`, req.url));
+      } else {
         return NextResponse.next();
       }
-      return NextResponse.redirect(new URL(`/${roles[0]}`, req.url));
     }
   } else if (
     req.nextUrl.pathname === "/" ||

@@ -1,6 +1,6 @@
 import { baseURL } from "../../../../files";
 import VehicleGoingToLandfill from "@/components/dashboard/vehicle_going_to_landfill";
-import VehicleComingFromLandfill from "@/components/dashboard/vehicle_coming_from_landfill";
+import VehiclesComingFromLandfill from "@/components/dashboard/VehiclesComingFromLandfill";
 import TotalWasteStoredThisWeek from "@/components/dashboard/total_waste_stored_landfill";
 import STSList from "./_components/sts_list";
 import { cookies } from "next/headers";

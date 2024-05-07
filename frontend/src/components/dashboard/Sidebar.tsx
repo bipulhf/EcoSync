@@ -9,7 +9,9 @@ import {
   HomeOutlined,
   LogoutOutlined,
   TruckOutlined,
+  UserAddOutlined,
   UserOutlined,
+  UserSwitchOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
@@ -51,6 +53,11 @@ const labels = [
     icon: React.createElement(TruckOutlined),
   },
   {
+    key: "READ_USER_ALL",
+    label: <Link href={`/users`}>Users</Link>,
+    icon: React.createElement(UsergroupAddOutlined),
+  },
+  {
     key: "STS_SELF",
     label: <Link href={`/fleet`}>Fleet</Link>,
     icon: React.createElement(BranchesOutlined),
@@ -58,7 +65,7 @@ const labels = [
   {
     key: "ROLES",
     label: <Link href={`/roles`}>Roles and Permissions</Link>,
-    icon: React.createElement(UsergroupAddOutlined),
+    icon: React.createElement(UserAddOutlined),
   },
 ];
 
@@ -118,7 +125,7 @@ const Sidebar = ({
                     ]
                   }
                 >
-                  {role.toUpperCase()}
+                  <UserSwitchOutlined /> {role.toUpperCase()}
                 </Tag>
               </Link>
             ))}

@@ -203,6 +203,12 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
   }
 }
 
+export async function getJWT() {
+  const cookieStore = cookies();
+  const jwt = cookieStore.get("jwt")?.value;
+  return jwt;
+}
+
 export async function deleteUser() {
   revalidatePath(`/admin/users`);
 }

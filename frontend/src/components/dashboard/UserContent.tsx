@@ -1,18 +1,31 @@
-"use client";
+import VehiclesGoingToLandfill from "./VehiclesGoingToLandfill";
+import VehiclesComingFromLandfill from "./VehiclesComingFromLandfill";
+import WeeklyWasteAmountLandfill from "./WeeklyWasteAmountLandfill";
 
-import { Layout } from "antd";
-
-const { Content } = Layout;
-
-export default function UserContent() {
+export default async function UserContent({ permissions }: any) {
   return (
-    <Content style={{ margin: "24px 16px 0" }}>
+    <div style={{ margin: "24px 16px 0" }}>
       <div
         style={{
           padding: 24,
           minHeight: 360,
         }}
-      ></div>
-    </Content>
+      >
+        {(permissions.includes("READ_LANDFILL_SELF") ||
+          permissions.includes("READ_LANDFILL_ALL")) && (
+          <WeeklyWasteAmountLandfill />
+        )}
+        {((permissions.includes("READ_VEHICLE_SELF") &&
+          permissions.includes("READ_LANDFILL_SELF")) ||
+          permissions.includes("READ_VEHICLE_ALL")) && (
+          <VehiclesGoingToLandfill />
+        )}
+        {(permissions.includes("READ_STS_SELF") &&
+          permissions.includes("READ_VEHICLE_SELF")) ||
+          (permissions.includes("READ_VEHICLE_ALL") && (
+            <VehiclesComingFromLandfill />
+          ))}
+      </div>
+    </div>
   );
 }
