@@ -4,7 +4,9 @@ import { deleteUser, updateUserAdmin } from "@/utils/actions";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
-import { baseURL } from "../../../../../../files";
+import { baseURL } from "../../../../../files";
+import { Checkbox } from "antd";
+import { CheckboxValueType } from "antd/es/checkbox/Group";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -29,9 +31,10 @@ export default function UserProfileForm({
   photo,
   email,
   mobile,
-  role,
+  roles,
   sts_id,
   landfill_id,
+  total_roles,
 }: any) {
   const [user, setUser] = useState({
     first_name: fname,
@@ -40,7 +43,7 @@ export default function UserProfileForm({
     email,
     mobile,
     password: "",
-    role,
+    roles,
     sts_id,
     landfill_id,
   });
@@ -51,15 +54,24 @@ export default function UserProfileForm({
   const [image, setImage] = useState(photo);
   const [loading, setLoading] = useState(false);
 
+  const [checkedList, setCheckedList] = useState<CheckboxValueType[]>(
+    user.roles
+  );
+
+  const onChange = (list: CheckboxValueType[]) => {
+    setCheckedList(list);
+    setUser({ ...user, roles: list });
+  };
+
   return (
     <>
       <form
-        className={`text-admin font-medium w-[80%] mx-auto text-2xl py-5`}
+        className={`text-admin font-medium w-[90%] md:w-[80%] mx-auto text-xl py-5`}
         action={formAction}
       >
-        <div className="flex justify-around items-center">
+        <div className="flex justify-around items-center max-md:flex-col-reverse">
           <input type="text" id="id" name="id" required value={id} hidden />
-          <div className="w-full mr-10">
+          <div className="w-full md:mr-10">
             <div className="mb-2">
               <label htmlFor="first_name" className="block mb-2">
                 First Name:
@@ -151,21 +163,16 @@ export default function UserProfileForm({
               <label htmlFor="role" className="w-[30%] block mb-2">
                 User Role
               </label>
-              <select
-                value={user.role}
-                onChange={(e) => setUser({ ...user, role: e.target.value })}
-                id="role"
-                name="role"
-                required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
-              >
-                <option value="unassigned">Unassigned</option>
-                <option value="sts_manager">STS Manager</option>
-                <option value="landfill_manager">Landfill Manager</option>
-                <option value="admin">Admin</option>
-              </select>
+              <div className="flex flex-col gap-2">
+                <Checkbox.Group
+                  options={total_roles}
+                  value={checkedList}
+                  onChange={onChange}
+                />
+              </div>
+              <input type="hidden" name="roles" value={checkedList.join(",")} />
             </div>
-            {user.role === "sts_manager" && (
+            {user.roles.includes("sts_manager") && (
               <div className="mb-2 items-center">
                 <label htmlFor="sts_id" className="w-[30%] block mb-2">
                   Enter STS ID
@@ -182,7 +189,7 @@ export default function UserProfileForm({
                 />
               </div>
             )}
-            {user.role === "landfill_manager" && (
+            {user.roles.includes("landfill_manager") && (
               <div className="mb-2 items-center">
                 <label htmlFor="landfill_id" className="w-[30%] block mb-2">
                   Enter Landfill ID
@@ -287,7 +294,7 @@ export default function UserProfileForm({
         </div>
       </form>
       {state?.message && (
-        <p className="text-red text-2xl font-medium mt-4 text-center">
+        <p className="text-red text-lg font-medium mt-4 text-center">
           {state.message}
         </p>
       )}

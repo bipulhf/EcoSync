@@ -11,9 +11,10 @@ export async function registration(prevState: any, formData: FormData) {
   const last_name = formData.get("last_name");
   const email = formData.get("email");
   const mobile = formData.get("mobile");
-  const role = formData.get("role");
+  const getRoles = formData.get("roles")?.toString();
   const sts_id = formData.get("sts_id");
   const landfill_id = formData.get("landfill_id");
+  const roles = getRoles?.split(",");
 
   const data = await fetch(`${baseURL}/auth/create`, {
     method: "POST",
@@ -26,14 +27,14 @@ export async function registration(prevState: any, formData: FormData) {
       last_name,
       email,
       mobile,
-      role,
+      roles,
       sts_id,
       landfill_id,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin/users`);
+  if (data.status === 201) {
+    redirect(`/users`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -172,15 +173,16 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
   const mobile = formData.get("mobile");
   const password = formData.get("password");
   const profile_photo = formData.get("photo");
-  const role = formData.get("role");
+  const getRoles = formData.get("roles")?.toString();
   const sts_id = formData.get("sts_id");
   const landfill_id = formData.get("landfill_id");
+  const roles = getRoles?.split(",");
 
   const data = await fetch(`${baseURL}/users/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
       first_name,
@@ -189,14 +191,14 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
       mobile,
       password,
       profile_photo,
-      role,
+      roles,
       sts_id,
       landfill_id,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin/users`);
+  if (data.status === 201) {
+    redirect(`/users`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -224,7 +226,7 @@ export async function stsRegistration(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
       ward,
@@ -235,8 +237,8 @@ export async function stsRegistration(prevState: any, formData: FormData) {
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/sts`);
   } else {
     const response = await data.json();
     return { message: response.message };

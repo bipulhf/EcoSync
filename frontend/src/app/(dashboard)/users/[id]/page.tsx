@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
-import { baseURL } from "../../../../../../files";
-import UserProfileForm from "./user_profile_form";
+import UserProfileForm from "./UserProfileForm";
+import { baseURL } from "../../../../../files";
+import { getJWT } from "@/utils/actions";
 
 const getData = async (id: string) => {
   const data = await (
@@ -8,7 +8,7 @@ const getData = async (id: string) => {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${cookies().get("jwt")?.value}`,
+        Authorization: `Bearer ${await getJWT()}`,
       },
     })
   ).json();
@@ -20,7 +20,7 @@ const getData = async (id: string) => {
     photo: data.profile_photo,
     email: data.email,
     mobile: data.mobile,
-    role: data.role,
+    roles: data.roles,
     sts_id: data.sts_id,
     landfill_id: data.landfill_id,
   };
@@ -38,14 +38,26 @@ export default async function UserProfile({
     photo,
     email,
     mobile,
-    role,
+    roles,
     sts_id,
     landfill_id,
   } = await getData(params.id);
 
+  const rolesArr: any = [];
+  roles.map((role: any) => {
+    rolesArr.push(role.role);
+  });
+
+  const total_roles = [
+    "admin",
+    "landfill_manager",
+    "sts_manager",
+    "unassigned",
+  ];
+
   return (
     <>
-      <h1 className={`text-3xl text-center text-admin font-bold pt-10`}>
+      <h1 className={`text-xl text-center text-admin font-bold pt-10`}>
         Profile
       </h1>
       <UserProfileForm
@@ -55,9 +67,10 @@ export default async function UserProfile({
         photo={photo}
         email={email}
         mobile={mobile}
-        role={role}
+        roles={rolesArr}
         sts_id={sts_id}
         landfill_id={landfill_id}
+        total_roles={total_roles}
       />
     </>
   );

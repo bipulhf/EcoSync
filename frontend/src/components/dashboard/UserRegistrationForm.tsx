@@ -3,6 +3,8 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { registration } from "@/utils/actions";
 import { useState } from "react";
+import { CheckboxValueType } from "antd/es/checkbox/Group";
+import { Checkbox } from "antd";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -20,20 +22,28 @@ function Submit() {
   );
 }
 
-export default function UserRegistaionsForm() {
+export default function UserRegistaionsForm({ total_roles }: any) {
   const [state, formAction] = useFormState(registration, null);
-  const [role, setRole] = useState("unassigned");
+  const [checkedList, setCheckedList] = useState<CheckboxValueType[]>([
+    "unassigned",
+  ]);
 
+  const onChange = (list: CheckboxValueType[]) => {
+    setCheckedList(list);
+  };
   return (
     <>
       <form
-        className={`text-admin font-medium w-[60%] mx-auto text-2xl my-10`}
+        className={`text-admin font-medium w-[90%] md:w-[80%] mx-auto text:md md:text-xl py-5`}
         action={formAction}
       >
         <div className="flex justify-around items-center">
-          <div className="w-full mr-10">
-            <div className="mb-4 flex w-full items-center">
-              <label htmlFor="first_name" className="w-[30%] block mb-2">
+          <div className="w-full md:mr-10">
+            <div className="mb-4 flex w-ful items-center">
+              <label
+                htmlFor="first_name"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 First Name
               </label>
               <input
@@ -46,7 +56,10 @@ export default function UserRegistaionsForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="last_name" className="w-[30%] block mb-2">
+              <label
+                htmlFor="last_name"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Last Name
               </label>
               <input
@@ -59,7 +72,10 @@ export default function UserRegistaionsForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="email" className="w-[30%] block mb-2">
+              <label
+                htmlFor="email"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Email
               </label>
               <input
@@ -72,7 +88,10 @@ export default function UserRegistaionsForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="mobile" className="w-[30%] block mb-2">
+              <label
+                htmlFor="mobile"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Mobile
               </label>
               <input
@@ -85,26 +104,27 @@ export default function UserRegistaionsForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="role" className="w-[30%] block mb-2">
+              <label
+                htmlFor="role"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 User Role
               </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                id="role"
-                name="role"
-                required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
-              >
-                <option value="unassigned">Unassigned</option>
-                <option value="sts_manager">STS Manager</option>
-                <option value="landfill_manager">Landfill Manager</option>
-                <option value="admin">Admin</option>
-              </select>
+              <div className="flex flex-col gap-2">
+                <Checkbox.Group
+                  options={total_roles}
+                  value={checkedList}
+                  onChange={onChange}
+                />
+              </div>
+              <input type="hidden" name="roles" value={checkedList.join(",")} />
             </div>
-            {role === "sts_manager" && (
+            {checkedList.includes("sts_manager") && (
               <div className="mb-4 flex w-full items-center">
-                <label htmlFor="sts_id" className="w-[30%] block mb-2">
+                <label
+                  htmlFor="sts_id"
+                  className="w-[30%] block mb-2 max-sm:hidden"
+                >
                   Enter STS ID
                 </label>
                 <input
@@ -117,9 +137,12 @@ export default function UserRegistaionsForm() {
                 />
               </div>
             )}
-            {role === "landfill_manager" && (
+            {checkedList.includes("landfill_manager") && (
               <div className="mb-4 flex w-full items-center">
-                <label htmlFor="landfill_id" className="w-[30%] block mb-2">
+                <label
+                  htmlFor="landfill_id"
+                  className="w-[30%] block mb-2 max-sm:hidden"
+                >
                   Enter Landfill ID
                 </label>
                 <input
@@ -137,7 +160,9 @@ export default function UserRegistaionsForm() {
         <Submit />
       </form>
       {state?.message && (
-        <p className="text-red text-2xl font-medium mt-4 text-center">{state.message}</p>
+        <p className="text-red text-2xl font-medium mt-4 text-center">
+          {state.message}
+        </p>
       )}
     </>
   );

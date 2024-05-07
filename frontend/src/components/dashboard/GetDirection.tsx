@@ -1,38 +1,11 @@
-import { cookies } from "next/headers";
-import { baseURL } from "../../../../../../files";
-import ShowDirection from "../../_components/show_direction";
+import ShowDirection from "./ShowDirection";
 import { convertSecondsToTime } from "@/utils/timeconvert";
-const getData = async (id: string) => {
-  const sts = await (
-    await fetch(`${baseURL}/sts/${id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `${cookies().get("jwt")?.value}`,
-      },
-    })
-  ).json();
 
-  return {
-    sts,
-  };
-};
-
-export default async function GetDirection({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { sts } = await getData(params.id);
-  const sts_postition = { lat: sts.latitude, lng: sts.longitude };
-  const landfill_position = {
-    lat: sts.landfill.latidute,
-    lng: sts.landfill.longitude,
-  };
-
+export default async function GetDirection({ sts }: any) {
   return (
     <div className="pb-10 mt-5 mx-10 flex flex-col items-center">
       <div>
-        <h1 className="text-3xl font-semibold text-center mb-5 text-admin">
+        <h1 className="text-xl font-semibold text-center mb-5 text-admin">
           From STS ID: {sts.id} To Landfill ID: {sts.landfill.id}
         </h1>
       </div>

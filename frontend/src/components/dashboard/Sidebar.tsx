@@ -34,7 +34,7 @@ const labels = [
   },
   {
     key: "VEHICLE",
-    label: <Link href={`/vehicle`}>Vehicle</Link>,
+    label: <Link href={`/vehicles`}>Vehicle</Link>,
     icon: React.createElement(CarOutlined),
   },
   {
@@ -113,7 +113,7 @@ const Sidebar = ({
         <div>
           <div className="p-5">
             {roles.map((role: any) => (
-              <Link href={`/${role}`} key={role} className="mb-2 inline-block">
+              <div key={role} className="mb-2 inline-block">
                 <Tag
                   color={
                     color[
@@ -127,7 +127,7 @@ const Sidebar = ({
                 >
                   <UserSwitchOutlined /> {role.toUpperCase()}
                 </Tag>
-              </Link>
+              </div>
             ))}
           </div>
           <Menu mode="inline" items={items} theme="dark" onClick={(e) => {}} />

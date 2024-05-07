@@ -25,17 +25,20 @@ export default function STSRegistrationForm() {
   return (
     <>
       <form
-        className={`text-admin font-medium w-[60%] mx-auto text-2xl my-10`}
+        className={`text-admin font-medium w-[90%] sm:w-[80%] lg:w-[75%] mx-auto text-lg md:text-xl my-10`}
         action={formAction}
       >
         <div className="flex justify-around items-center">
-          <div className="w-full mr-10">
+          <div className="w-full md:mr-10">
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="ward_no" className="w-[30%] block mb-2">
+              <label
+                htmlFor="ward_no"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Ward No
               </label>
               <input
-                type="text"
+                type="number"
                 id="ward_no"
                 name="ward_no"
                 required
@@ -44,50 +47,65 @@ export default function STSRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="capacity" className="w-[30%] block mb-2">
+              <label
+                htmlFor="capacity"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Capacity
               </label>
               <input
-                type="text"
+                type="number"
                 id="capacity"
                 name="capacity"
+                step="0.01"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 placeholder="Enter STS Capacity in Tons"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="latitude" className="w-[30%] block mb-2">
+              <label
+                htmlFor="latitude"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Latitude
               </label>
               <input
-                type="text"
+                type="number"
                 id="latitude"
                 name="latitude"
+                step="0.000001"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 placeholder="Enter Latitude"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="longitude" className="w-[30%] block mb-2">
+              <label
+                htmlFor="longitude"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Longitude
               </label>
               <input
-                type="text"
+                type="number"
                 id="longitude"
                 name="longitude"
+                step="0.000001"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 placeholder="Enter Longitude"
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="landfill_id" className="w-[30%] block mb-2">
+              <label
+                htmlFor="landfill_id"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Landfill ID
               </label>
               <input
-                type="text"
+                type="number"
                 id="landfill_id"
                 name="landfill_id"
                 required

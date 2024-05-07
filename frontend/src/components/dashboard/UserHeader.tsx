@@ -3,6 +3,7 @@
 import Image from "next/image";
 import logo from "@/../public/static/images/logo.png";
 import { Layout } from "antd";
+import Link from "next/link";
 
 const { Header } = Layout;
 
@@ -17,7 +18,9 @@ export default function UserHeader({ roles }: any) {
       style={{ padding: 5, background: headerColor }}
       className="flex justify-center"
     >
-      <Image src={logo} alt="Logo" width={160} />
+      <Link href={"/dashboard"}>
+        <Image src={logo} alt="Logo" width={160} />
+      </Link>
     </Header>
   );
 }

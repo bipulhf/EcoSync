@@ -21,11 +21,11 @@ export default function ShowDirection({
     <>
       <APIProvider apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY as string}>
         <Map
-          style={{ width: "85vw", height: "70vh" }}
           defaultCenter={landfill_position}
           defaultZoom={12}
           gestureHandling={"greedy"}
           zoomControl={true}
+          className="h-[55vh] w-[90vw] md:w-[75vw] lg:w-[70vw] xl:w-[55vw]"
         >
           <Direction
             sts_position={sts_position}
