@@ -1,6 +1,7 @@
 import VehiclesGoingToLandfill from "./VehiclesGoingToLandfill";
 import VehiclesComingFromLandfill from "./VehiclesComingFromLandfill";
 import WeeklyWasteAmountLandfill from "./WeeklyWasteAmountLandfill";
+import DemoHeatmap from "./HeatMap";
 
 export default async function UserContent({ permissions }: any) {
   return (
@@ -11,6 +12,7 @@ export default async function UserContent({ permissions }: any) {
           minHeight: 360,
         }}
       >
+        {/* <DemoHeatmap /> */}
         {(permissions.includes("READ_LANDFILL_SELF") ||
           permissions.includes("READ_LANDFILL_ALL")) && (
           <WeeklyWasteAmountLandfill />
@@ -20,11 +22,11 @@ export default async function UserContent({ permissions }: any) {
           permissions.includes("READ_VEHICLE_ALL")) && (
           <VehiclesGoingToLandfill />
         )}
-        {(permissions.includes("READ_STS_SELF") &&
+        {((permissions.includes("READ_STS_SELF") &&
           permissions.includes("READ_VEHICLE_SELF")) ||
-          (permissions.includes("READ_VEHICLE_ALL") && (
-            <VehiclesComingFromLandfill />
-          ))}
+          permissions.includes("READ_VEHICLE_ALL")) && (
+          <VehiclesComingFromLandfill />
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
+import VehicleTable from "@/app/(dashboard)/vehicles/VehicleTable";
 
 const VehicleModal = ({ vehicles }: any) => {
   const [open, setOpen] = useState(false);
@@ -19,9 +20,7 @@ const VehicleModal = ({ vehicles }: any) => {
         onCancel={() => setOpen(false)}
         width={1000}
       >
-        <p>some contents...</p>
-        <p>some contents...</p>
-        <p>some contents...</p>
+        <VehicleTable vehicles={vehicles} />
       </Modal>
     </>
   );

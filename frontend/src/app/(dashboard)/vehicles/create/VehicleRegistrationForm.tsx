@@ -1,5 +1,7 @@
 "use client";
+
 import { vehicleRegistration } from "@/utils/actions";
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 function Submit() {
@@ -20,17 +22,21 @@ function Submit() {
 
 export default function VechicleRegistrationForm() {
   const [state, formAction] = useFormState(vehicleRegistration, null);
+  const [capacity, setCapacity] = useState(3);
 
   return (
     <>
       <form
-        className={`text-admin font-medium w-[60%] mx-auto text-2xl my-10`}
+        className={`text-admin font-medium w-[90%] sm:w-[80%] lg:w-[75%] mx-auto text-md sm:text-lg md:text-xl my-10`}
         action={formAction}
       >
         <div className="flex justify-around items-center">
-          <div className="w-full mr-10">
+          <div className="w-full md:mr-10">
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="sts_id" className="w-[30%] block mb-2">
+              <label
+                htmlFor="sts_id"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 STS ID
               </label>
               <input
@@ -43,7 +49,10 @@ export default function VechicleRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="vehicle_number" className="w-[30%] block mb-2">
+              <label
+                htmlFor="vehicle_number"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Vechicle Number
               </label>
               <input
@@ -56,7 +65,10 @@ export default function VechicleRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="vehicle_type" className="w-[30%] block mb-2">
+              <label
+                htmlFor="vehicle_type"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Vechicle Type
               </label>
               <select
@@ -64,6 +76,12 @@ export default function VechicleRegistrationForm() {
                 name="vehicle_type"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
+                onChange={(e) => {
+                  if (e.target.value === "open_truck") setCapacity(3);
+                  if (e.target.value === "dump_truck") setCapacity(5);
+                  if (e.target.value === "compactor") setCapacity(7);
+                  if (e.target.value === "container") setCapacity(12);
+                }}
               >
                 <option value="open_truck">Open Truck</option>
                 <option value="dump_truck">Dump Truck</option>
@@ -72,23 +90,27 @@ export default function VechicleRegistrationForm() {
               </select>
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="capacity" className="w-[30%] block mb-2">
+              <label
+                htmlFor="capacity"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Capacity
               </label>
-              <select
+              <input
+                type="number"
                 id="capacity"
                 name="capacity"
                 required
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin bg-white`}
-              >
-                <option value={3}>3 Ton</option>
-                <option value={5}>5 Ton</option>
-                <option value={7}>7 Ton</option>
-                <option value={15}>15 Ton</option>
-              </select>
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                placeholder="Enter Capacity in liters"
+                value={capacity}
+              />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="driver_name" className="w-[30%] block mb-2">
+              <label
+                htmlFor="driver_name"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Driver Name
               </label>
               <input
@@ -101,7 +123,10 @@ export default function VechicleRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="driver_mobile" className="w-[30%] block mb-2">
+              <label
+                htmlFor="driver_mobile"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Driver Mobile
               </label>
               <input
@@ -114,11 +139,15 @@ export default function VechicleRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="loaded" className="w-[30%] block mb-2">
+              <label
+                htmlFor="loaded"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Cost/km (Loaded)
               </label>
               <input
-                type="text"
+                type="number"
+                step={0.001}
                 id="loaded"
                 name="loaded"
                 required
@@ -127,11 +156,15 @@ export default function VechicleRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="unloaded" className="w-[30%] block mb-2">
+              <label
+                htmlFor="unloaded"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Cost/km (Unloaded)
               </label>
               <input
-                type="text"
+                type="number"
+                step={0.001}
                 id="unloaded"
                 name="unloaded"
                 required

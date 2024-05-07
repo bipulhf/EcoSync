@@ -25,7 +25,7 @@ export default function STSRegistrationForm() {
   return (
     <>
       <form
-        className={`text-admin font-medium w-[90%] sm:w-[80%] lg:w-[75%] mx-auto text-lg md:text-xl my-10`}
+        className={`text-admin font-medium w-[90%] sm:w-[80%] lg:w-[75%] mx-auto text-md sm:text-lg md:text-xl my-10`}
         action={formAction}
       >
         <div className="flex justify-around items-center">
@@ -89,9 +89,9 @@ export default function STSRegistrationForm() {
               </label>
               <input
                 type="number"
+                step="0.000001"
                 id="longitude"
                 name="longitude"
-                step="0.000001"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
                 placeholder="Enter Longitude"

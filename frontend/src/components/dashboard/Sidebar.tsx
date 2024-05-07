@@ -2,6 +2,7 @@
 
 import React from "react";
 import {
+  BarChartOutlined,
   BranchesOutlined,
   CarOutlined,
   CarryOutOutlined,
@@ -29,7 +30,7 @@ const labels = [
   },
   {
     key: "LANDFILL",
-    label: <Link href={`/landfill`}>Landfill</Link>,
+    label: <Link href={`/landfills`}>Landfill</Link>,
     icon: React.createElement(HeatMapOutlined),
   },
   {
@@ -49,7 +50,7 @@ const labels = [
   },
   {
     key: "STS_VEHICLE",
-    label: <Link href={`/sts_vehicle`}>STS Vehicle Entry</Link>,
+    label: <Link href={`/sts/entry_vehicle`}>STS Vehicle Entry</Link>,
     icon: React.createElement(TruckOutlined),
   },
   {
@@ -130,7 +131,18 @@ const Sidebar = ({
               </div>
             ))}
           </div>
-          <Menu mode="inline" items={items} theme="dark" onClick={(e) => {}} />
+          <Menu
+            mode="inline"
+            items={[
+              {
+                key: "Home",
+                label: <Link href={`/dashboard`}>Dashboard</Link>,
+                icon: React.createElement(BarChartOutlined),
+              },
+            ]}
+            theme="dark"
+          />
+          <Menu mode="inline" items={items} theme="dark" />
         </div>
         <div>
           <h2 className="text-gray-300 text-[1rem] px-5 py-3">User Info: </h2>

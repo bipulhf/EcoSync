@@ -279,8 +279,8 @@ export async function landfillRegistration(prevState: any, formData: FormData) {
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/dashboard`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -294,8 +294,10 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
   const capacity = formData.get("capacity");
   const driver_name = formData.get("driver_name");
   const driver_mobile = formData.get("driver_mobile");
-  const cost_per_km_load = formData.get("loaded");
-  const cost_per_km_unload = formData.get("unloaded");
+  const cost_per_km_loaded = formData.get("loaded");
+  const cost_per_km_unloaded = formData.get("unloaded");
+
+  console.log(capacity);
 
   const data = await fetch(`${baseURL}/vehicle`, {
     method: "POST",
@@ -310,13 +312,13 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
       capacity,
       driver_name,
       driver_mobile,
-      cost_per_km_load,
-      cost_per_km_unload,
+      cost_per_km_loaded,
+      cost_per_km_unloaded,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/vehicles`);
   } else {
     const response = await data.json();
     return { message: response.message };

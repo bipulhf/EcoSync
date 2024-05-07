@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import ReportTable from "./_components/report";
 import SearchForm from "./_components/search_form";
-import { useSearchParams } from "next/navigation";
 
 export default function Report() {
   const searchParams = useSearchParams();

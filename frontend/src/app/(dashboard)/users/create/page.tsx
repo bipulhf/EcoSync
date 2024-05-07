@@ -1,4 +1,4 @@
-import UserRegistrationForm from "@/components/dashboard/UserRegistrationForm";
+import UserRegistrationForm from "./UserRegistrationForm";
 
 export default async function UserRegistration() {
   const total_roles = [

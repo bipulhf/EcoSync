@@ -20,9 +20,9 @@ export default function MultipleLocation({ sts }: any) {
           lat: sts[0]?.latitude || 23.7593748,
           lng: sts[0]?.longitude || 90.3185111,
         }}
-        style={{ width: "100vwh", height: "25vh" }}
         disableDefaultUI={true}
         fullscreenControl={false}
+        className="h-[55vh] w-[90vw] md:w-[75vw] lg:w-[70vw] xl:w-[55vw]"
       >
         {sts.map((sts: any) => (
           <React.Fragment key={sts.id}>

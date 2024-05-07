@@ -3,11 +3,12 @@ import { baseURL } from "../../../../../files";
 import { getJWT } from "@/utils/actions";
 import GetDirection from "@/components/dashboard/GetDirection";
 import ManagerModal from "@/components/dashboard/ManagerModal";
-import VehicleModal from "@/components/dashboard/VehicleModal";
+import StsModal from "@/components/dashboard/StsModal";
+import MultipleLocation from "@/components/dashboard/MultipleLocation";
 
 const getData = async (id: string) => {
   const data = await (
-    await fetch(`${baseURL}/sts/${id}`, {
+    await fetch(`${baseURL}/landfill/${id}`, {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
@@ -19,7 +20,7 @@ const getData = async (id: string) => {
   return data;
 };
 
-export default async function StsProfile({
+export default async function LandfillProfile({
   params,
 }: {
   params: { id: string };
@@ -30,18 +31,19 @@ export default async function StsProfile({
     <>
       <div className="px-10 pt-10 text-xl text-admin flex items-center justify-between flex-col max-xl:text-center xl:flex-row">
         <div className="text-xl flex flex-col gap-2 text-admin mb-5">
-          <h1 className={`font-bold italic mb-6`}>STS Information</h1>
-          <h2 className="font-semibold">STS ID : {data.id}</h2>
-          <h2>Ward No : {data.ward}</h2>
-          <h2 className="font-semibold">STS Capacity : {data.capacity} Tons</h2>
-          <h2>Landfill ID : {data.landfill_id}</h2>
-          <h2>City Corporation : {data.landfill.city_corporation}</h2>
+          <h1 className={`font-bold italic mb-6`}>Landfill Information</h1>
+          <h2 className="font-semibold">Landfill ID : {data.id}</h2>
+          <h2>City Corporation : {data.city_corporation}</h2>
+          <h2>
+            Starting Time : {new Date(data.start_time).toLocaleTimeString()}
+          </h2>
+          <h2>Closing Time : {new Date(data.end_time).toLocaleTimeString()}</h2>
           <div className="flex flex-col md:flex-row gap-5 md:justify-between mt-5">
-            <VehicleModal vehicles={data.vehicle} />
+            <StsModal sts={data.sts} />
             <ManagerModal managers={data.manager} />
           </div>
         </div>
-        <GetDirection sts={data} />
+        <MultipleLocation sts={data.sts} />
       </div>
     </>
   );

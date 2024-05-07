@@ -27,28 +27,17 @@ export default function EntryVehicle() {
   return (
     <>
       <form
-        className="text-sts_text font-medium text-2xl w-[50%] mx-auto my-10"
+        className="text-sts_text font-medium w-[90%] sm:w-[80%] lg:w-[75%] mx-auto text-md sm:text-lg md:text-xl my-10"
         action={formAction}
       >
-        <h1 className="text-4xl text-sts_text font-bold text-center my-10">
+        <h1 className="text-xl lg:text-2xl text-sts_text font-bold text-center my-10">
           Entry of vehicle leaving from STS
         </h1>
         <div className="mb-4 flex w-full items-center">
-          <label htmlFor="sts_id" className="w-[30%] block mb-2">
-            STS ID:
-          </label>
-          <input
-            type="text"
-            id="sts_id"
-            name="sts_id"
-            required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sts_text"
-            placeholder="Enter STS ID"
-          />
-        </div>
-
-        <div className="mb-4 flex w-full items-center">
-          <label htmlFor="vehicle_number" className="w-[30%] block mb-2">
+          <label
+            htmlFor="vehicle_number"
+            className="w-[30%] block mb-2 max-sm:hidden"
+          >
             Vehicle Number:
           </label>
           {vehicle_number ? (
@@ -74,7 +63,10 @@ export default function EntryVehicle() {
         </div>
 
         <div className="mb-4 flex w-full items-center">
-          <label htmlFor="waste_volume" className="w-[30%] block mb-2">
+          <label
+            htmlFor="waste_volume"
+            className="w-[30%] block mb-2 max-sm:hidden"
+          >
             Waste Volume:
           </label>
           <input

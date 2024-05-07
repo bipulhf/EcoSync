@@ -25,13 +25,16 @@ export default function LandfillRegistrationForm() {
   return (
     <>
       <form
-        className={`text-admin font-medium w-[60%] mx-auto text-2xl my-10`}
+        className={`text-admin font-medium w-[90%] sm:w-[80%] lg:w-[75%] mx-auto text-md sm:text-lg md:text-xl my-10`}
         action={formAction}
       >
         <div className="flex justify-around items-center">
-          <div className="w-full mr-10">
+          <div className="w-full md:mr-10">
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="city_corporation" className="w-[30%] block mb-2">
+              <label
+                htmlFor="city_corporation"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 City Corporation Name
               </label>
               <input
@@ -44,11 +47,15 @@ export default function LandfillRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="latitude" className="w-[30%] block mb-2">
+              <label
+                htmlFor="latitude"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Latitude
               </label>
               <input
-                type="text"
+                type="number"
+                step="0.000001"
                 id="latitude"
                 name="latitude"
                 required
@@ -57,11 +64,15 @@ export default function LandfillRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="longitude" className="w-[30%] block mb-2">
+              <label
+                htmlFor="longitude"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Longitude
               </label>
               <input
-                type="text"
+                type="number"
+                step="0.000001"
                 id="longitude"
                 name="longitude"
                 required
@@ -70,7 +81,10 @@ export default function LandfillRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="start_time" className="w-[30%] block mb-2">
+              <label
+                htmlFor="start_time"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Landfill Start Time
               </label>
               <input
@@ -83,7 +97,10 @@ export default function LandfillRegistrationForm() {
               />
             </div>
             <div className="mb-4 flex w-full items-center">
-              <label htmlFor="end_time" className="w-[30%] block mb-2">
+              <label
+                htmlFor="end_time"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
                 Landfill End Time
               </label>
               <input
