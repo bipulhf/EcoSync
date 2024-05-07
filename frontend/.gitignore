@@ -33,3 +33,5 @@ files.ts
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+./files.ts

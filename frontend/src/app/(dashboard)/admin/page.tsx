@@ -1,3 +1,5 @@
+"use client";
+
 import Buttons from "./_components/buttons";
 import { baseURL } from "../../../../files";
 import VehicleGoingToLandfill from "@/components/dashboard/vehicle_going_to_landfill";
@@ -6,6 +8,13 @@ import TotalWasteStoredThisWeek from "@/components/dashboard/total_waste_stored_
 import STSList from "./_components/sts_list";
 import { cookies } from "next/headers";
 import MultipleLocation from "./_components/multiple_location";
+import Sidebar from "@/components/dashboard/Sidebar";
+import { Layout } from "antd";
+import Image from "next/image";
+import { log } from "console";
+import logo from "@/../public/static/images/logo.png";
+
+const { Header, Content, Footer, Sider } = Layout;
 
 const getData = async () => {
   const vehicle_going_to_landfill = await (
@@ -48,16 +57,39 @@ const getData = async () => {
   };
 };
 
-export default async function Admin() {
-  const {
-    vehicle_going_to_landfill,
-    vehicle_coming_from_landfill,
-    sts,
-    weekly_waste_amount,
-  } = await getData();
+export default function Admin() {
+  // const {
+  //   vehicle_going_to_landfill,
+  //   vehicle_coming_from_landfill,
+  //   sts,
+  //   weekly_waste_amount,
+  // } = await getData();
 
   return (
-    <div className="pb-10 mt-5 mx-10">
+    <>
+      <Header
+        style={{ padding: 5, background: "#4A75CB" }}
+        className="flex justify-center"
+      >
+        <Image src={logo} alt="Logo" width={160} />
+      </Header>
+      <Content style={{ margin: "24px 16px 0" }}>
+        <div
+          style={{
+            padding: 24,
+            minHeight: 360,
+          }}
+        ></div>
+      </Content>
+      <Footer style={{ textAlign: "center" }}>
+        EcoSync © {new Date().getFullYear()} Created by Homo_sapiens
+      </Footer>
+    </>
+  );
+}
+
+/*
+<div className="pb-10 mt-5 mx-10">
       <Buttons />
       <MultipleLocation sts={sts} />
       <div className="flex">
@@ -75,7 +107,4 @@ export default async function Admin() {
         </div>
       </div>
     </div>
-  );
-}
-
-export const fetchCache = "force-no-store";
+  */

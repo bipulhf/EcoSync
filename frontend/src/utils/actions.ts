@@ -66,9 +66,11 @@ export async function login(prevState: any, formData: FormData) {
 
   if (data.status === 200) {
     const response = await data.json();
-    const { role, token } = response;
-    cookies().set("jwt", token);
-    redirect(`/${role}`);
+    const { roles, token } = response;
+    cookies().set("jwt", token, {
+      httpOnly: true,
+    });
+    redirect(`/${roles[0]}`);
   } else {
     const response = await data.json();
     return { message: response.message };

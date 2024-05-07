@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { League_Spartan } from "next/font/google";
 import "./globals.css";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const inter = League_Spartan({ subsets: ["latin"] });
 
@@ -17,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} text-[10px]`}>{children}</body>
+      <body className={`${inter.className} text-[100%]`}>
+        <AntdRegistry>{children}</AntdRegistry>
+      </body>
     </html>
   );
 }

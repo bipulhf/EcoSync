@@ -1,15 +1,15 @@
 import Image from "next/image";
-import logo from "/public/logo.png";
+import logo from "@/../public/static/images/logo.png";
 import Link from "next/link";
-import LogoutButton from "./logout";
+import LogoutButton from "./Logout";
 import extractUserInfo from "@/utils/verify";
 
 export default async function UserHeader() {
-  const { name, role, photo, sts_id, landfill_id } = await extractUserInfo();
+  const { name, roles, photo, sts_id, landfill_id } = await extractUserInfo();
   let headerColor = "#6F6F6F";
-  if (role === "admin") headerColor = "#4A75CB";
-  else if (role === "sts_manager") headerColor = "#82B378";
-  else if (role === "landfill_manager") headerColor = "#B84C42";
+  if (roles.includes("admin")) headerColor = "#4A75CB";
+  else if (roles.includes("sts_manager")) headerColor = "#82B378";
+  else if (roles.includes("landfill_manager")) headerColor = "#B84C42";
 
   return (
     <header>
@@ -18,7 +18,7 @@ export default async function UserHeader() {
         style={{ backgroundColor: headerColor }}
       >
         <div className="mx-10">
-          <Link href={`/${role}`}>
+          <Link href={`/${roles[0]}`}>
             <Image src={logo} alt="Logo" width={200} />
           </Link>
         </div>
@@ -27,7 +27,7 @@ export default async function UserHeader() {
             <div className="flex flex-col text-right text-white mr-7">
               <h2 className="text-2xl">{(name as string).toUpperCase()}</h2>
               <h2 className="font-bold text-md">
-                {(role as string).toUpperCase()}
+                {(roles[0] as string).toUpperCase()}
               </h2>
               {sts_id && (
                 <h2 className="font-bold text-md"> STS ID: {sts_id}</h2>
