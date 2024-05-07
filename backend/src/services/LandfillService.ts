@@ -67,6 +67,40 @@ export const createLandfillService = async ({
   }
 };
 
+export async function landfillsLastWeekWasteService() {
+  try {
+    const landfills = await getWeeklyWasteAmount();
+    let result: any = {};
+    landfills.forEach((landfill) => {
+      if (landfill.departure_time) {
+        if (!result[landfill.departure_time.toDateString()])
+          result[landfill.departure_time?.toDateString()] = {};
+
+        if (
+          !result[landfill.departure_time.toDateString()][landfill.landfill_id]
+        )
+          result[landfill.departure_time.toDateString()][
+            landfill.landfill_id
+          ] = 0;
+
+        result[landfill.departure_time.toDateString()][landfill.landfill_id] +=
+          landfill.waste_volume;
+      }
+    });
+
+    const data: any[] = [];
+    Object.keys(result).forEach((date) => {
+      Object.keys(result[date]).forEach((landfill_id) => {
+        const volume_waste = result[date][landfill_id];
+        result.push({ date, landfill_id, volume_waste });
+      });
+    });
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const vehicleEntryInLandfillService = async (
   user_id: number,
   vehicle_number: string,

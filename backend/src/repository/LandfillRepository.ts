@@ -9,6 +9,15 @@ export async function getAllLandfill(tx?: any) {
     return await dbCon.query.LandfillTable.findMany({
       with: {
         sts: true,
+        manager: {
+          columns: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            mobile: true,
+            email: true,
+          },
+        },
       },
     });
   } catch (error) {
@@ -21,6 +30,18 @@ export async function getLandfillById(landfill_id: number, tx?: any) {
     const dbCon = tx || db;
     return await dbCon.query.LandfillTable.findFirst({
       where: (model: any) => eq(model.id, landfill_id),
+      with: {
+        sts: true,
+        manager: {
+          columns: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            mobile: true,
+            email: true,
+          },
+        },
+      },
     });
   } catch (error) {
     throw new ResourceNotFound("Landfill", landfill_id);
@@ -32,6 +53,18 @@ export async function getLandfillByManagerId(manager_id: number, tx?: any) {
     const dbCon = tx || db;
     return await dbCon.query.LandfillTable.findMany({
       where: (model: any) => eq(model.manager_id, manager_id),
+      with: {
+        sts: true,
+        manager: {
+          columns: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            mobile: true,
+            email: true,
+          },
+        },
+      },
     });
   } catch (error) {
     throw new ResourceNotFound("Landfill", manager_id);

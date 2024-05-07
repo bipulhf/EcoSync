@@ -104,7 +104,7 @@ userRouter.put(
       const adminId = res.locals.userId;
       if (userId == adminId) {
         return res.status(403).json({
-          message: "Update your info from your profile (on the header).",
+          message: "Update your info from your profile",
         });
       }
       const user = await updateUserService({

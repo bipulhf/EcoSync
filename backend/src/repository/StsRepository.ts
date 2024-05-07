@@ -22,6 +22,19 @@ export async function getStsById(sts_id: number, tx?: any) {
     const dbCon = tx || db;
     return await dbCon.query.StsTable.findFirst({
       where: (model: any) => eq(model.id, sts_id),
+      with: {
+        landfill: true,
+        vehicle: true,
+        manager: {
+          columns: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            mobile: true,
+          },
+        },
+      },
     });
   } catch (error) {
     throw new ResourceNotFound("STS", sts_id);
@@ -38,8 +51,11 @@ export async function getStsByManagerId(manager_id: number, tx?: any) {
       if (!user?.sts_id)
         throw new InvalidAccess("You don't have assigned STS.");
       const sts_id = user.sts_id;
-      const sts = await txInner.query.StsTable.findFirst({
+      const sts = await txInner.query.StsTable.findMany({
         where: (model: any) => eq(model.id, sts_id),
+        with: {
+          landfill: true,
+        },
       });
       return sts;
     });

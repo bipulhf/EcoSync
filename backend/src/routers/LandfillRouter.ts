@@ -9,23 +9,30 @@ import {
   vehiclesThatLeftLandfillService,
   vehicleLeavingLandfillService,
   getLandfillService,
+  landfillsLastWeekWasteService,
 } from "../services/LandfillService";
 import { middleware } from "../middleware";
 import getErrorType from "../error";
-import { vehiclesInLandfill } from "../repository/VehicleRepository";
 
 const landfillRouter = Router();
 
 landfillRouter.get(
   "/landfill",
-  middleware([rolePermissions.READ_LANDFILL_ALL]),
+  middleware([
+    rolePermissions.READ_LANDFILL_ALL,
+    rolePermissions.READ_LANDFILL_SELF,
+  ]),
   async (req, res) => {
     try {
-      const managerId = parseInt(req.query.managerId as string);
-      let landfills: any;
-      if (res.locals.permission == rolePermissions.READ_LANDFILL_ALL)
-        landfills = getAllLandfillService();
-      else landfills = getAllLandfillService(managerId);
+      const permission: string[] = [];
+      res.locals.permission.forEach((element: any) => {
+        permission.push(element.permission);
+      });
+
+      let landfills: any[] = [];
+      if (permission.includes(rolePermissions.READ_LANDFILL_ALL))
+        landfills = await getAllLandfillService();
+      else landfills = await getAllLandfillService(res.locals.userId);
       return res.status(200).json(landfills);
     } catch (error) {
       const err = getErrorType(error);
@@ -57,6 +64,21 @@ landfillRouter.post(
 );
 
 landfillRouter.get(
+  "/landfill/last-week-waste",
+  middleware([rolePermissions.READ_LANDFILL_ALL]),
+  async (req, res) => {
+    try {
+      const all_landfills_last_week_waste =
+        await landfillsLastWeekWasteService();
+      return res.status(201).json(all_landfills_last_week_waste);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
+);
+
+landfillRouter.get(
   "/landfill/vehicle",
   middleware([
     rolePermissions.READ_VEHICLE_SELF,
@@ -64,7 +86,9 @@ landfillRouter.get(
   ]),
   async (req, res) => {
     try {
-      const vehicles_in_landfill = await vehiclesInLandfill(res.locals.userId);
+      const vehicles_in_landfill = await vehiclesInLandfillService(
+        res.locals.userId
+      );
       return res.status(201).json(vehicles_in_landfill);
     } catch (error) {
       const err = getErrorType(error);
@@ -116,6 +140,7 @@ landfillRouter.get(
   "/landfill/left",
   middleware([
     rolePermissions.READ_VEHICLE_SELF,
+    rolePermissions.READ_STS_SELF,
     rolePermissions.READ_VEHICLE_ALL,
   ]),
   async (req, res) => {

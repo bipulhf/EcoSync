@@ -20,8 +20,12 @@ stsRouter.get(
   middleware([rolePermissions.READ_STS_ALL, rolePermissions.READ_STS_SELF]),
   async (req, res) => {
     try {
+      const permission: string[] = [];
+      res.locals.permission.forEach((element: any) => {
+        permission.push(element.permission);
+      });
       const sts = await getAllStsService(
-        res.locals.permission,
+        permission,
         parseInt(res.locals.userId)
       );
       return res.json(sts);
@@ -69,9 +73,9 @@ stsRouter.post(
   middleware([rolePermissions.STS_VEHICLE_UPDATE]),
   async (req, res) => {
     try {
-      const { sts_id, vehicle_number, waste_volume } = req.body;
+      const { vehicle_number, waste_volume } = req.body;
       const message = await vehicleEnteredInStsService(
-        parseInt(sts_id),
+        res.locals.userId,
         vehicle_number,
         parseFloat(waste_volume)
       );
@@ -86,6 +90,7 @@ stsRouter.get(
   "/sts/left",
   middleware([
     rolePermissions.READ_VEHICLE_SELF,
+    rolePermissions.READ_LANDFILL_SELF,
     rolePermissions.READ_VEHICLE_ALL,
   ]),
   async (req, res) => {

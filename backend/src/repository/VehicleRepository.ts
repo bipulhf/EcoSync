@@ -209,10 +209,10 @@ export async function didVehicleLeftSts(vehicle_number: string, tx?: any) {
   const dbCon = tx || db;
   try {
     return await dbCon.query.LandfillVehicleTable.findMany({
-      where: (model: any, { and, isNotNull }: any) =>
+      where: (model: any, { and, isNull }: any) =>
         and(
           eq(model.vehicle_number, vehicle_number),
-          isNotNull(model.arrival_time)
+          isNull(model.arrival_time)
         ),
     });
   } catch (error) {

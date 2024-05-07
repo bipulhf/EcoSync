@@ -7,7 +7,6 @@ import {
   getVehicleByNumberService,
   updateVehicleService,
   deleteVehicleByNumberService,
-  getVehicleByStsIdService,
 } from "../services/VehicleService";
 import getErrorType from "../error";
 
@@ -41,17 +40,19 @@ vehicleRouter.post(
       return res.status(201).json(vehicle);
     } catch (error) {
       const err = getErrorType(error);
-
       return res.status(err.errorCode).json({ message: err.message });
     }
   }
 );
 vehicleRouter.get(
   "/vehicle",
-  middleware([rolePermissions.READ_VEHICLE_ALL]),
+  middleware([
+    rolePermissions.READ_VEHICLE_ALL,
+    rolePermissions.READ_VEHICLE_SELF,
+  ]),
   async (req, res) => {
     try {
-      const vehicles = await getAllVehiclesService();
+      const vehicles = await getAllVehiclesService(res.locals.userId);
       return res.status(200).json(vehicles);
     } catch (error) {
       const err = getErrorType(error);
@@ -59,17 +60,6 @@ vehicleRouter.get(
     }
   }
 );
-
-vehicleRouter.get("/vehicle/sts/:sts_id", async (req, res) => {
-  try {
-    const sts_id = req.params.sts_id;
-    const vehicles = await getVehicleByStsIdService(+sts_id);
-    return res.status(200).json(vehicles);
-  } catch (error) {
-    const err = getErrorType(error);
-    return res.status(err.errorCode).json({ message: err.message });
-  }
-});
 
 vehicleRouter.get(
   "/vehicle/:number",

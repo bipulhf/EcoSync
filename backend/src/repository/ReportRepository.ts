@@ -9,7 +9,7 @@ export async function getReports(pageNo: number) {
       const [vehicleCount] = await tx
         .select({ count: count() })
         .from(StsVehicleTable);
-      const [vehicles] = await tx.query.LandfillVehicleTable.findMany({
+      const vehicles = await tx.query.LandfillVehicleTable.findMany({
         with: {
           vehicle: true,
           sts_vehicle: {
@@ -38,7 +38,7 @@ export async function getReportByStsId(landfill_id: number, pageNo: number) {
       const [vehicleCount] = await tx
         .select({ count: count() })
         .from(StsVehicleTable);
-      const [vehicles] = await tx.query.LandfillVehicleTable.findMany({
+      const vehicles = await tx.query.LandfillVehicleTable.findMany({
         where: (model) =>
           and(
             eq(model.landfill_id, landfill_id),
@@ -75,7 +75,7 @@ export async function getReportByVehicleNumber(
       const [vehicleCount] = await tx
         .select({ count: count() })
         .from(StsVehicleTable);
-      const [vehicles] = await tx.query.LandfillVehicleTable.findMany({
+      const vehicles = await tx.query.LandfillVehicleTable.findMany({
         where: (model) =>
           and(
             eq(model.vehicle_number, vehicle_number),

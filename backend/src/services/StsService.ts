@@ -23,9 +23,12 @@ import {
 import { getUserById } from "../repository/UserRepository";
 import { getStsVehicleById } from "../repository/ReportRepository";
 
-export const getAllStsService = async (permission: string, userId: number) => {
+export const getAllStsService = async (
+  permission: string[],
+  userId: number
+) => {
   try {
-    if (permission === rolePermissions.READ_STS_ALL) {
+    if (permission.includes(rolePermissions.READ_STS_ALL)) {
       const sts = await getAllSts();
       return sts;
     } else {

@@ -9,6 +9,7 @@ import {
   inserVehicle,
   updateVehicle,
 } from "../repository/VehicleRepository";
+import { getUserById } from "../repository/UserRepository";
 
 export const addVehicleService = async ({
   sts_id,
@@ -55,15 +56,17 @@ export const addVehicleService = async ({
       cost_per_km_unloaded,
     });
     return vehicle;
-  } catch (error: any) {
+  } catch (error) {
     throw error;
   }
 };
 
-export const getAllVehiclesService = async () => {
+export const getAllVehiclesService = async (user_id: number) => {
   try {
-    const vehicles = await getAllVehicles();
-    return vehicles;
+    const user = await getUserById(user_id);
+    if (!user) throw new ResourceNotFound("User", user_id);
+    if (user.sts_id) return await getVehicleByStsId(user.sts_id);
+    return await getAllVehicles();
   } catch (error) {
     throw error;
   }
@@ -75,15 +78,6 @@ export const getVehicleByNumberService = async (vehicle_number: string) => {
     const vehicle = await getVehicleByNumber(vehicle_number);
     if (!vehicle) throw new ResourceNotFound("Vehicle", vehicle_number);
     return vehicle;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getVehicleByStsIdService = async (sts_id: number) => {
-  try {
-    const vehicles = await getVehicleByStsId(sts_id);
-    return vehicles;
   } catch (error) {
     throw error;
   }

@@ -30,8 +30,8 @@ export const getReportService = async (
       const query = {
         pageNo,
         isFirst: pageNo === 1,
-        isLast: report.vehicleCount - pageNo * 10 <= 0,
-        total: report.vehicleCount,
+        isLast: report.vehicleCount.count - pageNo * 10 <= 0,
+        total: report.vehicleCount.count,
         data: report.vehicles,
       };
 
@@ -45,8 +45,8 @@ export const getReportService = async (
       const query = {
         pageNo,
         isFirst: pageNo === 1,
-        isLast: report.vehicleCount - pageNo * 10 <= 0,
-        total: report.vehicleCount,
+        isLast: report.vehicleCount.count - pageNo * 10 <= 0,
+        total: report.vehicleCount.count,
         data: report.vehicles,
       };
       return query;
