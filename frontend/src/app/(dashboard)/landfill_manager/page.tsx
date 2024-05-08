@@ -2,7 +2,7 @@ import { baseURL } from "../../../../files";
 import extractUserInfo from "@/utils/verify";
 import { leftLandfill } from "@/utils/actions";
 import Link from "next/link";
-import VehicleInLandfill from "@/components/dashboard/vehicle_in_landfill";
+import VehicleInLandfill from "@/components/dashboard/VehiclesInLandfill";
 import VehicleGoingToLandfill from "@/components/dashboard/vehicle_going_to_landfill";
 import TotalWasteStoredThisWeek from "@/components/dashboard/total_waste_stored_landfill";
 import { cookies } from "next/headers";

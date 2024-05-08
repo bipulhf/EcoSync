@@ -39,7 +39,11 @@ export default async function Sts() {
       <div className="flex gap-4 flex-wrap max-md:justify-center">
         {sts.length ? (
           sts.map((user: any) => (
-            <Link href={`/sts/${user.id}`} key={user.id} className="w-[20%]">
+            <Link
+              href={`/sts/${user.id}`}
+              key={user.id}
+              className="min-w-[20%]"
+            >
               <StsCard sts={user} />
             </Link>
           ))

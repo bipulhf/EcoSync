@@ -60,7 +60,7 @@ const labels = [
   },
   {
     key: "STS_SELF",
-    label: <Link href={`/fleet`}>Fleet</Link>,
+    label: <Link href={`/sts/fleet`}>Fleet</Link>,
     icon: React.createElement(BranchesOutlined),
   },
   {

@@ -1,27 +1,23 @@
-import { getTimeFromDate } from "@/utils/timeconvert";
 import extractUserInfo from "@/utils/verify";
-import { cookies } from "next/headers";
 import { baseURL } from "../../../../../files";
 import Link from "next/link";
+import { getJWT } from "@/utils/actions";
 
 const getData = async () => {
-  const { sts_id } = await extractUserInfo();
-
   const sts = await (
-    await fetch(`${baseURL}/sts/${sts_id}/fleet`, {
+    await fetch(`${baseURL}/fleet`, {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${cookies().get("jwt")?.value}`,
+        Authorization: `Bearer ${await getJWT()}`,
       },
     })
   ).json();
-
-  return { sts };
+  return sts;
 };
 
 export default async function Fleet() {
-  const { sts } = await getData();
+  const sts = await getData();
   return (
     <div className="py-10 w-[95%] mx-auto">
       <h1 className="text-4xl text-sts_text text-center mb-5 font-bold">
@@ -54,7 +50,7 @@ export default async function Fleet() {
             <tr key={vehicle.vehicle_number}>
               <td className="px-5 pb-2 border-2 border-sts_text">
                 <Link
-                  href={`/sts_manager/entry_vehicle?vehicle_number=${vehicle.vehicle_number}`}
+                  href={`/sts/entry_vehicle?vehicle_number=${vehicle.vehicle_number}`}
                 >
                   {vehicle.vehicle_number}
                 </Link>

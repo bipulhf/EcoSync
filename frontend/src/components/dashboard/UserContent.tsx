@@ -2,6 +2,8 @@ import VehiclesGoingToLandfill from "./VehiclesGoingToLandfill";
 import VehiclesComingFromLandfill from "./VehiclesComingFromLandfill";
 import WeeklyWasteAmountLandfill from "./WeeklyWasteAmountLandfill";
 import DemoHeatmap from "./HeatMap";
+import VechiclesInSTS from "./VehiclesInSts";
+import VehicleInLandfill from "./VehiclesInLandfill";
 
 export default async function UserContent({ permissions }: any) {
   return (
@@ -17,10 +19,14 @@ export default async function UserContent({ permissions }: any) {
           permissions.includes("READ_LANDFILL_ALL")) && (
           <WeeklyWasteAmountLandfill />
         )}
+        {permissions.includes("STS_VEHICLE_UPDATE") && <VechiclesInSTS />}
         {((permissions.includes("READ_VEHICLE_SELF") &&
           permissions.includes("READ_LANDFILL_SELF")) ||
           permissions.includes("READ_VEHICLE_ALL")) && (
-          <VehiclesGoingToLandfill />
+          <VehiclesGoingToLandfill permissions={permissions} />
+        )}
+        {permissions.includes("LANDFILL_VEHICLE_UPDATE") && (
+          <VehicleInLandfill />
         )}
         {((permissions.includes("READ_STS_SELF") &&
           permissions.includes("READ_VEHICLE_SELF")) ||

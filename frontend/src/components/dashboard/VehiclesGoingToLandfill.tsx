@@ -1,6 +1,6 @@
-import { getTimeFromDate } from "@/utils/timeconvert";
 import { baseURL } from "../../../files";
 import { getJWT } from "@/utils/actions";
+import VehiclesGoingToLandfillForm from "./VehiclesGoingToLandfillForm";
 
 const getData = async () => {
   const data = await (
@@ -14,8 +14,9 @@ const getData = async () => {
   return data;
 };
 
-export default async function VehiclesGoingToLandfill() {
+export default async function VehiclesGoingToLandfill({ permissions }: any) {
   let landfill_vehicle: any[] = await getData();
+
   return (
     <div className="border-2 border-landfill rounded-lg p-3 my-5 bg-landfill_bg text-center">
       <h2 className="md:text-xl font-bold">Vechicles Going to Landfill:</h2>
@@ -23,20 +24,11 @@ export default async function VehiclesGoingToLandfill() {
         <h2 className="md:text-lg font-medium">No vehicle to show</h2>
       ) : (
         landfill_vehicle.map((vehicle: any) => (
-          <div
-            className="text-landfill md:text-xl font-medium my-3"
+          <VehiclesGoingToLandfillForm
+            permissions={permissions}
+            vehicle={vehicle}
             key={vehicle.id}
-          >
-            <span className="mx-2">
-              Left at:{" "}
-              <b>{getTimeFromDate(new Date(vehicle.departure_time))}</b>
-            </span>{" "}
-            | <span className="mx-2">{vehicle.vehicle.vehicle_number}</span> |{" "}
-            <span className="mx-2">{vehicle.vehicle.driver_name}</span> |{" "}
-            <span className="mx-2 font-bold">
-              {vehicle.vehicle.driver_mobile}
-            </span>
-          </div>
+          />
         ))
       )}
     </div>

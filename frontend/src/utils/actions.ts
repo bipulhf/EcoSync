@@ -326,7 +326,6 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
 }
 
 export async function addVehicleSTS(prevState: any, formData: FormData) {
-  const sts_id = formData.get("sts_id");
   const vehicle_number = formData.get("vehicle_number");
   const waste_volume = formData.get("waste_volume");
 
@@ -334,17 +333,16 @@ export async function addVehicleSTS(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
-      sts_id,
       vehicle_number,
       waste_volume,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/dashboard`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -359,7 +357,7 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
       vehicle_number,
@@ -367,38 +365,40 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
     }),
   });
 
-  if (data.status === 200) {
-    revalidatePath("/landfill_manager");
-    redirect(`/landfill_manager`);
+  if (data.status === 201) {
+    revalidatePath("/dashboard");
   } else {
     const response = await data.json();
     return { message: response.message };
   }
 }
 
-export async function leftSTS(formData: FormData) {
+export async function leftSTS(prevState: any, formData: FormData) {
   const id = formData.get("id");
-  const data = await fetch(`${baseURL}/sts/vehicle/${id}`, {
+  const url = `${baseURL}/sts/vehicle/${id}`;
+
+  const data = await fetch(url, {
     method: "PUT",
     headers: {
-      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
   });
+
   if (data.status === 200) {
-    revalidatePath("/sts_manager");
+    revalidatePath("/dashboard");
   }
 }
 
-export async function leftLandfill(formData: FormData) {
+export async function leftLandfill(prevState: any, formData: FormData) {
   const id = formData.get("id");
   const data = await fetch(`${baseURL}/landfill/vehicle/${id}`, {
     method: "PUT",
     headers: {
-      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
   });
   if (data.status === 200) {
-    revalidatePath("/landfill_manager");
+    revalidatePath("/dashboard");
   }
 }
 

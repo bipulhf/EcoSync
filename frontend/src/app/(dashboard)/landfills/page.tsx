@@ -41,7 +41,7 @@ export default async function Sts() {
             <Link
               href={`/landfills/${user.id}`}
               key={user.id}
-              className="w-[20%]"
+              className="min-w-[20%]"
             >
               <LandfillCard landfill={user} />
             </Link>
