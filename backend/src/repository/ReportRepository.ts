@@ -32,18 +32,14 @@ export async function getReports(pageNo: number) {
   }
 }
 
-export async function getReportByStsId(landfill_id: number, pageNo: number) {
+export async function getReport(pageNo: number, pageSize: number) {
   try {
     return await db.transaction(async (tx) => {
       const [vehicleCount] = await tx
         .select({ count: count() })
         .from(StsVehicleTable);
       const vehicles = await tx.query.LandfillVehicleTable.findMany({
-        where: (model) =>
-          and(
-            eq(model.landfill_id, landfill_id),
-            isNotNull(model.departure_time)
-          ),
+        where: (model) => isNotNull(model.departure_time),
         with: {
           vehicle: true,
           sts_vehicle: {
@@ -52,7 +48,7 @@ export async function getReportByStsId(landfill_id: number, pageNo: number) {
             },
           },
         },
-        limit: 10,
+        limit: pageSize,
         offset: (pageNo - 1) * 10,
         orderBy: (model, { desc }) => [
           desc(model.departure_time),
@@ -62,7 +58,7 @@ export async function getReportByStsId(landfill_id: number, pageNo: number) {
       return { vehicleCount, vehicles };
     });
   } catch (error) {
-    throw new ResourceNotFound("STS", landfill_id);
+    throw new Error("Error fetching reports");
   }
 }
 

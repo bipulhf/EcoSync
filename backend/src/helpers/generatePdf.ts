@@ -51,7 +51,7 @@ export const generatePdf = ({ sts_vehicle }: any, stream: WriteStream) => {
     .fontSize(20)
     .text(
       `Landfill Arrival Time: ${getTimeFromDate(
-        new Date(sts_vehicle.Landfill_Vehicle.arrival_time)
+        new Date(sts_vehicle.landfill_vehicle.arrival_time)
       )}`,
       50,
       430
@@ -61,7 +61,7 @@ export const generatePdf = ({ sts_vehicle }: any, stream: WriteStream) => {
     .fontSize(20)
     .text(
       `Landfill Departure Time: ${getTimeFromDate(
-        new Date(sts_vehicle.Landfill_Vehicle.departure_time)
+        new Date(sts_vehicle.landfill_vehicle.departure_time)
       )}`,
       50,
       470

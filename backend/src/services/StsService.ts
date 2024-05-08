@@ -176,9 +176,6 @@ export const fleetOptimizationService = async (userId: number) => {
     else if (!user.sts_id)
       throw new InvalidAccess("You don't have assigned STS.");
 
-    let currentDate = new Date();
-    currentDate.setHours(5, 0, 0, 0);
-
     let { sts_vehicle, vehicle_trip } = await getFleetList(user.sts_id);
 
     vehicle_trip = vehicle_trip.filter(

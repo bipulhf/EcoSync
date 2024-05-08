@@ -219,6 +219,9 @@ export async function didVehicleLeftSts(vehicle_number: string, tx?: any) {
 
 export async function getFleetList(sts_id: number) {
   try {
+    let currentDate = new Date();
+    currentDate.setHours(5, 0, 0, 0);
+
     return await db.transaction(async (tx) => {
       const sts_vehicle = await tx.query.VehicleTable.findMany({
         where: (model) => eq(model.sts_id, sts_id),
@@ -229,8 +232,7 @@ export async function getFleetList(sts_id: number) {
       });
 
       const vehicle_trip = await tx.query.LandfillVehicleTable.findMany({
-        where: (model, { gte }) =>
-          gte(model.departure_time, new Date(new Date().getDay() - 1)),
+        where: (model, { gte }) => gte(model.departure_time, currentDate),
         with: {
           sts_vehicle: {
             columns: {

@@ -2,57 +2,29 @@ import { generatePdf } from "../helpers/generatePdf";
 import path from "path";
 import fs from "fs";
 import {
-  getReportByStsId,
+  getReport,
   getReportByVehicleNumber,
   getReports,
   getStsVehicleById,
 } from "../repository/ReportRepository";
 import { InvalidAccess } from "../errors/InvalidAccess";
+import { InvalidType } from "../errors/InvalidType";
 
-export const getReportService = async (
-  search: string,
-  type: string,
-  pageNo: number
-) => {
-  if (search && type) {
-    try {
-      if (!pageNo) throw new Error("Bad Request");
+export const getReportService = async (pageNo: number, pageSize: number) => {
+  try {
+    if (!pageNo) throw new InvalidType("Page Number");
 
-      let report: any;
-      if (type == "sts_id") {
-        report = await getReportByStsId(parseInt(search), pageNo);
-      } else if (type == "vehicle_number") {
-        report = await getReportByVehicleNumber(search, pageNo);
-      } else if (type == "date") {
-        search.replace("%ff", "-");
-        console.log(type);
-      }
-      const query = {
-        pageNo,
-        isFirst: pageNo === 1,
-        isLast: report.vehicleCount.count - pageNo * 10 <= 0,
-        total: report.vehicleCount.count,
-        data: report.vehicles,
-      };
+    let report = await getReport(pageNo, pageSize);
 
-      return query;
-    } catch (error) {
-      throw error;
-    }
-  } else {
-    try {
-      const report: any = await getReports(pageNo);
-      const query = {
-        pageNo,
-        isFirst: pageNo === 1,
-        isLast: report.vehicleCount.count - pageNo * 10 <= 0,
-        total: report.vehicleCount.count,
-        data: report.vehicles,
-      };
-      return query;
-    } catch (error) {
-      throw error;
-    }
+    const query = {
+      pageNo,
+      total: report.vehicleCount.count,
+      data: report.vehicles,
+    };
+
+    return query;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -72,20 +44,18 @@ export const createReportService = async (sts_vehicle_id: number) => {
         sts_vehicle.landfill_vehicle.departure_time
       ).toLocaleTimeString()}.pdf`
     );
-
+    const file_path = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "pdf",
+      `report_${
+        sts_vehicle.vehicle_number
+      }_${sts_vehicle.landfill_vehicle.departure_time?.toLocaleTimeString()}.pdf`
+    );
     generatePdf({ sts_vehicle }, stream);
-
-    stream.on("finish", () => {
-      return path.join(
-        __dirname,
-        "..",
-        "public",
-        "pdf",
-        `report_${
-          sts_vehicle.vehicle_number
-        }_${sts_vehicle.landfill_vehicle.departure_time?.toLocaleTimeString()}.pdf`
-      );
-    });
+    return { stream, file_path };
   } catch (error) {
     throw error;
   }
