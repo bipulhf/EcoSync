@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { baseURL } from "../../files";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -402,33 +402,27 @@ export async function leftLandfill(prevState: any, formData: FormData) {
   }
 }
 
-export async function searchReport(prevState: any, formData: FormData) {
-  const search = formData.get("search");
-  const type = formData.get("type");
-  const date = formData.get("date");
-
-  const query = search || date;
-
-  const data = await (
-    await fetch(`${baseURL}/report?pageNo=1&type=${type}&query=${query}`, {
+export async function getReport(pageNo: number, pageSize: number) {
+  return await (
+    await fetch(`${baseURL}/report?pageNo=${pageNo}&pageSize=${pageSize}`, {
       headers: {
-        Authorization: `Bearer ${cookies().get("jwt")?.value}`,
+        Authorization: `Bearer ${await getJWT()}`,
       },
     })
   ).json();
-  if (data.status == 200) {
-    revalidatePath("/admin/report");
-    redirect(`/admin/report?pageNo=1&type=${type}&query=${query}`);
-  }
 }
 
 export const downloadReport = async (sts_vehicle_id: string) => {
-  await fetch(`${baseURL}/report/download/${sts_vehicle_id}`, {
-    headers: {
-      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
-    },
-  });
-  redirect(`http://localhost:8000/report/${sts_vehicle_id}`);
+  const { file_path } = await (
+    await fetch(`${baseURL}/report/${sts_vehicle_id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${await getJWT()}`,
+      },
+    })
+  ).json();
+
+  redirect(`${baseURL}/report/download/${file_path}`);
 };
 
 export async function Logout() {

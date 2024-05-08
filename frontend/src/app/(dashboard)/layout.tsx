@@ -34,7 +34,6 @@ export default async function DashboardLayout({
           <Layout>
             <UserHeader roles={roles} />
             {children}
-            <UserFooter />
           </Layout>
         </Layout>
       </main>

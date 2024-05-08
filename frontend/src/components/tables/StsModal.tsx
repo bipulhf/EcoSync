@@ -53,7 +53,12 @@ const StsModal = ({ sts }: any) => {
         onCancel={() => setOpen(false)}
         width={1000}
       >
-        <Table columns={columns} dataSource={sts} />
+        <Table
+          columns={columns}
+          dataSource={sts}
+          size="small"
+          scroll={{ x: "max-content" }}
+        />
       </Modal>
     </>
   );

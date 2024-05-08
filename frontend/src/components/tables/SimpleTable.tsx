@@ -35,7 +35,12 @@ const columns: TableProps<DataType>["columns"] = [
 ];
 
 const SimpleTables = ({ data }: { data: DataType[] }) => (
-  <Table columns={columns} dataSource={data} />
+  <Table
+    columns={columns}
+    dataSource={data}
+    size="small"
+    scroll={{ x: "max-content" }}
+  />
 );
 
 export default SimpleTables;
