@@ -79,7 +79,7 @@ stsRouter.post(
         vehicle_number,
         parseFloat(waste_volume)
       );
-      return res.status(200).json(message);
+      return res.status(201).json(message);
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });
@@ -113,11 +113,12 @@ stsRouter.put(
   async (req, res) => {
     try {
       const sts_vehicle_id = +req.params.sts_vehicle_id;
+
       const vehicle = await vehicleLeavingStsService(
         res.locals.userId,
         sts_vehicle_id
       );
-      return res.status(200).json(vehicle);
+      return res.status(200).json();
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });
@@ -126,18 +127,14 @@ stsRouter.put(
 );
 
 stsRouter.get(
-  "/sts/:id/fleet",
+  "/fleet",
   middleware([
     rolePermissions.READ_VEHICLE_SELF,
     rolePermissions.READ_STS_SELF,
   ]),
   async (req, res) => {
     try {
-      const sts_id = parseInt(req.params.id as string);
-      const fleet = await fleetOptimizationService(
-        sts_id,
-        parseInt(res.locals.userId)
-      );
+      const fleet = await fleetOptimizationService(parseInt(res.locals.userId));
       return res.status(200).json(fleet);
     } catch (error) {
       const err = getErrorType(error);

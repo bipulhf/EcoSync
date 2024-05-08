@@ -118,8 +118,8 @@ export async function vehiclesInSts(sts_id: number, tx?: any) {
   const dbCon = tx || db;
   try {
     return await dbCon.query.StsVehicleTable.findMany({
-      where: (model: any, { and, isNotNull }: any) =>
-        and(eq(model.sts_id, sts_id), isNotNull(model.departure_time)),
+      where: (model: any, { and, isNull }: any) =>
+        and(eq(model.sts_id, sts_id), isNull(model.departure_time)),
       with: {
         vehicle: true,
       },
@@ -131,15 +131,12 @@ export async function vehiclesInSts(sts_id: number, tx?: any) {
 
 export async function vehicleEntryInSts(
   sts_id: number,
+  landfill_id: number,
   vehicle_number: string,
   waste_volume: number
 ) {
   try {
     return await db.transaction(async (tx) => {
-      const sts = await tx.query.StsTable.findFirst({
-        where: (model) => eq(model.id, sts_id),
-      });
-      const landfill_id = sts!.landfill_id;
       const [landfill_vehicle] = await tx
         .insert(LandfillVehicleTable)
         .values({
@@ -208,11 +205,11 @@ export async function didVehicleReachSts(vehicle_number: string, tx?: any) {
 export async function didVehicleLeftSts(vehicle_number: string, tx?: any) {
   const dbCon = tx || db;
   try {
-    return await dbCon.query.LandfillVehicleTable.findMany({
+    return await dbCon.query.LandfillVehicleTable.findFirst({
       where: (model: any, { and, isNull }: any) =>
         and(
           eq(model.vehicle_number, vehicle_number),
-          isNull(model.arrival_time)
+          and(isNull(model.arrival_time), eq(model.left_sts, true))
         ),
     });
   } catch (error) {
@@ -230,22 +227,19 @@ export async function getFleetList(sts_id: number) {
           desc(model.capacity),
         ],
       });
-      const vehicle_trip = await tx
-        .select()
-        .from(LandfillVehicleTable)
-        .leftJoin(
-          StsTable,
-          eq(LandfillVehicleTable.landfill_id, StsTable.landfill_id)
-        )
-        .where(
-          and(
-            eq(StsTable.id, sts_id),
-            or(
-              isNull(LandfillVehicleTable.arrival_time),
-              gte(LandfillVehicleTable.departure_time, new Date())
-            )
-          )
-        );
+
+      const vehicle_trip = await tx.query.LandfillVehicleTable.findMany({
+        where: (model, { gte }) =>
+          gte(model.departure_time, new Date(new Date().getDay() - 1)),
+        with: {
+          sts_vehicle: {
+            columns: {
+              sts_id: true,
+            },
+          },
+          vehicle: true,
+        },
+      });
       return { sts_vehicle, vehicle_trip };
     });
   } catch (error) {
@@ -257,12 +251,42 @@ export async function vehiclesThatLeftSts(landfill_id?: number) {
   try {
     if (!landfill_id) {
       return await db.query.LandfillVehicleTable.findMany({
-        where: (model) => eq(model.left_sts, true),
+        where: (model, { and, isNull }) =>
+          and(isNull(model.arrival_time), eq(model.left_sts, true)),
+        with: {
+          vehicle: {
+            columns: {
+              driver_mobile: true,
+              driver_name: true,
+            },
+          },
+          sts_vehicle: {
+            columns: {
+              departure_time: true,
+            },
+          },
+        },
       });
     } else {
       return await db.query.LandfillVehicleTable.findMany({
-        where: (model, { and }) =>
-          and(eq(model.left_sts, true), eq(model.landfill_id, landfill_id)),
+        where: (model, { and, isNull }) =>
+          and(
+            eq(model.left_sts, true),
+            and(eq(model.landfill_id, landfill_id), isNull(model.arrival_time))
+          ),
+        with: {
+          vehicle: {
+            columns: {
+              driver_mobile: true,
+              driver_name: true,
+            },
+          },
+          sts_vehicle: {
+            columns: {
+              departure_time: true,
+            },
+          },
+        },
       });
     }
   } catch (error) {

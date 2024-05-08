@@ -207,7 +207,7 @@ export const StsVehicleTable = pgTable(
     vehicle_number: varchar("vehicle_number", { length: 15 })
       .notNull()
       .references(() => VehicleTable.vehicle_number, { onDelete: "cascade" }),
-    departure_time: timestamp("departure_time").$onUpdate(() => new Date()),
+    departure_time: timestamp("departure_time"),
     sts_id: integer("sts_id")
       .references(() => StsTable.id, { onDelete: "cascade" })
       .notNull(),

@@ -89,7 +89,7 @@ landfillRouter.get(
       const vehicles_in_landfill = await vehiclesInLandfillService(
         res.locals.userId
       );
-      return res.status(201).json(vehicles_in_landfill);
+      return res.status(200).json(vehicles_in_landfill);
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });
@@ -165,7 +165,10 @@ landfillRouter.put(
       const landfill_vehicle_id = parseInt(
         req.params.landfill_vehicle_id as string
       );
-      const landfill_vehicle = await getLandfillService(landfill_vehicle_id);
+      const landfill_vehicle = await vehicleLeavingLandfillService(
+        res.locals.userId,
+        landfill_vehicle_id
+      );
       return res.status(200).json(landfill_vehicle);
     } catch (error) {
       const err = getErrorType(error);

@@ -94,20 +94,26 @@ export const vehicleEnteredInStsService = async (
 ) => {
   try {
     const txn = await db.transaction(async (tx) => {
-      const sts = await getStsByManagerId(userId, tx);
+      const [sts] = await getStsByManagerId(userId, tx);
       const vehicle = await getVehicleByNumber(vehicle_number, tx);
       const vehicleEnteredSts = await didVehicleReachSts(vehicle_number, tx);
-      const vehicleNotInLandfill = await didVehicleLeftSts(vehicle_number, tx);
-      return { sts, vehicle, vehicleEnteredSts, vehicleNotInLandfill };
+      const vehicleAlreadyLeftSts = await didVehicleLeftSts(vehicle_number, tx);
+
+      return { sts, vehicle, vehicleEnteredSts, vehicleAlreadyLeftSts };
     });
 
     if (txn.vehicleEnteredSts)
       throw new InvalidAccess("Vehicle already in STS");
-    else if (txn.vehicleNotInLandfill)
+    else if (txn.vehicleAlreadyLeftSts)
       throw new InvalidAccess("Vehicle left STS");
-    else if (txn.sts.sts_id != txn.vehicle.sts_id) throw new InvalidAccess();
+    else if (txn.sts.id != txn.vehicle.sts_id) throw new InvalidAccess();
 
-    await vehicleEntryInSts(txn.sts.sts_id, vehicle_number, waste_volume);
+    await vehicleEntryInSts(
+      txn.sts.id,
+      txn.sts.landfill.id,
+      vehicle_number,
+      waste_volume
+    );
     return { message: "Vehicle entered in STS" };
   } catch (error) {
     throw error;
@@ -116,7 +122,7 @@ export const vehicleEnteredInStsService = async (
 
 export const vehiclesInStsService = async (userId: number) => {
   try {
-    const sts = await getStsByManagerId(userId);
+    const [sts] = await getStsByManagerId(userId);
     if (!sts) throw new InvalidAccess("You don't have STS assigned");
     const vehicles = await vehiclesInSts(sts.id);
     return vehicles;
@@ -162,20 +168,23 @@ export const vehiclesThatLeftStsService = async (
   }
 };
 
-export const fleetOptimizationService = async (
-  sts_id: number,
-  userId: number
-) => {
+export const fleetOptimizationService = async (userId: number) => {
   try {
     const user = await getUserById(userId);
 
     if (!user) throw new ResourceNotFound("User", userId);
-    else if (user.sts_id != sts_id) throw new InvalidAccess();
+    else if (!user.sts_id)
+      throw new InvalidAccess("You don't have assigned STS.");
 
     let currentDate = new Date();
     currentDate.setHours(5, 0, 0, 0);
 
-    const { sts_vehicle, vehicle_trip } = await getFleetList(sts_id);
+    let { sts_vehicle, vehicle_trip } = await getFleetList(user.sts_id);
+
+    vehicle_trip = vehicle_trip.filter(
+      (vehicle) => vehicle.sts_vehicle.sts_id === user.sts_id
+    );
+    console.log(vehicle_trip);
 
     const vehicles: {
       trip: number;
@@ -195,10 +204,10 @@ export const fleetOptimizationService = async (
       const tmp = {
         ...vehicle,
         trip: 3,
-        cost_loaded: vehicle.cost_per_km_unload + vehicle.cost_per_km_load,
+        cost_loaded: vehicle.cost_per_km_unloaded + vehicle.cost_per_km_loaded,
         travelling: false,
         per_ton:
-          (vehicle.cost_per_km_unload + vehicle.cost_per_km_load) /
+          (vehicle.cost_per_km_unloaded + vehicle.cost_per_km_loaded) /
           (3 * vehicle.capacity),
       };
       vehicle_trip.forEach((trip: any) => {
