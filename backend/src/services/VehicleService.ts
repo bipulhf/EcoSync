@@ -6,10 +6,12 @@ import {
   getAllVehicles,
   getVehicleByNumber,
   getVehicleByStsId,
+  getVehiclesTotalWasteAmount,
   inserVehicle,
   updateVehicle,
 } from "../repository/VehicleRepository";
 import { getUserById } from "../repository/UserRepository";
+import { rolePermissions } from "../globals";
 
 export const addVehicleService = async ({
   sts_id,
@@ -67,6 +69,52 @@ export const getAllVehiclesService = async (user_id: number) => {
     if (!user) throw new ResourceNotFound("User", user_id);
     if (user.sts_id) return await getVehicleByStsId(user.sts_id);
     return await getAllVehicles();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getVehiclesTotalWasteAmountService = async (
+  user_id: number,
+  permissions: any
+) => {
+  try {
+    const user = await getUserById(user_id);
+    if (!user) throw new ResourceNotFound("User", user_id);
+    const vehicles: any = {
+      open_truck: 0,
+      dump_truck: 0,
+      compactor: 0,
+      container: 0,
+    };
+
+    if (user.landfill_id) {
+      const landfill_vehicles = await getVehiclesTotalWasteAmount(
+        0,
+        user.landfill_id
+      );
+      landfill_vehicles.forEach((vehicle: any) => {
+        if (!vehicles[vehicle.vehicle.type]) vehicles[vehicle.vehicle.type] = 0;
+        vehicles[vehicle.vehicle.type] += vehicle.waste_volume;
+      });
+    } else if (user.sts_id) {
+      const sts_vehicles = await getVehiclesTotalWasteAmount(user.sts_id);
+      sts_vehicles.forEach((vehicle: any) => {
+        if (!vehicles[vehicle.vehicle.type]) vehicles[vehicle.vehicle.type] = 0;
+        vehicles[vehicle.vehicle.type] += vehicle.waste_volume;
+      });
+    } else if (permissions.includes(rolePermissions.READ_VEHICLE_ALL)) {
+      const all_vehicles = await getVehiclesTotalWasteAmount();
+      all_vehicles.forEach((vehicle: any) => {
+        if (!vehicles[vehicle.vehicle.type]) vehicles[vehicle.vehicle.type] = 0;
+        vehicles[vehicle.vehicle.type] += vehicle.waste_volume;
+      });
+    }
+    const new_vehicles = Object.keys(vehicles).map((key) => ({
+      type: key,
+      value: vehicles[key],
+    }));
+    return new_vehicles;
   } catch (error) {
     throw error;
   }

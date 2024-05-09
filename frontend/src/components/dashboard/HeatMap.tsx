@@ -3,27 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { Heatmap } from "@ant-design/plots";
 
-const DemoHeatmap = () => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    asyncFetch();
-  }, []);
-
-  const asyncFetch = () => {
-    fetch(
-      "https://gw.alipayobjects.com/os/bmw-prod/68d3f380-089e-4683-ab9e-4493200198f9.json"
-    )
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => {
-        console.log("fetch data failed", error);
-      });
-  };
+const CustomHeatMap = ({ data, xField, yField }: any) => {
   const config = {
     data,
-    xField: "name",
-    yField: "country",
+    xField,
+    yField,
     colorField: "value",
     sizeField: "value",
     shapeField: "point",
@@ -43,7 +27,14 @@ const DemoHeatmap = () => {
     },
   };
 
-  return <Heatmap {...config} />;
+  return (
+    <div>
+      <h1 className="text-admin md:text-xl">
+        {`${xField.split("_")[0]} HeatMap of Last 7 Days`.toUpperCase()}
+      </h1>
+      <Heatmap {...config} />
+    </div>
+  );
 };
 
-export default DemoHeatmap;
+export default CustomHeatMap;

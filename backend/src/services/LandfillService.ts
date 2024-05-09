@@ -73,18 +73,21 @@ export async function landfillsLastWeekWasteService() {
     let result: any = {};
     landfills.forEach((landfill) => {
       if (landfill.departure_time) {
-        if (!result[landfill.departure_time.toDateString()])
-          result[landfill.departure_time?.toDateString()] = {};
+        if (!result[landfill.departure_time.toLocaleDateString()])
+          result[landfill.departure_time?.toLocaleDateString()] = {};
 
         if (
-          !result[landfill.departure_time.toDateString()][landfill.landfill_id]
+          !result[landfill.departure_time.toLocaleDateString()][
+            landfill.landfill_id
+          ]
         )
-          result[landfill.departure_time.toDateString()][
+          result[landfill.departure_time.toLocaleDateString()][
             landfill.landfill_id
           ] = 0;
 
-        result[landfill.departure_time.toDateString()][landfill.landfill_id] +=
-          landfill.waste_volume;
+        result[landfill.departure_time.toLocaleDateString()][
+          landfill.landfill_id
+        ] += landfill.waste_volume;
       }
     });
 
@@ -92,7 +95,7 @@ export async function landfillsLastWeekWasteService() {
     Object.keys(result).forEach((date) => {
       Object.keys(result[date]).forEach((landfill_id) => {
         const volume_waste = result[date][landfill_id];
-        result.push({ date, landfill_id, volume_waste });
+        data.push({ date, landfill_id, value: volume_waste });
       });
     });
     return data;

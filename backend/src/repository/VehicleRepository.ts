@@ -249,6 +249,38 @@ export async function getFleetList(sts_id: number) {
   }
 }
 
+export async function getVehiclesTotalWasteAmount(
+  sts_id?: number,
+  landfill_id?: number
+) {
+  try {
+    if (sts_id)
+      return await db.query.StsVehicleTable.findMany({
+        where: (model) => eq(model.sts_id, sts_id),
+        with: {
+          vehicle: true,
+        },
+      });
+    else if (landfill_id)
+      return await db.query.LandfillVehicleTable.findMany({
+        where: (model) => eq(model.landfill_id, landfill_id),
+        with: {
+          vehicle: true,
+        },
+      });
+    else
+      return await db.query.LandfillVehicleTable.findMany({
+        with: {
+          vehicle: true,
+        },
+      });
+  } catch (error) {
+    if (sts_id) throw new ResourceNotFound("STS", sts_id);
+    else if (landfill_id) throw new ResourceNotFound("Landfill", landfill_id);
+    else throw new Error("Error while fetching vehicles");
+  }
+}
+
 export async function vehiclesThatLeftSts(landfill_id?: number) {
   try {
     if (!landfill_id) {

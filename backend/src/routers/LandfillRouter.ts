@@ -70,7 +70,7 @@ landfillRouter.get(
     try {
       const all_landfills_last_week_waste =
         await landfillsLastWeekWasteService();
-      return res.status(201).json(all_landfills_last_week_waste);
+      return res.status(200).json(all_landfills_last_week_waste);
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });

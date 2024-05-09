@@ -10,8 +10,10 @@ import {
   vehicleLeavingStsService,
   fleetOptimizationService,
   getStsService,
+  stsLastWeekWasteService,
 } from "../services/StsService";
 import getErrorType from "../error";
+import { getUserService } from "../services/UserService";
 
 const stsRouter = Router();
 
@@ -100,6 +102,27 @@ stsRouter.get(
         res.locals.permission
       );
       return res.status(200).json(vehicleLeftSts);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
+);
+
+stsRouter.get(
+  "/sts/last-week-waste",
+  middleware([rolePermissions.READ_LANDFILL_SELF]),
+  async (req, res) => {
+    try {
+      const user = await getUserService(res.locals.userId);
+      if (!user.landfill_id)
+        return res
+          .status(403)
+          .json({ message: "You don't have any assigned Landfill" });
+      const all_landfills_last_week_waste = await stsLastWeekWasteService(
+        user.landfill_id
+      );
+      return res.status(200).json(all_landfills_last_week_waste);
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });

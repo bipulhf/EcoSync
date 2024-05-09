@@ -7,6 +7,7 @@ import {
   getVehicleByNumberService,
   updateVehicleService,
   deleteVehicleByNumberService,
+  getVehiclesTotalWasteAmountService,
 } from "../services/VehicleService";
 import getErrorType from "../error";
 
@@ -53,6 +54,43 @@ vehicleRouter.get(
   async (req, res) => {
     try {
       const vehicles = await getAllVehiclesService(res.locals.userId);
+      return res.status(200).json(vehicles);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
+);
+vehicleRouter.get(
+  "/vehicle",
+  middleware([
+    rolePermissions.READ_VEHICLE_ALL,
+    rolePermissions.READ_VEHICLE_SELF,
+  ]),
+  async (req, res) => {
+    try {
+      const vehicles = await getAllVehiclesService(res.locals.userId);
+      return res.status(200).json(vehicles);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
+);
+
+vehicleRouter.get(
+  "/vehicle/transported-waste",
+  middleware([
+    rolePermissions.READ_VEHICLE_ALL,
+    rolePermissions.READ_VEHICLE_SELF,
+    rolePermissions.READ_LANDFILL_SELF,
+  ]),
+  async (req, res) => {
+    try {
+      const vehicles = await getVehiclesTotalWasteAmountService(
+        res.locals.userId,
+        res.locals.permissions
+      );
       return res.status(200).json(vehicles);
     } catch (error) {
       const err = getErrorType(error);

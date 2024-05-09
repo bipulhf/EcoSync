@@ -6,6 +6,7 @@ import {
   getAllSts,
   getStsById,
   getStsByManagerId,
+  getStsVehicleWeeklyAmount,
 } from "../repository/StsRepository";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
 import { getLandfillById } from "../repository/LandfillRepository";
@@ -226,6 +227,43 @@ export const fleetOptimizationService = async (userId: number) => {
     throw e;
   }
 };
+
+export async function stsLastWeekWasteService(landfill_id: number) {
+  try {
+    const sts = await getStsVehicleWeeklyAmount(landfill_id);
+    let result: any = {};
+    sts.forEach((single_sts) => {
+      if (single_sts.departure_time) {
+        if (!result[single_sts.departure_time.toLocaleDateString()])
+          result[single_sts.departure_time?.toLocaleDateString()] = {};
+
+        if (
+          !result[single_sts.departure_time.toLocaleDateString()][
+            single_sts.sts_id
+          ]
+        )
+          result[single_sts.departure_time.toLocaleDateString()][
+            single_sts.sts_id
+          ] = 0;
+
+        result[single_sts.departure_time.toLocaleDateString()][
+          single_sts.sts_id
+        ] += single_sts.waste_volume;
+      }
+    });
+
+    const data: any[] = [];
+    Object.keys(result).forEach((date) => {
+      Object.keys(result[date]).forEach((sts_id) => {
+        const volume_waste = result[date][sts_id];
+        data.push({ date, sts_id, value: volume_waste });
+      });
+    });
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
 
 function comparator(a: any, b: any) {
   if (a.per_ton == b.per_ton) {

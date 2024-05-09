@@ -41,6 +41,23 @@ export async function getStsById(sts_id: number, tx?: any) {
   }
 }
 
+export async function getStsVehicleWeeklyAmount(landfill_id: number) {
+  try {
+    return await db.query.StsVehicleTable.findMany({
+      where: (model, { and, gte }) =>
+        and(
+          eq(model.landfill_id, landfill_id),
+          gte(
+            model.departure_time,
+            new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
+          )
+        ),
+    });
+  } catch (error) {
+    throw new ResourceNotFound("Landfill", landfill_id);
+  }
+}
+
 export async function getStsByManagerId(manager_id: number, tx?: any) {
   try {
     const dbCon = tx || db;
