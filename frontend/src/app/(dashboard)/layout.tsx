@@ -1,6 +1,9 @@
-import UserHeader from "@/components/dashboard/header";
 import extractUserInfo from "@/utils/verify";
 import type { Metadata } from "next";
+import { Layout } from "antd";
+import Sidebar from "@/components/dashboard/Sidebar";
+import UserHeader from "@/components/dashboard/UserHeader";
+import UserFooter from "@/components/dashboard/UserFooter";
 
 export const metadata: Metadata = {
   title: "EcoSync - Revolutionizing Waste Management",
@@ -13,17 +16,26 @@ export default async function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { role } = await extractUserInfo();
-  let bgColor = "#FFFFFF";
-  if (role === "admin") bgColor = "#F3F7FB";
-  else if (role === "sts_manager") bgColor = "#F8FFF6";
-  else if (role === "landfill_manager") bgColor = "#FFFFFF";
+  const { id, name, sts_id, landfill_id, roles, permissions } =
+    await extractUserInfo();
 
   return (
-    role && (
-      <main className={`min-h-screen`} style={{ backgroundColor: bgColor }}>
-        <UserHeader />
-        {children}
+    roles && (
+      <main className={`min-h-screen`}>
+        <Layout>
+          <Sidebar
+            id={id}
+            name={name}
+            sts_id={sts_id}
+            landfill_id={landfill_id}
+            permissions={permissions}
+            roles={roles}
+          />
+          <Layout>
+            <UserHeader roles={roles} />
+            {children}
+          </Layout>
+        </Layout>
       </main>
     )
   );

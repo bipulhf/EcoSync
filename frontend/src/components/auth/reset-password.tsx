@@ -12,11 +12,11 @@ function Submit() {
 
   return (
     <button
-      className={`bg-admin hover:underline text-white font-medium text-2xl px-4 py-2 rounded-lg`}
+      className={`bg-admin hover:bg-admin hover:underline text-white font-medium text-xl px-4 py-2 rounded-lg`}
       type="submit"
       disabled={pending}
     >
-      {pending ? `Sending ...` : `Send Code`}
+      {pending ? `Sending...` : `Send Code`}
     </button>
   );
 }
@@ -37,7 +37,7 @@ export default function ResetPasswordForm() {
       <form action={formAction}>
         <label
           htmlFor="email"
-          className="block mb-2 text-3xl text-admin font-bold"
+          className="block mb-2 text-2xl lg:text-3xl text-admin font-bold"
         >
           Reset Password:
         </label>
@@ -46,7 +46,7 @@ export default function ResetPasswordForm() {
           id="email"
           name="email"
           required
-          className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-admin text-admin text-2xl"
+          className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-admin text-admin text-xl lg:text-2xl"
           placeholder="user@mail.com"
         />
         <input type="hidden" name="token" value={token} />

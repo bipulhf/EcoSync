@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  .roles_checkbox span {
+    color: #4a75cb !important;
+    font-size: large;
+  }
+  .ant-menu.ant-menu-dark .ant-menu-item-selected {
+    background-color: green !important; /*Overriden property*/
+  }
+}

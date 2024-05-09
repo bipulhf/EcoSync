@@ -2,13 +2,12 @@
 import { confirmPassword } from "@/utils/actions";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-
 function Submit() {
   const { pending } = useFormStatus();
 
   return (
     <button
-      className={`bg-admin hover:underline text-white font-medium text-2xl px-4 py-2 rounded-lg`}
+      className={`bg-admin hover:bg-admin hover:underline text-white font-medium text-xl px-4 py-2 rounded-lg`}
       type="submit"
       disabled={pending}
     >
@@ -27,7 +26,7 @@ export default function ConfirmPasswordForm() {
         <span className={`${show && `invisible`}`}>
           <label
             htmlFor="code"
-            className="block mb-2 text-3xl text-admin font-bold"
+            className="block mb-2 text-2xl lg:text-3xl text-admin font-bold"
           >
             Enter Code:
           </label>
@@ -36,12 +35,12 @@ export default function ConfirmPasswordForm() {
             id="code"
             name="code"
             required
-            className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-admin text-admin text-2xl"
+            className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-admin text-admin text-xl lg:text-2xl"
             placeholder="Enter Secret Code"
           />
         </span>
         <button
-          className={`bg-admin text-white font-medium text-2xl px-4 py-2 rounded-lg hover:underline ${
+          className={`bg-admin hover:bg-admin text-white font-medium text-xl px-4 py-2 rounded-lg hover:underline ${
             show && `invisible`
           }`}
           onClick={() => setShow(true)}
@@ -51,7 +50,7 @@ export default function ConfirmPasswordForm() {
         <span className={`${!show && `invisible`}`}>
           <label
             htmlFor="password"
-            className="block mb-2 text-3xl text-admin font-bold"
+            className="block mb-2 text-2xl lg:text-3xl text-admin font-bold"
           >
             New Password:
           </label>
@@ -60,7 +59,7 @@ export default function ConfirmPasswordForm() {
             id="password"
             name="password"
             required
-            className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-admin text-admin text-2xl"
+            className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-admin text-admin text-xl lg:text-2xl"
             placeholder="********"
           />
         </span>

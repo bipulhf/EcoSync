@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { baseURL } from "../../files";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -11,29 +11,30 @@ export async function registration(prevState: any, formData: FormData) {
   const last_name = formData.get("last_name");
   const email = formData.get("email");
   const mobile = formData.get("mobile");
-  const role = formData.get("role");
+  const getRoles = formData.get("roles")?.toString();
   const sts_id = formData.get("sts_id");
   const landfill_id = formData.get("landfill_id");
+  const roles = getRoles?.split(",");
 
   const data = await fetch(`${baseURL}/auth/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       first_name,
       last_name,
       email,
       mobile,
-      role,
+      roles,
       sts_id,
       landfill_id,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin/users`);
+  if (data.status === 201) {
+    redirect(`/users`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -66,9 +67,11 @@ export async function login(prevState: any, formData: FormData) {
 
   if (data.status === 200) {
     const response = await data.json();
-    const { role, token } = response;
-    cookies().set("jwt", token);
-    redirect(`/${role}`);
+    const { roles, token } = response;
+    cookies().set("jwt", token, {
+      httpOnly: true,
+    });
+    redirect(`/dashboard`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -135,11 +138,13 @@ export async function updateUser(prevState: any, formData: FormData) {
   const password = formData.get("password");
   const profile_photo = formData.get("photo");
 
+  console.log(first_name, last_name, email, mobile, password, profile_photo);
+
   const data = await fetch(`${baseURL}/profile`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       first_name,
@@ -152,7 +157,34 @@ export async function updateUser(prevState: any, formData: FormData) {
   });
 
   if (data.status === 200) {
-    redirect(`/admin/users`);
+    revalidatePath("/profile");
+    redirect(`/profile`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function changePassword(prevState: any, formData: FormData) {
+  const old_password = formData.get("old_password");
+  const new_password = formData.get("new_password");
+  const confirm_password = formData.get("confirm_password");
+
+  const data = await fetch(`${baseURL}/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      old_password,
+      new_password,
+      confirm_password,
+    }),
+  });
+
+  if (data.status === 200) {
+    redirect(`/profile`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -165,37 +197,42 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
   const last_name = formData.get("last_name");
   const email = formData.get("email");
   const mobile = formData.get("mobile");
-  const password = formData.get("password");
   const profile_photo = formData.get("photo");
-  const role = formData.get("role");
+  const getRoles = formData.get("roles")?.toString();
   const sts_id = formData.get("sts_id");
   const landfill_id = formData.get("landfill_id");
+  const roles = getRoles?.split(",");
 
   const data = await fetch(`${baseURL}/users/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
       first_name,
       last_name,
       email,
       mobile,
-      password,
       profile_photo,
-      role,
+      roles,
       sts_id,
       landfill_id,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin/users`);
+  if (data.status === 201) {
+    redirect(`/users`);
   } else {
     const response = await data.json();
     return { message: response.message };
   }
+}
+
+export async function getJWT() {
+  const cookieStore = cookies();
+  const jwt = cookieStore.get("jwt")?.value;
+  return jwt;
 }
 
 export async function deleteUser() {
@@ -213,7 +250,7 @@ export async function stsRegistration(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
       ward,
@@ -224,8 +261,8 @@ export async function stsRegistration(prevState: any, formData: FormData) {
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/sts`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -255,7 +292,7 @@ export async function landfillRegistration(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       city_corporation,
@@ -266,8 +303,8 @@ export async function landfillRegistration(prevState: any, formData: FormData) {
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/dashboard`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -281,14 +318,16 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
   const capacity = formData.get("capacity");
   const driver_name = formData.get("driver_name");
   const driver_mobile = formData.get("driver_mobile");
-  const cost_per_km_load = formData.get("loaded");
-  const cost_per_km_unload = formData.get("unloaded");
+  const cost_per_km_loaded = formData.get("loaded");
+  const cost_per_km_unloaded = formData.get("unloaded");
+
+  console.log(capacity);
 
   const data = await fetch(`${baseURL}/vehicle`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${cookies().get("jwt")?.value}`,
     },
     body: JSON.stringify({
       sts_id,
@@ -297,13 +336,13 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
       capacity,
       driver_name,
       driver_mobile,
-      cost_per_km_load,
-      cost_per_km_unload,
+      cost_per_km_loaded,
+      cost_per_km_unloaded,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/vehicles`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -311,7 +350,6 @@ export async function vehicleRegistration(prevState: any, formData: FormData) {
 }
 
 export async function addVehicleSTS(prevState: any, formData: FormData) {
-  const sts_id = formData.get("sts_id");
   const vehicle_number = formData.get("vehicle_number");
   const waste_volume = formData.get("waste_volume");
 
@@ -319,17 +357,16 @@ export async function addVehicleSTS(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
-      sts_id,
       vehicle_number,
       waste_volume,
     }),
   });
 
-  if (data.status === 200) {
-    redirect(`/admin`);
+  if (data.status === 201) {
+    redirect(`/dashboard`);
   } else {
     const response = await data.json();
     return { message: response.message };
@@ -344,7 +381,7 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
     body: JSON.stringify({
       vehicle_number,
@@ -352,68 +389,64 @@ export async function addVehicleLandfill(prevState: any, formData: FormData) {
     }),
   });
 
-  if (data.status === 200) {
-    revalidatePath("/landfill_manager");
-    redirect(`/landfill_manager`);
+  if (data.status === 201) {
+    revalidatePath("/dashboard");
   } else {
     const response = await data.json();
     return { message: response.message };
   }
 }
 
-export async function leftSTS(formData: FormData) {
+export async function leftSTS(prevState: any, formData: FormData) {
   const id = formData.get("id");
-  const data = await fetch(`${baseURL}/sts/vehicle/${id}`, {
+  const url = `${baseURL}/sts/vehicle/${id}`;
+
+  const data = await fetch(url, {
     method: "PUT",
     headers: {
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
   });
+
   if (data.status === 200) {
-    revalidatePath("/sts_manager");
+    revalidatePath("/dashboard");
   }
 }
 
-export async function leftLandfill(formData: FormData) {
+export async function leftLandfill(prevState: any, formData: FormData) {
   const id = formData.get("id");
   const data = await fetch(`${baseURL}/landfill/vehicle/${id}`, {
     method: "PUT",
     headers: {
-      Authorization: `${cookies().get("jwt")?.value}`,
+      Authorization: `Bearer ${await getJWT()}`,
     },
   });
   if (data.status === 200) {
-    revalidatePath("/landfill_manager");
+    revalidatePath("/dashboard");
   }
 }
 
-export async function searchReport(prevState: any, formData: FormData) {
-  const search = formData.get("search");
-  const type = formData.get("type");
-  const date = formData.get("date");
-
-  const query = search || date;
-
-  const data = await (
-    await fetch(`${baseURL}/report?pageNo=1&type=${type}&query=${query}`, {
+export async function getReport(pageNo: number, pageSize: number) {
+  return await (
+    await fetch(`${baseURL}/report?pageNo=${pageNo}&pageSize=${pageSize}`, {
       headers: {
-        Authorization: `${cookies().get("jwt")?.value}`,
+        Authorization: `Bearer ${await getJWT()}`,
       },
     })
   ).json();
-  if (data.status == 200) {
-    revalidatePath("/admin/report");
-    redirect(`/admin/report?pageNo=1&type=${type}&query=${query}`);
-  }
 }
 
 export const downloadReport = async (sts_vehicle_id: string) => {
-  await fetch(`${baseURL}/report/download/${sts_vehicle_id}`, {
-    headers: {
-      Authorization: `${cookies().get("jwt")?.value}`,
-    },
-  });
-  redirect(`http://localhost:8000/report/${sts_vehicle_id}`);
+  const { file_path } = await (
+    await fetch(`${baseURL}/report/${sts_vehicle_id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${await getJWT()}`,
+      },
+    })
+  ).json();
+
+  redirect(`${baseURL}/report/download/${file_path}`);
 };
 
 export async function Logout() {

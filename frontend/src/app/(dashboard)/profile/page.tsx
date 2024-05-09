@@ -1,6 +1,6 @@
 import extractUserInfo from "@/utils/verify";
 import { baseURL } from "../../../../files";
-import ProfileForm from "./profile_form";
+import ProfileForm from "./ProfileForm";
 import { cookies } from "next/headers";
 
 const getData = async () => {
@@ -9,10 +9,11 @@ const getData = async () => {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${cookies().get("jwt")?.value}`,
+        Authorization: `Bearer ${cookies().get("jwt")?.value}`,
       },
     })
   ).json();
+
   return {
     id: data.id,
     first_name: data.first_name,
@@ -20,20 +21,20 @@ const getData = async () => {
     photo: data.profile_photo,
     email: data.email,
     mobile: data.mobile,
-    role: data.role,
+    roles: data.roles,
   };
 };
 
 export default async function Profile() {
-  const { id, first_name, last_name, photo, email, mobile, role } =
+  const { id, first_name, last_name, photo, email, mobile, roles } =
     await getData();
   let color = "black";
-  if (role === "admin") color = "admin";
-  else if (role === "sts-manager") color = "sts_text";
-  else if (role === "landfill-manager") color = "landfill";
+  if (roles.includes("admin")) color = "admin";
+  else if (roles.includes("landfill_manager")) color = "landfill";
+  else if (roles.includes("sts_manager")) color = "sts_text";
   return (
     <>
-      <h1 className={`text-3xl text-center text-${color} font-bold mt-10`}>
+      <h1 className={`text-2xl text-center text-${color} font-bold mt-10`}>
         Profile
       </h1>
       <ProfileForm
@@ -44,7 +45,7 @@ export default async function Profile() {
         photo={photo}
         email={email}
         mobile={mobile}
-        role={role}
+        roles={roles}
       />
     </>
   );
