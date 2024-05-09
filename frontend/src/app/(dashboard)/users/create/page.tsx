@@ -1,12 +1,19 @@
+import { getJWT } from "@/utils/actions";
+import { baseURL } from "../../../../../files";
 import UserRegistrationForm from "./UserRegistrationForm";
 
+const getData = async () => {
+  return await (
+    await fetch(`${baseURL}/roles`, {
+      headers: { Authorization: `Bearer ${await getJWT()}` },
+    })
+  ).json();
+};
+
 export default async function UserRegistration() {
-  const total_roles = [
-    "unassigned",
-    "admin",
-    "sts_manager",
-    "landfill_manager",
-  ];
+  let total_roles = await getData();
+
+  total_roles = total_roles.map((role: any) => role.role);
 
   return (
     <>

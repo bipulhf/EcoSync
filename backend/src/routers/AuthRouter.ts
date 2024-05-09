@@ -69,13 +69,14 @@ authRouter.post(
   middleware([rolePermissions.UPDATE_USER_SELF]),
   async (req, res) => {
     try {
-      const token = (req.headers.authorization as string).split(" ")[1];
-      if (!token) return res.status(401).json({ message: "Unauthorized" });
-      const { oldPassword, newPassword } = req.body;
+      const { old_password, new_password, confirm_password } = req.body;
+      if (new_password !== confirm_password) {
+        return res.status(400).json({ message: "Passwords do not match" });
+      }
       const message = await changePasswordService(
-        token,
-        oldPassword,
-        newPassword
+        res.locals.userId,
+        old_password,
+        new_password
       );
       return res.status(200).json(message);
     } catch (error) {

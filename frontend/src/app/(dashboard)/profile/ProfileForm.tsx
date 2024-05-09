@@ -3,6 +3,7 @@
 import { updateUser } from "@/utils/actions";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 function Submit({ color }: any) {
   const { pending } = useFormStatus();
@@ -36,7 +37,6 @@ export default function ProfileForm({
     photo,
     email,
     mobile,
-    password: "",
   });
 
   const [image, setImage] = useState(user.photo);
@@ -109,22 +109,6 @@ export default function ProfileForm({
             </div>
 
             <div className="mb-2 md:max-w-[90%]">
-              <label htmlFor="password" className="block mb-2">
-                Password:
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-${color}`}
-                placeholder="(unchanged)"
-                onChange={(e) =>
-                  setUser({ ...user, password: e.target.value as string })
-                }
-              />
-            </div>
-
-            <div className="mb-2 md:max-w-[90%]">
               <label htmlFor="mobile" className="block mb-2">
                 Mobile:
               </label>
@@ -154,6 +138,9 @@ export default function ProfileForm({
                 value={rolesString.toUpperCase()}
                 disabled
               />
+            </div>
+            <div className="mt-5">
+              <ChangePasswordModal />
             </div>
           </div>
           <div>

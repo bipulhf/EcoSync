@@ -1,5 +1,6 @@
 import * as jose from "jose";
 import { cookies } from "next/headers";
+import { getJWT } from "./actions";
 
 export async function verify(token: string) {
   const decoded = await jose.jwtVerify(
@@ -10,7 +11,7 @@ export async function verify(token: string) {
 }
 
 export default async function extractUserInfo() {
-  const data = await verify(cookies().get("jwt")?.value as string);
+  const data = await verify((await getJWT()) as string);
 
   return {
     id: data.userId as string,

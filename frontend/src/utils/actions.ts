@@ -165,13 +165,38 @@ export async function updateUser(prevState: any, formData: FormData) {
   }
 }
 
+export async function changePassword(prevState: any, formData: FormData) {
+  const old_password = formData.get("old_password");
+  const new_password = formData.get("new_password");
+  const confirm_password = formData.get("confirm_password");
+
+  const data = await fetch(`${baseURL}/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      old_password,
+      new_password,
+      confirm_password,
+    }),
+  });
+
+  if (data.status === 200) {
+    redirect(`/profile`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
 export async function updateUserAdmin(prevState: any, formData: FormData) {
   const id = formData.get("id");
   const first_name = formData.get("first_name");
   const last_name = formData.get("last_name");
   const email = formData.get("email");
   const mobile = formData.get("mobile");
-  const password = formData.get("password");
   const profile_photo = formData.get("photo");
   const getRoles = formData.get("roles")?.toString();
   const sts_id = formData.get("sts_id");
@@ -189,7 +214,6 @@ export async function updateUserAdmin(prevState: any, formData: FormData) {
       last_name,
       email,
       mobile,
-      password,
       profile_photo,
       roles,
       sts_id,

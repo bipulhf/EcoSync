@@ -110,7 +110,7 @@ export default function UserRegistaionsForm({ total_roles }: any) {
               >
                 User Role
               </label>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 roles_checkbox">
                 <Checkbox.Group
                   options={total_roles}
                   value={checkedList}

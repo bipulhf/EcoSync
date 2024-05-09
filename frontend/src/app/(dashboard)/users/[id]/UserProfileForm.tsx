@@ -127,22 +127,6 @@ export default function UserProfileForm({
             </div>
 
             <div className="mb-2">
-              <label htmlFor="password" className="block mb-2">
-                Password:
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="(unchanged)"
-                onChange={(e) =>
-                  setUser({ ...user, password: e.target.value as string })
-                }
-              />
-            </div>
-
-            <div className="mb-2">
               <label htmlFor="mobile" className="block mb-2">
                 Mobile:
               </label>
@@ -163,7 +147,7 @@ export default function UserProfileForm({
               <label htmlFor="role" className="w-[30%] block mb-2">
                 User Role
               </label>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 roles_checkbox">
                 <Checkbox.Group
                   options={total_roles}
                   value={checkedList}

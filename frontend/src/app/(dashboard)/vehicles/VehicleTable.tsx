@@ -22,10 +22,14 @@ const onChange: TableProps<DataType>["onChange"] = (
 };
 
 const VehicleTable = ({ vehicles }: any) => {
-  const stsList: any[] = [];
+  let stsList: any[] = [];
   vehicles.map((vehicle: any) => {
     stsList.push({ text: vehicle.sts_id, value: vehicle.sts_id });
   });
+
+  stsList = stsList.filter(
+    (sts, index, self) => index === self.findIndex((t) => t.text === sts.text)
+  );
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -46,8 +50,6 @@ const VehicleTable = ({ vehicles }: any) => {
       dataIndex: "sts_id",
       showSorterTooltip: { target: "full-header" },
       filters: stsList,
-      // specify the condition of filtering result
-      // here is that finding the name started with `value`
       onFilter: (value, record) => record.sts_id === value,
       sorter: (a, b) => a.sts_id - b.sts_id,
       sortDirections: ["descend"],
@@ -60,6 +62,8 @@ const VehicleTable = ({ vehicles }: any) => {
       dataSource={vehicles}
       onChange={onChange}
       showSorterTooltip={{ target: "sorter-icon" }}
+      size="middle"
+      scroll={{ x: "max-content" }}
     />
   );
 };

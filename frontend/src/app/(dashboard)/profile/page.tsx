@@ -1,6 +1,6 @@
 import extractUserInfo from "@/utils/verify";
 import { baseURL } from "../../../../files";
-import ProfileForm from "./profile_form";
+import ProfileForm from "./ProfileForm";
 import { cookies } from "next/headers";
 
 const getData = async () => {

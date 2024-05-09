@@ -3,6 +3,14 @@ import { db } from "../drizzle/db";
 import { PermissionTable, RoleTable } from "../drizzle/schema";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
 
+export async function getRoles() {
+  try {
+    return await db.query.RoleTable.findMany();
+  } catch (e) {
+    throw new Error("Error while fetching roles");
+  }
+}
+
 export async function getRolesPermissions() {
   try {
     return await db.query.RoleTable.findMany({

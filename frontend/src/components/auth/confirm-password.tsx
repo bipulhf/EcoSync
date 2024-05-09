@@ -2,19 +2,17 @@
 import { confirmPassword } from "@/utils/actions";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { Button } from "../ui/button";
-
 function Submit() {
   const { pending } = useFormStatus();
 
   return (
-    <Button
+    <button
       className={`bg-admin hover:bg-admin hover:underline text-white font-medium text-xl px-4 py-2 rounded-lg`}
       type="submit"
       disabled={pending}
     >
       {pending ? `Changing...` : `Change Password`}
-    </Button>
+    </button>
   );
 }
 
@@ -41,14 +39,14 @@ export default function ConfirmPasswordForm() {
             placeholder="Enter Secret Code"
           />
         </span>
-        <Button
+        <button
           className={`bg-admin hover:bg-admin text-white font-medium text-xl px-4 py-2 rounded-lg hover:underline ${
             show && `invisible`
           }`}
           onClick={() => setShow(true)}
         >
           Next
-        </Button>
+        </button>
         <span className={`${!show && `invisible`}`}>
           <label
             htmlFor="password"

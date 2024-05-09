@@ -24,12 +24,11 @@ const JWT_EXPIRATION_MINUTES = process.env.JWT_EXPIRATION_MINUTES;
 const emailPattern: RegExp = /^[\w\.-]+@[\w\.-]+\.\w+$/;
 
 export const changePasswordService = async (
-  token: string,
+  userId: number,
   oldPassword: string,
   newPassword: string
 ) => {
   try {
-    const userId = getUserId(token);
     const user = await getUserById(userId, true);
 
     if (!user) throw new ResourceNotFound("User", userId);

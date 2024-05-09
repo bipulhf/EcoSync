@@ -13,6 +13,7 @@ const getData = async () => {
       },
     })
   ).json();
+
   return data;
 };
 
@@ -26,7 +27,7 @@ export default async function Users() {
             <UserAddOutlined /> Add User
           </button>
         </Link>
-        <h2 className="text-admin text-2xl font-bold mb-10">
+        <h2 className="text-admin md:text-2xl font-bold mb-10">
           <UsergroupAddOutlined /> User List:{" "}
         </h2>
       </div>

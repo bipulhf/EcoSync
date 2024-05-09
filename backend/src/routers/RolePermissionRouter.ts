@@ -5,8 +5,23 @@ import { rolePermissions } from "../globals";
 import {
   createRoleService,
   getRolesPermissionsService,
+  getRolesService,
 } from "../services/RolePermissionService";
 const rolePermissionRouter = Router();
+
+rolePermissionRouter.get(
+  "/roles",
+  middleware([rolePermissions.READ_ROLES]),
+  async (req, res) => {
+    try {
+      const result = await getRolesService();
+      return res.status(200).json(result);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
+);
 
 rolePermissionRouter.get(
   "/roles-permissions",

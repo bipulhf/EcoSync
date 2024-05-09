@@ -13,6 +13,12 @@ const getData = async (id: string) => {
     })
   ).json();
 
+  const default_roles = await (
+    await fetch(`${baseURL}/roles`, {
+      headers: { Authorization: `Bearer ${await getJWT()}` },
+    })
+  ).json();
+
   return {
     id: data.id,
     first_name: data.first_name,
@@ -23,6 +29,7 @@ const getData = async (id: string) => {
     roles: data.roles,
     sts_id: data.sts_id,
     landfill_id: data.landfill_id,
+    default_roles,
   };
 };
 
@@ -41,6 +48,7 @@ export default async function UserProfile({
     roles,
     sts_id,
     landfill_id,
+    default_roles,
   } = await getData(params.id);
 
   const rolesArr: any = [];
@@ -48,12 +56,7 @@ export default async function UserProfile({
     rolesArr.push(role.role);
   });
 
-  const total_roles = [
-    "admin",
-    "landfill_manager",
-    "sts_manager",
-    "unassigned",
-  ];
+  const total_roles = default_roles.map((role: any) => role.role);
 
   return (
     <>

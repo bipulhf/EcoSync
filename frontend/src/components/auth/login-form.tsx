@@ -8,19 +8,18 @@ import {
 } from "react-google-recaptcha-v3";
 import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { Button } from "../ui/button";
 
 function Submit() {
   const { pending } = useFormStatus();
 
   return (
-    <Button
+    <button
       className={`bg-admin hover:bg-admin hover:underline text-white font-medium text-xl px-4 py-2 rounded-lg`}
       type="submit"
       disabled={pending}
     >
       {pending ? `Logging in...` : `Login`}
-    </Button>
+    </button>
   );
 }
 

@@ -3,7 +3,6 @@ import trashImg from "@/../public/static/images/trash800.png";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -16,9 +15,9 @@ export default function Home() {
             <b>Waste Innovation</b>
           </h1>
           <Link href={"/login"}>
-            <Button className="bg-admin mt-5 hover:bg-admin hover:underline md:text-[1.5rem]">
+            <button className="bg-admin mt-5 hover:bg-admin hover:underline md:text-[1.5rem] text-white px-3 py-1 rounded-lg">
               Login
-            </Button>
+            </button>
           </Link>
         </div>
         <div className="aspect-w-16 aspect-h-9">
