@@ -61,22 +61,6 @@ vehicleRouter.get(
     }
   }
 );
-vehicleRouter.get(
-  "/vehicle",
-  middleware([
-    rolePermissions.READ_VEHICLE_ALL,
-    rolePermissions.READ_VEHICLE_SELF,
-  ]),
-  async (req, res) => {
-    try {
-      const vehicles = await getAllVehiclesService(res.locals.userId);
-      return res.status(200).json(vehicles);
-    } catch (error) {
-      const err = getErrorType(error);
-      return res.status(err.errorCode).json({ message: err.message });
-    }
-  }
-);
 
 vehicleRouter.get(
   "/vehicle/transported-waste",

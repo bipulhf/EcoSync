@@ -555,3 +555,36 @@ export async function workforceRegistration(
     return { message: response.message };
   }
 }
+
+export async function createContractorReport(
+  prevState: any,
+  formData: FormData
+) {
+  const waste_amount = formData.get("waste_amount");
+  const type_of_waste = formData.get("type_of_waste");
+  const vehicle_type = formData.get("vehicle_type");
+  const sts_id = formData.get("sts_id");
+  const contractor_id = formData.get("contractor_id");
+
+  const data = await fetch(`${baseURL}/contractor-monitor`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      waste_amount,
+      type_of_waste,
+      vehicle_type,
+      sts_id,
+      contractor_id,
+    }),
+  });
+
+  if (data.status === 201) {
+    redirect(`/contractors/monitor`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}

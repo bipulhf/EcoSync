@@ -44,8 +44,9 @@ export default async function UserContent({ permissions }: any) {
     : permissions.includes("READ_LANDFILL_SELF")
     ? "sts"
     : "";
-  const { vehicle_transported_waste, heat_map_data, landfill_sts_location } =
+  let { vehicle_transported_waste, heat_map_data, landfill_sts_location } =
     await getData(path);
+
   return (
     <div style={{ margin: "24px 16px 0" }}>
       <div
@@ -82,7 +83,8 @@ export default async function UserContent({ permissions }: any) {
             </div>
           )}
 
-          {(permissions.includes("READ_VEHICLE_ALL") ||
+          {(permissions.includes("READ_LANDFILL_ALL") ||
+            permissions.includes("READ_VEHICLE_ALL") ||
             permissions.includes("READ_LANDFILL_SELF") ||
             permissions.includes("READ_VEHICLE_SELF")) && (
             <div className="w-[80%] lg:w-[30%]">

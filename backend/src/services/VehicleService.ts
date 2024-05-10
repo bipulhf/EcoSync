@@ -67,8 +67,8 @@ export const getAllVehiclesService = async (user_id: number) => {
   try {
     const user = await getUserById(user_id);
     if (!user) throw new ResourceNotFound("User", user_id);
-    if (user.sts_id) return await getVehicleByStsId(user.sts_id);
-    return await getAllVehicles();
+    if (!user.sts_id) return await getAllVehicles();
+    return await getVehicleByStsId(user.sts_id);
   } catch (error) {
     throw error;
   }
@@ -114,6 +114,7 @@ export const getVehiclesTotalWasteAmountService = async (
       type: key,
       value: vehicles[key],
     }));
+
     return new_vehicles;
   } catch (error) {
     throw error;

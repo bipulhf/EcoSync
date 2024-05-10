@@ -166,6 +166,10 @@ export const permissions = [
     role_name: userRole.STS_MANAGER,
   },
   {
+    permission: rolePermissions.READ_CONTRACTOR_SELF,
+    role_name: userRole.STS_MANAGER,
+  },
+  {
     permission: rolePermissions.READ_WORKFORCE_MONITOR,
     role_name: userRole.CONTRACTOR_MANAGER,
   },

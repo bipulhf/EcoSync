@@ -2,8 +2,12 @@ import { eq } from "drizzle-orm";
 import { db } from "../drizzle/db";
 import { ContractorTable, UserTable } from "../drizzle/schema";
 
-export const getAllContractors = async () => {
+export const getAllContractors = async (sts_id?: number) => {
   try {
+    if (sts_id)
+      return await db.query.ContractorTable.findMany({
+        where: (model) => eq(model.sts_id, sts_id),
+      });
     return await db.query.ContractorTable.findMany({
       with: {
         contract: true,

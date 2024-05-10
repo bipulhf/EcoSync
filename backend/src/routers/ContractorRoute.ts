@@ -14,10 +14,15 @@ const contractorRouter = Router();
 
 contractorRouter.get(
   "/contractor",
-  middleware([rolePermissions.READ_CONTRACTOR_ALL]),
+  middleware([
+    rolePermissions.READ_CONTRACTOR_ALL,
+    rolePermissions.READ_CONTRACTOR_SELF,
+  ]),
   async (req, res) => {
     try {
-      const contractors = await getAllContractorsService();
+      let contractors;
+      if (!res.locals.sts_id) contractors = await getAllContractorsService();
+      else contractors = await getAllContractorsService(res.locals.sts_id);
       return res.status(200).json(contractors);
     } catch (error) {
       const err = getErrorType(error);

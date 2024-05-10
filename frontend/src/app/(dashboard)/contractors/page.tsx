@@ -23,7 +23,10 @@ export default async function Contractors() {
 
   return (
     <div className="w-[95%] lg:w-[80%] mx-auto py-10">
-      <div className="flex justify-between flex-row-reverse">
+      <div className="flex justify-between">
+        <h2 className="text-admin text-2xl font-bold mb-10">
+          <AppstoreAddOutlined /> Contractor List:{" "}
+        </h2>
         {permissions.includes("CREATE_CONTRACTOR") && (
           <Link href={"/contractors/create"}>
             <button className="px-5 py-2 bg-admin text-white rounded-lg hover:underline font-semibold">
@@ -31,9 +34,6 @@ export default async function Contractors() {
             </button>
           </Link>
         )}
-        <h2 className="text-admin text-2xl font-bold mb-10">
-          <AppstoreAddOutlined /> Contractor List:{" "}
-        </h2>
       </div>
       <div className="flex gap-4 flex-wrap max-md:justify-center">
         {contractors.length ? (

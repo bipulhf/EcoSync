@@ -21,7 +21,7 @@ const columns: TableProps<DataType>["columns"] = [
     dataIndex: "vehicle_number",
     key: "vehicle_number",
     render: (vehicle_number) => (
-      <Link href={`/sts/entry_vehicle/${vehicle_number}`}>
+      <Link href={`/sts/entry_vehicle?vehicle_number=${vehicle_number}`}>
         {vehicle_number}
       </Link>
     ),

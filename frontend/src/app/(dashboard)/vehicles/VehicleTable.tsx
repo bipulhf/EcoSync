@@ -23,9 +23,10 @@ const onChange: TableProps<DataType>["onChange"] = (
 
 const VehicleTable = ({ vehicles }: any) => {
   let stsList: any[] = [];
-  vehicles.map((vehicle: any) => {
-    stsList.push({ text: vehicle.sts_id, value: vehicle.sts_id });
-  });
+  if (vehicles.length)
+    vehicles.map((vehicle: any) => {
+      stsList.push({ text: vehicle.sts_id, value: vehicle.sts_id });
+    });
 
   stsList = stsList.filter(
     (sts, index, self) => index === self.findIndex((t) => t.text === sts.text)

@@ -296,6 +296,7 @@ export const ContractorMonitoringTable = pgTable("contractor_monitoring", {
   id: serial("id").primaryKey(),
   waste_amount: real("waste_amount").notNull(),
   type_of_waste: varchar("type_of_waste", { length: 255 }).notNull(),
+  collection_time: timestamp("collection_time").notNull().defaultNow(),
   vehicle_type: varchar("vehicle_type", { length: 255 }).notNull(),
   sts_id: integer("sts_id")
     .references(() => StsTable.id, { onDelete: "cascade" })

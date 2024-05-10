@@ -20,7 +20,7 @@ const getData = async () => {
 export default async function VehiclesPage() {
   const data = await getData();
   const { permissions } = await extractUserInfo();
-  console.log(data);
+
   return (
     <div className="w-[95%] lg:w-[90%] mx-auto py-10">
       <div className="flex justify-between flex-row-reverse">

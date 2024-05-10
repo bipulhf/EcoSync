@@ -11,6 +11,7 @@ import rolePermissionRouter from "./routers/RolePermissionRouter";
 import contractorRouter from "./routers/ContractorRoute";
 import workforceRouter from "./routers/WorkforceRouter";
 import contractRouter from "./routers/ContractRoute";
+import contractorMonitoringRouter from "./routers/ContractorMonitoringRouter";
 
 const app = express();
 
@@ -36,5 +37,6 @@ app.use("/", rolePermissionRouter);
 app.use("/", workforceRouter);
 app.use("/", contractorRouter);
 app.use("/", contractRouter);
+app.use("/", contractorMonitoringRouter);
 
 export default app;

@@ -8,8 +8,9 @@ import {
 } from "../repository/ContractorRepository";
 import { getStsById } from "../repository/StsRepository";
 
-export const getAllContractorsService = async () => {
+export const getAllContractorsService = async (sts_id?: number) => {
   try {
+    if (sts_id) return await getAllContractors(sts_id);
     return await getAllContractors();
   } catch (error) {
     throw error;
