@@ -1,5 +1,5 @@
-import ShowDirection from "./ShowDirection";
 import { convertSecondsToTime } from "@/utils/timeconvert";
+import ShowDirection from "./ShowDirection";
 
 export default async function GetDirection({ sts }: any) {
   return (

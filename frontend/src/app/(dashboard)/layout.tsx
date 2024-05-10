@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Layout } from "antd";
 import Sidebar from "@/components/dashboard/Sidebar";
 import UserHeader from "@/components/dashboard/UserHeader";
-import UserFooter from "@/components/dashboard/UserFooter";
 
 export const metadata: Metadata = {
   title: "EcoSync - Revolutionizing Waste Management",

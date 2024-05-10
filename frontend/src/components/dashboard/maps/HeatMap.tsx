@@ -29,7 +29,7 @@ const CustomHeatMap = ({ data, xField, yField }: any) => {
 
   return (
     <div>
-      <h1 className="text-admin md:text-xl">
+      <h1 className="text-admin md:text-xl text-center">
         {`${xField.split("_")[0]} HeatMap of Last 7 Days`.toUpperCase()}
       </h1>
       <Heatmap {...config} />

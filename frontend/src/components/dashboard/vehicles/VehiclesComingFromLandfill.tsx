@@ -1,6 +1,6 @@
 import { getJWT } from "@/utils/actions";
 import { getTimeFromDate } from "@/utils/timeconvert";
-import { baseURL } from "../../../files";
+import { baseURL } from "../../../../files";
 
 const getData = async () => {
   const data = await (

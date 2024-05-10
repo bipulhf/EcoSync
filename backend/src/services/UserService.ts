@@ -165,11 +165,14 @@ export const getAllInformationService = async () => {
       compactor: 0,
       container: 0,
     };
+    let total_capacity = 0;
     const vehicles = await getAllVehicles();
     vehicles.map((vehicle) => {
       if (!type[vehicle.type]) type[vehicle.type] = 0;
       type[vehicle.type] += 1;
+      total_capacity += vehicle.capacity;
     });
+
     const sts = await getAllSts();
     const landfill = await getAllLandfill();
 
@@ -195,7 +198,28 @@ export const getAllInformationService = async () => {
         value: landfill.length,
         managers: landfill_managers,
       },
+      total_capacity,
     };
+  } catch (error) {
+    throw new Error("Error updating user");
+  }
+};
+
+export const getAllLandfillStsLocationService = async () => {
+  try {
+    const sts = await getAllSts();
+    const landfill = await getAllLandfill();
+    const sts_info = sts.map((single_sts: any) => ({
+      latitude: single_sts.latitude,
+      longitude: single_sts.longitude,
+    }));
+    const landfill_info = landfill.map((landfill: any) => ({
+      latitude: landfill.latitude,
+      longitude: landfill.longitude,
+    }));
+
+    const result = [...sts_info, ...landfill_info];
+    return result;
   } catch (error) {
     throw new Error("Error updating user");
   }

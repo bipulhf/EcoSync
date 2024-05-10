@@ -1,6 +1,6 @@
 import { getJWT } from "@/utils/actions";
-import { baseURL } from "../../../files";
 import VechiclesInSTSForm from "./VehicleInStsForm";
+import { baseURL } from "../../../../files";
 
 const getData = async () => {
   const sts_vehicle = await (

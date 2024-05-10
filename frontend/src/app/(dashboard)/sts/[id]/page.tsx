@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { baseURL } from "../../../../../files";
 import { getJWT } from "@/utils/actions";
-import GetDirection from "@/components/dashboard/GetDirection";
-import ManagerModal from "@/components/dashboard/ManagerModal";
-import VehicleModal from "@/components/dashboard/VehicleModal";
+import VehicleModal from "@/components/dashboard/modals/VehicleModal";
+import GetDirection from "@/components/dashboard/maps/GetDirection";
+import ManagerModal from "@/components/dashboard/modals/ManagerModal";
 
 const getData = async (id: string) => {
   const data = await (

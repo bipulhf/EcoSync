@@ -1,12 +1,14 @@
-import VehiclesGoingToLandfill from "./VehiclesGoingToLandfill";
-import VehiclesComingFromLandfill from "./VehiclesComingFromLandfill";
-import WeeklyWasteAmountLandfill from "./WeeklyWasteAmountLandfill";
-import VechiclesInSTS from "./VehiclesInSts";
-import VehicleInLandfill from "./VehiclesInLandfill";
 import { baseURL } from "../../../files";
 import { getJWT } from "@/utils/actions";
 import PieChart from "./PieChart";
-import CustomHeatMap from "./HeatMap";
+import CustomHeatMap from "./maps/HeatMap";
+import TotalInformation from "./TotalInformation";
+import MultipleLocationWider from "./maps/MultipleLocationWider";
+import WeeklyWasteAmountLandfill from "./WeeklyWasteAmountLandfill";
+import VehiclesComingFromLandfill from "./vehicles/VehiclesComingFromLandfill";
+import VehiclesGoingToLandfill from "./vehicles/VehiclesGoingToLandfill";
+import VehicleInLandfill from "./vehicles/VehiclesInLandfill";
+import VechiclesInSTS from "./vehicles/VehiclesInSts";
 
 const getData = async (text: string) => {
   let heat_map_data;
@@ -25,7 +27,15 @@ const getData = async (text: string) => {
       },
     })
   ).json();
-  return { vehicle_transported_waste, heat_map_data };
+  const landfill_sts_location = await (
+    await fetch(`${baseURL}/get-landfill-sts-location`, {
+      headers: {
+        Authorization: `Bearer ${await getJWT()}`,
+      },
+    })
+  ).json();
+
+  return { vehicle_transported_waste, heat_map_data, landfill_sts_location };
 };
 
 export default async function UserContent({ permissions }: any) {
@@ -34,7 +44,8 @@ export default async function UserContent({ permissions }: any) {
     : permissions.includes("READ_LANDFILL_SELF")
     ? "sts"
     : "";
-  const { vehicle_transported_waste, heat_map_data } = await getData(path);
+  const { vehicle_transported_waste, heat_map_data, landfill_sts_location } =
+    await getData(path);
   return (
     <div style={{ margin: "24px 16px 0" }}>
       <div
@@ -43,6 +54,17 @@ export default async function UserContent({ permissions }: any) {
           minHeight: 360,
         }}
       >
+        <div className="mb-5 w-full mx-auto flex flex-col justify-center items-center gap-5">
+          <div>
+            <TotalInformation />
+          </div>
+          <div className="text-center">
+            <p className="md:text-xl font-medium mb-3">
+              All Landfill and STS Location
+            </p>
+            <MultipleLocationWider landfill_sts={landfill_sts_location} />
+          </div>
+        </div>
         {(permissions.includes("READ_LANDFILL_SELF") ||
           permissions.includes("READ_LANDFILL_ALL")) && (
           <WeeklyWasteAmountLandfill />

@@ -11,6 +11,7 @@ import {
   deleteUser,
   updateUserService,
   createUserService,
+  getAllLandfillStsLocationService,
   getAllInformationService,
 } from "../services/UserService";
 import getErrorType from "../error";
@@ -182,6 +183,20 @@ userRouter.get("/all-info", async (req, res) => {
     if (!currentUserId)
       return res.status(403).json({ message: "User not found." });
     const information = await getAllInformationService();
+    return res.status(200).json(information);
+  } catch (error) {
+    const err = getErrorType(error);
+    return res.status(err.errorCode).json({ message: err.message });
+  }
+});
+
+userRouter.get("/get-landfill-sts-location", async (req, res) => {
+  try {
+    const token = (req.headers.authorization as string).split(" ")[1];
+    let currentUserId = getUserId(token);
+    if (!currentUserId)
+      return res.status(403).json({ message: "User not found." });
+    const information = await getAllLandfillStsLocationService();
     return res.status(200).json(information);
   } catch (error) {
     const err = getErrorType(error);

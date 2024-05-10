@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Tag } from "antd";
-import RolesPermissionsModal from "./RolesPermissionModal";
+import RolesPermissionsModal from "./modals/RolesPermissionModal";
 
 const color = [
   "gold",

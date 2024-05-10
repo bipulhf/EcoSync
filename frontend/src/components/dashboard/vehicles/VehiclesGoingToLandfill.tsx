@@ -1,6 +1,6 @@
-import { baseURL } from "../../../files";
 import { getJWT } from "@/utils/actions";
 import VehiclesGoingToLandfillForm from "./VehiclesGoingToLandfillForm";
+import { baseURL } from "../../../../files";
 
 const getData = async () => {
   const data = await (

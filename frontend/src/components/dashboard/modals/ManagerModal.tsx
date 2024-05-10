@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
-import SimpleTables from "../tables/SimpleTable";
+import SimpleTables from "../../tables/SimpleTable";
 
 const ManagerModal = ({ managers }: any) => {
   const [open, setOpen] = useState(false);

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
-import VehicleTable from "@/app/(dashboard)/vehicles/VehicleTable";
 import { useFormState, useFormStatus } from "react-dom";
 import { changePassword } from "@/utils/actions";
 
