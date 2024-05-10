@@ -45,6 +45,9 @@ export default async function createInitialInfo() {
             role: userRole.LANDFILL_MANAGER,
           },
           {
+            role: userRole.CONTRACTOR_MANAGER,
+          },
+          {
             role: userRole.UNASSIGNED,
           },
         ]);

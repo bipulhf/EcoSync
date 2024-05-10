@@ -90,6 +90,38 @@ export const permissions = [
     role_name: userRole.ADMIN,
   },
   {
+    permission: rolePermissions.READ_CONTRACTOR_ALL,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.READ_CONTRACT_ALL,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.CREATE_CONTRACT,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.CREATE_CONTRACTOR,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.CREATE_CONTRACTOR_MANAGER,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.DELETE_CONTRACTOR,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.UPDATE_CONTRACT,
+    role_name: userRole.ADMIN,
+  },
+  {
+    permission: rolePermissions.UPDATE_CONTRACTOR,
+    role_name: userRole.ADMIN,
+  },
+  {
     permission: rolePermissions.READ_USER_SELF,
     role_name: userRole.STS_MANAGER,
   },
@@ -128,5 +160,29 @@ export const permissions = [
   {
     permission: rolePermissions.READ_LANDFILL_SELF,
     role_name: userRole.LANDFILL_MANAGER,
+  },
+  {
+    permission: rolePermissions.READ_CONTRACTOR_MONITOR,
+    role_name: userRole.STS_MANAGER,
+  },
+  {
+    permission: rolePermissions.READ_WORKFORCE_MONITOR,
+    role_name: userRole.CONTRACTOR_MANAGER,
+  },
+  {
+    permission: rolePermissions.READ_CONTRACTOR_SELF,
+    role_name: userRole.CONTRACTOR_MANAGER,
+  },
+  {
+    permission: rolePermissions.READ_CONTRACT_SELF,
+    role_name: userRole.CONTRACTOR_MANAGER,
+  },
+  {
+    permission: rolePermissions.CREATE_WORKFORCE,
+    role_name: userRole.CONTRACTOR_MANAGER,
+  },
+  {
+    permission: rolePermissions.READ_WORKFORCE_SELF,
+    role_name: userRole.CONTRACTOR_MANAGER,
   },
 ];

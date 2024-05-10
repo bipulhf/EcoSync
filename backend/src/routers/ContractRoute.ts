@@ -8,9 +8,9 @@ import {
   getContractByContractorIdService,
 } from "../services/ContractService";
 
-export const contractRoute = Router();
+const contractRouter = Router();
 
-contractRoute.get(
+contractRouter.get(
   "/contract",
   middleware([rolePermissions.READ_CONTRACT_ALL]),
   async (req, res) => {
@@ -24,7 +24,7 @@ contractRoute.get(
   }
 );
 
-contractRoute.post(
+contractRouter.post(
   "/contract",
   middleware([rolePermissions.CREATE_CONTRACT]),
   async (req, res) => {
@@ -39,7 +39,7 @@ contractRoute.post(
   }
 );
 
-contractRoute.get(
+contractRouter.get(
   "/contract/:contractor_id",
   middleware([
     rolePermissions.READ_CONTRACT_ALL,
@@ -56,3 +56,5 @@ contractRoute.get(
     }
   }
 );
+
+export default contractRouter;

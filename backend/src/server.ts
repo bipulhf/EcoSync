@@ -8,6 +8,9 @@ import stsRouter from "./routers/StsRouter";
 import landfillRouter from "./routers/LandfillRouter";
 import reportRouter from "./routers/ReportRouter";
 import rolePermissionRouter from "./routers/RolePermissionRouter";
+import contractorRouter from "./routers/ContractorRoute";
+import workforceRouter from "./routers/WorkforceRouter";
+import contractRouter from "./routers/ContractRoute";
 
 const app = express();
 
@@ -30,5 +33,8 @@ app.use("/", stsRouter);
 app.use("/", landfillRouter);
 app.use("/", reportRouter);
 app.use("/", rolePermissionRouter);
+app.use("/", workforceRouter);
+app.use("/", contractorRouter);
+app.use("/", contractRouter);
 
 export default app;

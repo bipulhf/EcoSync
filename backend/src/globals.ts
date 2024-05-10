@@ -3,6 +3,7 @@ export const userRole = {
   STS_MANAGER: "sts_manager",
   LANDFILL_MANAGER: "landfill_manager",
   UNASSIGNED: "unassigned",
+  CONTRACTOR_MANAGER: "contractor_manager",
 };
 
 export const rolePermissions = {
@@ -52,4 +53,5 @@ export const rolePermissions = {
   READ_WORKFORCE_ALL: "READ_WORKFORCE_ALL",
   READ_WORKFORCE_MONITOR: "READ_WORKFORCE_MONITOR",
   READ_CONTRACTOR_MONITOR: "READ_CONTRACTOR_MONITOR",
+  CREATE_CONTRACTOR_MANAGER: "CREATE_CONTRACTOR_MANAGER",
 };

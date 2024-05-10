@@ -65,7 +65,7 @@ export const UserTable = pgTable("users", {
   landfill_id: integer("landfill_id").references(() => LandfillTable.id, {
     onDelete: "set null",
   }),
-  contractor_id: integer("contract_id").references(() => ContractorTable.id, {
+  contractor_id: integer("contractor_id").references(() => ContractorTable.id, {
     onDelete: "set null",
   }),
   mobile: varchar("mobile", { length: 11 }).notNull().unique(),
@@ -167,7 +167,7 @@ export const StsTableRelations = relations(StsTable, ({ one, many }) => ({
 
 export const ContractTable = pgTable("contracts", {
   id: serial("id").primaryKey(),
-  duration: timestamp("duration").notNull(),
+  duration: integer("duration").notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
   contractor_id: integer("contractor_id")
     .notNull()

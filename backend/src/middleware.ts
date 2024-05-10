@@ -12,6 +12,7 @@ export const middleware = (permission: string[]) => {
       const decoded = jwt.verify(token, JWT_SECRET) as any;
       let flag = false;
       permission.forEach((perm) => {
+        console.log(perm);
         if (decoded.permissions.includes(perm)) {
           res.locals.permission = permissions;
           res.locals.userId = decoded.userId;

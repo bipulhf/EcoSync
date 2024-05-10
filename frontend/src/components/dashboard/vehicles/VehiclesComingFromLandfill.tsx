@@ -20,7 +20,7 @@ export default async function VehiclesComingFromLandfill() {
   return (
     <div className="border-2 border-sts_text rounded-lg p-3 my-5 bg-sts_bg text-center">
       <h2 className="md:text-xl font-bold">Vechicles coming from landfill:</h2>
-      {landfill_vehicle.length === 0 ? (
+      {!landfill_vehicle.length ? (
         <h2 className="md:text-lg font-medium">No vehicle to show</h2>
       ) : (
         landfill_vehicle.map((vehicle: any) => (

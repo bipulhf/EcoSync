@@ -1,5 +1,6 @@
 import {
   createContractor,
+  createContractorManager,
   deleteContractor,
   getAllContractors,
   getContractorById,
@@ -40,6 +41,18 @@ export const createContractorService = async ({
       area_collection,
       sts_id,
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createContractorManagerService = async (
+  user_id: number,
+  contractor_id: number
+) => {
+  try {
+    await createContractorManager(user_id, contractor_id);
+    return { message: "Contractor manager created successfully" };
   } catch (error) {
     throw error;
   }

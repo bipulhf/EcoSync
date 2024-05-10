@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../drizzle/db";
-import { ContractorTable } from "../drizzle/schema";
+import { ContractorTable, UserTable } from "../drizzle/schema";
 
 export const getAllContractors = async () => {
   try {
@@ -26,6 +26,20 @@ export const getContractorById = async (contractor_id: number) => {
     });
   } catch (error) {
     throw new Error("Error in getting Contractor");
+  }
+};
+
+export const createContractorManager = async (
+  user_id: number,
+  contractor_id: number
+) => {
+  try {
+    return await db
+      .update(UserTable)
+      .set({ contractor_id })
+      .where(eq(UserTable.id, user_id));
+  } catch (error) {
+    throw new Error("Error in updating Contractor");
   }
 };
 

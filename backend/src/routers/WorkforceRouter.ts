@@ -3,18 +3,12 @@ import { rolePermissions } from "../globals";
 import { middleware } from "../middleware";
 import getErrorType from "../error";
 import {
-  createContractorService,
-  deleteContractorService,
-  getAllContractorsService,
-  getContractorService,
-} from "../services/ContractorService";
-import {
   createWorkforceService,
   getAllWorkforceService,
   getWorkforceByContractorIdService,
 } from "../services/WorkforceService";
 
-export const workforceRouter = Router();
+const workforceRouter = Router();
 
 workforceRouter.get(
   "/workforce",
@@ -31,7 +25,7 @@ workforceRouter.get(
 );
 
 workforceRouter.post(
-  "/contractor",
+  "/workforce",
   middleware([rolePermissions.CREATE_WORKFORCE]),
   async (req, res) => {
     const {
@@ -83,3 +77,5 @@ workforceRouter.get(
     }
   }
 );
+
+export default workforceRouter;

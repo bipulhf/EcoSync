@@ -3,15 +3,16 @@ import { rolePermissions } from "../globals";
 import { middleware } from "../middleware";
 import getErrorType from "../error";
 import {
+  createContractorManagerService,
   createContractorService,
   deleteContractorService,
   getAllContractorsService,
   getContractorService,
 } from "../services/ContractorService";
 
-export const contractorRoute = Router();
+const contractorRouter = Router();
 
-contractorRoute.get(
+contractorRouter.get(
   "/contractor",
   middleware([rolePermissions.READ_CONTRACTOR_ALL]),
   async (req, res) => {
@@ -25,7 +26,7 @@ contractorRoute.get(
   }
 );
 
-contractorRoute.post(
+contractorRouter.post(
   "/contractor",
   middleware([rolePermissions.CREATE_CONTRACTOR]),
   async (req, res) => {
@@ -58,7 +59,26 @@ contractorRoute.post(
   }
 );
 
-contractorRoute.get(
+contractorRouter.post(
+  "/contractor/:contractor_id/manager",
+  middleware([rolePermissions.CREATE_CONTRACTOR_MANAGER]),
+  async (req, res) => {
+    try {
+      const { user_id } = req.body;
+      const contractor_id = +req.params.contractor_id;
+      const contractor = await createContractorManagerService(
+        +user_id,
+        contractor_id
+      );
+      return res.status(200).json(contractor);
+    } catch (error) {
+      const err = getErrorType(error);
+      return res.status(err.errorCode).json({ message: err.message });
+    }
+  }
+);
+
+contractorRouter.get(
   "/contractor/:contractor_id",
   middleware([
     rolePermissions.READ_CONTRACTOR_ALL,
@@ -76,7 +96,7 @@ contractorRoute.get(
   }
 );
 
-contractorRoute.delete(
+contractorRouter.delete(
   "/contractor/:contractor_id",
   middleware([rolePermissions.DELETE_CONTRACTOR]),
   async (req, res) => {
@@ -90,3 +110,5 @@ contractorRoute.delete(
     }
   }
 );
+
+export default contractorRouter;
