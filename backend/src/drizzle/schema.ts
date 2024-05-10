@@ -65,6 +65,9 @@ export const UserTable = pgTable("users", {
   landfill_id: integer("landfill_id").references(() => LandfillTable.id, {
     onDelete: "set null",
   }),
+  contractor_id: integer("contract_id").references(() => ContractorTable.id, {
+    onDelete: "set null",
+  }),
   mobile: varchar("mobile", { length: 11 }).notNull().unique(),
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
@@ -82,6 +85,10 @@ export const UserTableRelations = relations(UserTable, ({ one, many }) => ({
   token: one(TokenTable, {
     fields: [UserTable.id],
     references: [TokenTable.user_id],
+  }),
+  contractor: one(ContractorTable, {
+    fields: [UserTable.contractor_id],
+    references: [ContractorTable.id],
   }),
 }));
 
@@ -154,7 +161,163 @@ export const StsTableRelations = relations(StsTable, ({ one, many }) => ({
     fields: [StsTable.landfill_id],
     references: [LandfillTable.id],
   }),
+  contractor: many(ContractorTable),
+  contractor_monitor: many(ContractorMonitoringTable),
 }));
+
+export const ContractTable = pgTable("contracts", {
+  id: serial("id").primaryKey(),
+  duration: timestamp("duration").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  contractor_id: integer("contractor_id")
+    .notNull()
+    .references(() => ContractorTable.id, { onDelete: "cascade" }),
+});
+
+export const ContractTableRelations = relations(ContractTable, ({ one }) => ({
+  contractor: one(ContractorTable, {
+    fields: [ContractTable.contractor_id],
+    references: [ContractorTable.id],
+  }),
+}));
+
+export const ContractorTable = pgTable("contractors", {
+  id: serial("id").primaryKey(),
+  company_name: varchar("company_name", { length: 255 }).notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  tin: varchar("tin", { length: 255 }).notNull().unique(),
+  mobile: varchar("mobile", { length: 11 }).notNull().unique(),
+  payment_per_ton_waste: real("payment_per_ton_waste").notNull(),
+  required_amount_waste: real("required_amount_waste").notNull(),
+  area_collection: varchar("area_collection", { length: 255 }).notNull(),
+  sts_id: integer("sts_id").references(() => StsTable.id, {
+    onDelete: "cascade",
+  }),
+});
+
+export const ContractorTableRelations = relations(
+  ContractorTable,
+  ({ one, many }) => ({
+    contract: many(ContractTable),
+    sts: one(StsTable, {
+      fields: [ContractorTable.sts_id],
+      references: [StsTable.id],
+    }),
+    user: many(UserTable),
+    workforce: many(ContractorWorkforceTable),
+    monitor_workforce: many(WorkforceMonitoringTable),
+    monitor_contractor: many(ContractorMonitoringTable),
+  })
+);
+
+export const WorkforceTable = pgTable("workforces", {
+  id: serial("id").primaryKey(),
+  full_name: varchar("full_name", { length: 255 }).notNull(),
+  dob: timestamp("dob").notNull(),
+  job_title: varchar("job_title", { length: 255 }).notNull(),
+  rate_per_hour: real("rate_per_hour").notNull(),
+  mobile: varchar("mobile", { length: 11 }).notNull().unique(),
+  assigned_route_latitude: real("assigned_route_latitude").notNull(),
+  assigned_route_longitude: real("assigned_route_longitude").notNull(),
+  total_time_in_sec: integer("total_time_in_sec").notNull(),
+});
+
+export const WorkforceTableRelations = relations(
+  WorkforceTable,
+  ({ many }) => ({
+    sts: many(ContractorWorkforceTable),
+    monitor: many(WorkforceMonitoringTable),
+    contractor: many(ContractorWorkforceTable),
+  })
+);
+
+export const ContractorWorkforceTable = pgTable(
+  "contractor_workforce",
+  {
+    contractor_id: integer("contractor_id")
+      .notNull()
+      .references(() => ContractorTable.id, { onDelete: "cascade" }),
+    workforce_id: integer("workforce_id")
+      .notNull()
+      .references(() => WorkforceTable.id, { onDelete: "cascade" }),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.contractor_id, table.workforce_id] }),
+    };
+  }
+);
+
+export const ContractorWorkforceTableRelations = relations(
+  ContractorWorkforceTable,
+  ({ one }) => ({
+    contractor: one(ContractorTable, {
+      fields: [ContractorWorkforceTable.contractor_id],
+      references: [ContractorTable.id],
+    }),
+    workforce: one(WorkforceTable, {
+      fields: [ContractorWorkforceTable.workforce_id],
+      references: [WorkforceTable.id],
+    }),
+  })
+);
+
+export const WorkforceMonitoringTable = pgTable("workforce_monitoring", {
+  id: serial("id").primaryKey(),
+  login: timestamp("login").notNull().defaultNow(),
+  logout: timestamp("logout"),
+  start_time: timestamp("start_time").notNull().defaultNow(),
+  end_time: timestamp("end_time"),
+  overtime_hours: real("overtime_hours").notNull().default(0),
+  leave_today: boolean("leave_today").notNull().default(false),
+  contractor_id: integer("contractor_id")
+    .notNull()
+    .references(() => ContractorTable.id, { onDelete: "cascade" }),
+  workforce_id: integer("workforce_id")
+    .notNull()
+    .references(() => WorkforceTable.id, { onDelete: "cascade" }),
+});
+
+export const WorkforceMonitoringTableRelations = relations(
+  WorkforceMonitoringTable,
+  ({ one }) => ({
+    contractor: one(ContractorTable, {
+      fields: [WorkforceMonitoringTable.contractor_id],
+      references: [ContractorTable.id],
+    }),
+    workforce: one(WorkforceTable, {
+      fields: [WorkforceMonitoringTable.workforce_id],
+      references: [WorkforceTable.id],
+    }),
+  })
+);
+
+export const ContractorMonitoringTable = pgTable("contractor_monitoring", {
+  id: serial("id").primaryKey(),
+  waste_amount: real("waste_amount").notNull(),
+  type_of_waste: varchar("type_of_waste", { length: 255 }).notNull(),
+  vehicle_type: varchar("vehicle_type", { length: 255 }).notNull(),
+  sts_id: integer("sts_id")
+    .references(() => StsTable.id, { onDelete: "cascade" })
+    .notNull(),
+  contractor_id: integer("contractor_id")
+    .notNull()
+    .references(() => ContractorTable.id, { onDelete: "cascade" }),
+});
+
+export const ContractorMonitoringTableRelations = relations(
+  ContractorMonitoringTable,
+  ({ one }) => ({
+    sts: one(StsTable, {
+      fields: [ContractorMonitoringTable.sts_id],
+      references: [StsTable.id],
+    }),
+    contractor: one(ContractorTable, {
+      fields: [ContractorMonitoringTable.contractor_id],
+      references: [ContractorTable.id],
+    }),
+  })
+);
 
 export const LandfillTable = pgTable("landfills", {
   id: serial("id").primaryKey(),

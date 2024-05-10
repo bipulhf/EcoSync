@@ -129,6 +129,7 @@ export const getTokenService = async ({ email, password }: any) => {
       profile_photo: user.profile_photo,
       sts_id: user.sts_id,
       landfill_id: user.landfill_id,
+      contractor_id: user.contractor_id,
     };
 
     const token = jwt.sign(payload, JWT_SECRET, {
