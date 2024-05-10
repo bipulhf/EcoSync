@@ -12,6 +12,7 @@ import contractorRouter from "./routers/ContractorRoute";
 import workforceRouter from "./routers/WorkforceRouter";
 import contractRouter from "./routers/ContractRoute";
 import contractorMonitoringRouter from "./routers/ContractorMonitoringRouter";
+import workforceMonitoringRouter from "./routers/WorkforceMonitoringRouter";
 
 const app = express();
 
@@ -38,5 +39,6 @@ app.use("/", workforceRouter);
 app.use("/", contractorRouter);
 app.use("/", contractRouter);
 app.use("/", contractorMonitoringRouter);
+app.use("/", workforceMonitoringRouter);
 
 export default app;

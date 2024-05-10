@@ -588,3 +588,27 @@ export async function createContractorReport(
     return { message: response.message };
   }
 }
+
+export async function workforceEntry(prevState: any, formData: FormData) {
+  const workforce_id = formData.get("workforce_id");
+  const leave_today = formData.get("leave_today");
+
+  const data = await fetch(`${baseURL}/workforce-monitor`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      workforce_id,
+      leave_today,
+    }),
+  });
+
+  if (data.status === 201) {
+    redirect(`/workforces/monitor`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}

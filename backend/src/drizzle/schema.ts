@@ -266,9 +266,6 @@ export const WorkforceMonitoringTable = pgTable("workforce_monitoring", {
   id: serial("id").primaryKey(),
   login: timestamp("login").notNull().defaultNow(),
   logout: timestamp("logout"),
-  start_time: timestamp("start_time").notNull().defaultNow(),
-  end_time: timestamp("end_time"),
-  overtime_hours: real("overtime_hours").notNull().default(0),
   leave_today: boolean("leave_today").notNull().default(false),
   contractor_id: integer("contractor_id")
     .notNull()
