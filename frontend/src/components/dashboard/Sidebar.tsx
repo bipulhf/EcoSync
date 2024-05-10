@@ -2,13 +2,16 @@
 
 import React from "react";
 import {
+  AppstoreAddOutlined,
   BarChartOutlined,
   BranchesOutlined,
   CarOutlined,
   CarryOutOutlined,
+  FileAddOutlined,
   HeatMapOutlined,
   HomeOutlined,
   LogoutOutlined,
+  MonitorOutlined,
   TruckOutlined,
   UserAddOutlined,
   UserOutlined,
@@ -67,6 +70,31 @@ const labels = [
     key: "ROLES",
     label: <Link href={`/roles`}>Roles and Permissions</Link>,
     icon: React.createElement(UserAddOutlined),
+  },
+  {
+    key: "CONTRACTOR",
+    label: <Link href={`/contractors`}>Contractors</Link>,
+    icon: React.createElement(AppstoreAddOutlined),
+  },
+  {
+    key: "CONTRACT",
+    label: <Link href={`/contracts`}>Contracts</Link>,
+    icon: React.createElement(FileAddOutlined),
+  },
+  {
+    key: "WORKFORCE",
+    label: <Link href={`/workforces`}>Workforces</Link>,
+    icon: React.createElement(UsergroupAddOutlined),
+  },
+  {
+    key: "READ_WORKFORCE_MONITOR",
+    label: <Link href={`/workforces/monitor`}>Workforce Monitor</Link>,
+    icon: React.createElement(MonitorOutlined),
+  },
+  {
+    key: "READ_CONTRACTOR_MONITOR",
+    label: <Link href={`/contractors/monitor`}>Contractor Monitor</Link>,
+    icon: React.createElement(MonitorOutlined),
   },
 ];
 

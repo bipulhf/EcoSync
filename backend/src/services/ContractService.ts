@@ -1,9 +1,11 @@
+import { ResourceNotFound } from "../errors/ResourceNotFound";
 import {
   createContract,
   getAllContracts,
   getContractByContractorId,
   getContractById,
 } from "../repository/ContractRepository";
+import { getContractorById } from "../repository/ContractorRepository";
 
 export const getAllContractService = async () => {
   try {
@@ -36,6 +38,8 @@ export const createContractService = async ({
   duration,
 }: any) => {
   try {
+    const contractor = await getContractorById(contractor_id);
+    if (!contractor) throw new ResourceNotFound("Contractor", contractor_id);
     return await createContract({ contractor_id, duration });
   } catch (error) {
     throw error;

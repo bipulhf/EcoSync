@@ -269,6 +269,7 @@ export async function createUser(
     roles,
     sts_id,
     landfill_id,
+    contractor_id,
   }: any,
   tx?: any
 ) {
@@ -285,6 +286,7 @@ export async function createUser(
           mobile,
           sts_id: sts_id ? sts_id : null,
           landfill_id: landfill_id ? landfill_id : null,
+          contractor_id: contractor_id ? contractor_id : null,
         })
         .returning();
       roles.forEach(

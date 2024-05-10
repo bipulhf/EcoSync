@@ -1,3 +1,4 @@
+import { ResourceNotFound } from "../errors/ResourceNotFound";
 import {
   createContractor,
   createContractorManager,
@@ -5,6 +6,7 @@ import {
   getAllContractors,
   getContractorById,
 } from "../repository/ContractorRepository";
+import { getStsById } from "../repository/StsRepository";
 
 export const getAllContractorsService = async () => {
   try {
@@ -32,6 +34,8 @@ export const createContractorService = async ({
   sts_id,
 }: any) => {
   try {
+    const sts = await getStsById(sts_id);
+    if (!sts) throw new ResourceNotFound("STS", sts_id);
     return await createContractor({
       company_name,
       tin,

@@ -21,6 +21,7 @@ import {
 import { AlreadyExists } from "../errors/AlreadyExists";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
 import { getAllVehicles } from "../repository/VehicleRepository";
+import { getContractorById } from "../repository/ContractorRepository";
 
 const emailPattern: RegExp = /^[\w\.-]+@[\w\.-]+\.\w+$/;
 
@@ -32,6 +33,7 @@ export const createUserService = async ({
   roles,
   sts_id,
   landfill_id,
+  contractor_id,
 }: any) => {
   try {
     (sts_id = +sts_id), (landfill_id = +landfill_id);
@@ -45,20 +47,26 @@ export const createUserService = async ({
       throw new Error("STS ID is required for the role");
     else if (roles.includes(userRole.LANDFILL_MANAGER) && !landfill_id)
       throw new Error("Landfill ID is required for the role");
+    else if (roles.includes(userRole.CONTRACTOR_MANAGER) && !contractor_id)
+      throw new Error("Contractor ID is required for the role");
 
     const password = generateRandomPassword(10);
     const present = await db.transaction(async (tx: any) => {
       const user = await getUserByEmail(email, false, tx);
-      let sts, landfill;
+      let sts, landfill, contractor;
       if (sts_id) sts = await getStsById(sts_id, tx);
       if (landfill_id) landfill = await getLandfillById(landfill_id, tx);
-      return { user, sts, landfill };
+      if (contractor_id)
+        contractor = await getContractorById(contractor_id, tx);
+      return { user, sts, landfill, contractor };
     });
 
     if (present.user) throw new AlreadyExists("User");
     else if (!present.sts && sts_id) throw new ResourceNotFound("STS", sts_id);
     else if (!present.landfill && landfill_id)
       throw new ResourceNotFound("Landfill", landfill_id);
+    else if (!present.contractor && contractor_id)
+      throw new ResourceNotFound("Contractor", contractor_id);
 
     const newUser = await createUser({
       first_name,
@@ -69,6 +77,7 @@ export const createUserService = async ({
       roles,
       sts_id,
       landfill_id,
+      contractor_id,
     });
 
     const mail = {

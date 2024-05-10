@@ -155,6 +155,24 @@ export default function UserRegistaionsForm({ total_roles }: any) {
                 />
               </div>
             )}
+            {checkedList.includes("contractor_manager") && (
+              <div className="mb-4 flex w-full items-center">
+                <label
+                  htmlFor="contractor_id"
+                  className="w-[30%] block mb-2 max-sm:hidden"
+                >
+                  Enter Contractor ID
+                </label>
+                <input
+                  type="text"
+                  id="contractor_id"
+                  name="contractor_id"
+                  required
+                  className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                  placeholder="Enter Contractor ID"
+                />
+              </div>
+            )}
           </div>
         </div>
         <Submit />

@@ -15,10 +15,11 @@ export const getAllContractors = async () => {
   }
 };
 
-export const getContractorById = async (contractor_id: number) => {
+export const getContractorById = async (contractor_id: number, tx?: any) => {
+  const dbCon = tx || db;
   try {
-    return await db.query.ContractorTable.findMany({
-      where: (model) => eq(model.id, contractor_id),
+    return await dbCon.query.ContractorTable.findFirst({
+      where: (model: any) => eq(model.id, contractor_id),
       with: {
         contract: true,
         sts: true,

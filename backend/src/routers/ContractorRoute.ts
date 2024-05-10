@@ -50,7 +50,7 @@ contractorRouter.post(
         sts_id,
       });
       return res
-        .status(200)
+        .status(201)
         .json({ message: "Contractor created successfully" });
     } catch (error) {
       const err = getErrorType(error);

@@ -1,8 +1,8 @@
 import { baseURL } from "../../../../../files";
 import { getJWT } from "@/utils/actions";
-import ManagerModal from "@/components/dashboard/ManagerModal";
 import MultipleLocation from "@/components/dashboard/maps/MultipleLocation";
 import StsModal from "@/components/tables/StsModal";
+import ManagerModal from "@/components/dashboard/modals/ManagerModal";
 
 const getData = async (id: string) => {
   const data = await (

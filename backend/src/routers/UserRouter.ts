@@ -25,8 +25,16 @@ userRouter.post(
   middleware([rolePermissions.CREATE_USER]),
   async (req, res) => {
     try {
-      let { first_name, last_name, email, mobile, roles, sts_id, landfill_id } =
-        req.body;
+      let {
+        first_name,
+        last_name,
+        email,
+        mobile,
+        roles,
+        sts_id,
+        landfill_id,
+        contractor_id,
+      } = req.body;
       const message = await createUserService({
         first_name,
         last_name,
@@ -35,6 +43,7 @@ userRouter.post(
         roles,
         sts_id,
         landfill_id,
+        contractor_id,
       });
       return res.status(201).json(message);
     } catch (error) {

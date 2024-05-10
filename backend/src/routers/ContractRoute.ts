@@ -31,7 +31,7 @@ contractRouter.post(
     try {
       const { duration, contractor_id } = req.body;
       await createContractService({ duration, contractor_id });
-      return res.status(200).json({ message: "Contract created successfully" });
+      return res.status(201).json({ message: "Contract created successfully" });
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });

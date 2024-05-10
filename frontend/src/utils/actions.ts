@@ -14,6 +14,7 @@ export async function registration(prevState: any, formData: FormData) {
   const getRoles = formData.get("roles")?.toString();
   const sts_id = formData.get("sts_id");
   const landfill_id = formData.get("landfill_id");
+  const contractor_id = formData.get("conractor_id");
   const roles = getRoles?.split(",");
 
   const data = await fetch(`${baseURL}/auth/create`, {
@@ -30,6 +31,7 @@ export async function registration(prevState: any, formData: FormData) {
       roles,
       sts_id,
       landfill_id,
+      contractor_id,
     }),
   });
 
@@ -452,4 +454,67 @@ export const downloadReport = async (sts_vehicle_id: string) => {
 export async function Logout() {
   cookies().delete("jwt");
   redirect("/login");
+}
+
+export async function contractorRegistration(
+  prevState: any,
+  formData: FormData
+) {
+  const company_name = formData.get("company_name");
+  let tin = formData.get("tin");
+  const mobile = formData.get("mobile");
+  const payment_per_ton_waste = formData.get("payment_per_ton_waste");
+  let required_amount_waste = parseInt(
+    formData.get("required_amount_waste")?.toString() || "0"
+  );
+  const area_collection = formData.get("area_collection");
+  const sts_id = formData.get("sts_id");
+
+  const data = await fetch(`${baseURL}/contractor`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      company_name,
+      tin,
+      mobile,
+      payment_per_ton_waste,
+      required_amount_waste: required_amount_waste / 1000,
+      area_collection,
+      sts_id,
+    }),
+  });
+
+  if (data.status === 201) {
+    redirect(`/contractors`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function contractRegistration(prevState: any, formData: FormData) {
+  const duration = formData.get("duration");
+  let contractor_id = formData.get("contractor_id");
+
+  const data = await fetch(`${baseURL}/contract`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      duration,
+      contractor_id,
+    }),
+  });
+
+  if (data.status === 201) {
+    redirect(`/contracts`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
 }

@@ -7,6 +7,7 @@ import {
   getAllWorkforceService,
   getWorkforceByContractorIdService,
 } from "../services/WorkforceService";
+import { getContractByContractorIdService } from "../services/ContractService";
 
 const workforceRouter = Router();
 
@@ -39,6 +40,21 @@ workforceRouter.post(
       total_time_in_sec,
     } = req.body;
     try {
+      const contract = await getContractByContractorIdService(
+        res.locals.contractor_id
+      );
+      if (contract.length === 0) {
+        return res.status(400).json({ message: "Contracts does not exist" });
+      } else if (
+        new Date(
+          new Date(contract[0].created_at).setDate(
+            new Date(contract[0].created_at).getDate() + contract[0].duration
+          )
+        ) < new Date()
+      ) {
+        return res.status(400).json({ message: "Contract has expired" });
+      }
+
       await createWorkforceService({
         full_name,
         dob,
@@ -51,7 +67,7 @@ workforceRouter.post(
         contractor_id: res.locals.contractor_id,
       });
       return res
-        .status(200)
+        .status(201)
         .json({ message: "Workforce created successfully" });
     } catch (error) {
       const err = getErrorType(error);

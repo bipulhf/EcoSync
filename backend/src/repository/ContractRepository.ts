@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "../drizzle/db";
 import { ContractTable } from "../drizzle/schema";
 
@@ -8,6 +8,7 @@ export const getAllContracts = async () => {
       with: {
         contractor: true,
       },
+      orderBy: (model) => desc(model.created_at),
     });
   } catch (error) {
     throw new Error("Error in getAllContracts");
@@ -21,6 +22,7 @@ export const getContractById = async (contract_id: number) => {
       with: {
         contractor: true,
       },
+      orderBy: (model) => desc(model.created_at),
     });
   } catch (error) {
     throw new Error("Error in getting Contract");
@@ -34,6 +36,7 @@ export const getContractByContractorId = async (contractor_id: number) => {
       with: {
         contractor: true,
       },
+      orderBy: (model) => desc(model.created_at),
     });
   } catch (error) {
     throw new Error("Error in getting Contract");
