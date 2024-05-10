@@ -13,10 +13,14 @@ import {
   createUser,
   updateUserAndRoleById,
 } from "../repository/UserRepository";
-import { getStsById } from "../repository/StsRepository";
-import { getLandfillById } from "../repository/LandfillRepository";
+import { getAllSts, getStsById } from "../repository/StsRepository";
+import {
+  getAllLandfill,
+  getLandfillById,
+} from "../repository/LandfillRepository";
 import { AlreadyExists } from "../errors/AlreadyExists";
 import { ResourceNotFound } from "../errors/ResourceNotFound";
+import { getAllVehicles } from "../repository/VehicleRepository";
 
 const emailPattern: RegExp = /^[\w\.-]+@[\w\.-]+\.\w+$/;
 
@@ -147,6 +151,51 @@ export const updateUserService = async ({
       landfill_id,
     });
     return updatedUser;
+  } catch (error) {
+    throw new Error("Error updating user");
+  }
+};
+
+export const getAllInformationService = async () => {
+  try {
+    const users = await getAllUsersWithRoles();
+    const type: any = {
+      open_truck: 0,
+      dump_truck: 0,
+      compactor: 0,
+      container: 0,
+    };
+    const vehicles = await getAllVehicles();
+    vehicles.map((vehicle) => {
+      if (!type[vehicle.type]) type[vehicle.type] = 0;
+      type[vehicle.type] += 1;
+    });
+    const sts = await getAllSts();
+    const landfill = await getAllLandfill();
+
+    let sts_managers: number = 0;
+    sts.map((single_sts: any) => {
+      sts_managers += single_sts.manager.length;
+    });
+    let landfill_managers: number = 0;
+    landfill.map((single_landfill: any) => {
+      landfill_managers += single_landfill.manager.length;
+    });
+    return {
+      users: users.length,
+      vehicles: {
+        value: vehicles.length,
+        type,
+      },
+      sts: {
+        value: sts.length,
+        managers: sts_managers,
+      },
+      landfill: {
+        value: landfill.length,
+        managers: landfill_managers,
+      },
+    };
   } catch (error) {
     throw new Error("Error updating user");
   }

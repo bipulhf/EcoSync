@@ -10,6 +10,7 @@ export async function getAllSts(tx?: any) {
     return await dbCon.query.StsTable.findMany({
       with: {
         landfill: true,
+        manager: true,
       },
     });
   } catch (error) {

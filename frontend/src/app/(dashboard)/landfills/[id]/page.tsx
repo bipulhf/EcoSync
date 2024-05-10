@@ -3,8 +3,8 @@ import { baseURL } from "../../../../../files";
 import { getJWT } from "@/utils/actions";
 import GetDirection from "@/components/dashboard/GetDirection";
 import ManagerModal from "@/components/dashboard/ManagerModal";
-import StsModal from "@/components/dashboard/StsModal";
 import MultipleLocation from "@/components/dashboard/MultipleLocation";
+import StsModal from "@/components/tables/StsModal";
 
 const getData = async (id: string) => {
   const data = await (

@@ -11,6 +11,7 @@ import {
   deleteUser,
   updateUserService,
   createUserService,
+  getAllInformationService,
 } from "../services/UserService";
 import getErrorType from "../error";
 import { getUserId } from "../helpers/getRole";
@@ -173,5 +174,19 @@ userRouter.put(
     }
   }
 );
+
+userRouter.get("/all-info", async (req, res) => {
+  try {
+    const token = (req.headers.authorization as string).split(" ")[1];
+    let currentUserId = getUserId(token);
+    if (!currentUserId)
+      return res.status(403).json({ message: "User not found." });
+    const information = await getAllInformationService();
+    return res.status(200).json(information);
+  } catch (error) {
+    const err = getErrorType(error);
+    return res.status(err.errorCode).json({ message: err.message });
+  }
+});
 
 export default userRouter;
