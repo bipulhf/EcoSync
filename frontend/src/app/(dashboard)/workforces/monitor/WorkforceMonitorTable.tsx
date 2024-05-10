@@ -4,6 +4,8 @@ import React from "react";
 import { Table } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import Link from "next/link";
+import { useFormState } from "react-dom";
+import { workforceUpdate } from "@/utils/actions";
 
 interface DataType {
   key: React.Key;
@@ -20,7 +22,27 @@ const onChange: TableProps<DataType>["onChange"] = (
   extra
 ) => {};
 
+function removeDuplicates(arr: any[]) {
+  let unique: any[] = arr.filter((obj, index) => {
+    return index === arr.findIndex((o) => obj.value === o.value);
+  });
+
+  return unique;
+}
+
 const WorkforceMonitorTable = ({ contractor_monitor }: any) => {
+  const [state, formAction] = useFormState(workforceUpdate, null);
+
+  const dateArr = removeDuplicates(
+    (contractor_monitor.map((contract: any) => contract.login) as any).map(
+      (company: any) => ({
+        text: new Date(company).toLocaleDateString(),
+        value: new Date(company).toLocaleDateString(),
+      })
+    )
+  );
+
+  console.log(dateArr);
   const columns: TableColumnsType<DataType> = [
     {
       title: "Name",
@@ -69,6 +91,27 @@ const WorkforceMonitorTable = ({ contractor_monitor }: any) => {
       dataIndex: "login",
       key: "login",
       render: (text, row: any) => new Date(text).toLocaleDateString(),
+      filters: dateArr,
+      onFilter: (value: any, record: any) =>
+        new Date(record.login).toLocaleDateString() === value,
+      filterMode: "tree",
+      filterSearch: true,
+    },
+    {
+      title: "Update Entry",
+      dataIndex: "id",
+      key: "entry",
+      render: (text, row: any) => (
+        <form action={formAction}>
+          <input type="hidden" name="workforce_id" value={text} />
+          <button
+            className={`px-2 py-1 rounded-lg hover:underline bg-admin text-white`}
+            type="submit"
+          >
+            Update Entry
+          </button>
+        </form>
+      ),
     },
   ];
 

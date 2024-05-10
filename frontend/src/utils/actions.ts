@@ -246,6 +246,7 @@ export async function stsRegistration(prevState: any, formData: FormData) {
   const capacity = formData.get("capacity");
   const latitude = formData.get("latitude");
   const longitude = formData.get("longitude");
+  const fine_per_ton = formData.get("fine_per_ton");
   const landfill_id = formData.get("landfill_id");
 
   const data = await fetch(`${baseURL}/sts`, {
@@ -259,6 +260,7 @@ export async function stsRegistration(prevState: any, formData: FormData) {
       capacity,
       latitude,
       longitude,
+      fine_per_ton,
       landfill_id,
     }),
   });
@@ -451,6 +453,19 @@ export const downloadReport = async (sts_vehicle_id: string) => {
   redirect(`${baseURL}/report/download/${file_path}`);
 };
 
+export const downloadContractorReport = async (sts_vehicle_id: string) => {
+  const { file_path } = await (
+    await fetch(`${baseURL}/contractor/${sts_vehicle_id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${await getJWT()}`,
+      },
+    })
+  ).json();
+
+  redirect(`${baseURL}/contractor/download/${file_path}`);
+};
+
 export async function Logout() {
   cookies().delete("jwt");
   redirect("/login");
@@ -607,6 +622,27 @@ export async function workforceEntry(prevState: any, formData: FormData) {
 
   if (data.status === 201) {
     redirect(`/workforces/monitor`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function workforceUpdate(prevState: any, formData: FormData) {
+  const workforce_id = formData.get("workforce_id");
+  const data = await fetch(`${baseURL}/workforce-monitor`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      workforce_id,
+    }),
+  });
+
+  if (data.status === 200) {
+    revalidatePath(`/workforces/monitor`);
   } else {
     const response = await data.json();
     return { message: response.message };

@@ -56,6 +56,7 @@ export const createStsService = async ({
   capacity,
   latitude,
   longitude,
+  fine_per_ton,
   landfill_id,
 }: any) => {
   try {
@@ -79,6 +80,7 @@ export const createStsService = async ({
       longitude: parseFloat(longitude),
       distance_meter: distance.distanceInMeter,
       possible_time_sec: distance.timeInSeconds,
+      fine_per_ton,
       landfill_id,
     });
 

@@ -3,6 +3,7 @@
 import React from "react";
 import { Table } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
+import { downloadContractorReport } from "@/utils/actions";
 
 interface DataType {
   key: React.Key;
@@ -20,11 +21,12 @@ const onChange: TableProps<DataType>["onChange"] = (
 ) => {};
 
 const ContractorMonitorTable = ({ contractor_monitor }: any) => {
+  console.log(contractor_monitor);
   const columns: TableColumnsType<DataType> = [
     {
       title: "Name",
       dataIndex: ["contractor", "company_name"],
-      key: "full_name",
+      key: "company_name",
     },
     {
       title: "Waste Amount",
@@ -61,6 +63,39 @@ const ContractorMonitorTable = ({ contractor_monitor }: any) => {
       onFilter: (value: any, record: any) => record.vehicle_type === value,
       filterMode: "tree",
       filterSearch: true,
+    },
+    {
+      title: "Collection Time",
+      dataIndex: "collection_time",
+      key: "collection_time",
+      render: (text) => new Date(text).toLocaleString(),
+      filters: (
+        contractor_monitor.map(
+          (contract: any) => contract.collection_time
+        ) as any
+      ).map((company: any) => ({
+        text: new Date(company).toLocaleDateString(),
+        value: new Date(company).toLocaleDateString(),
+      })),
+      onFilter: (value: any, record: any) =>
+        new Date(record.collection_time).toLocaleDateString() === value,
+      filterMode: "tree",
+      filterSearch: true,
+    },
+    {
+      title: "Download Bill",
+      dataIndex: "id",
+      key: "download",
+      render: (text: any) => (
+        <button
+          className={`px-2 py-1 rounded-lg hover:underline bg-admin text-white`}
+          onClick={() => {
+            downloadContractorReport(text);
+          }}
+        >
+          Download Bill
+        </button>
+      ),
     },
   ];
 

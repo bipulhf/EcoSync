@@ -90,6 +90,7 @@ export async function createSts(
     longitude,
     distance_meter,
     possible_time_sec,
+    fine_per_ton,
     landfill_id,
   }: any,
   tx?: any
@@ -105,6 +106,7 @@ export async function createSts(
         longitude,
         distance_meter,
         possible_time_sec,
+        fine_per_ton,
         landfill_id,
       })
       .returning();

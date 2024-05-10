@@ -145,6 +145,7 @@ export const StsTable = pgTable("sts", {
   longitude: real("longitude").notNull(),
   distance_meter: real("distance_meter").notNull(),
   possible_time_sec: real("possible_time_sec").notNull(),
+  fine_per_ton: real("fine_per_ton").notNull(),
   landfill_id: integer("landfill_id")
     .references(() => LandfillTable.id, {
       onDelete: "cascade",

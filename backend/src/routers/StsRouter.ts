@@ -41,13 +41,15 @@ stsRouter.post(
   "/sts",
   middleware([rolePermissions.CREATE_STS]),
   async (req, res) => {
-    let { ward, capacity, latitude, longitude, landfill_id } = req.body;
+    let { ward, capacity, latitude, longitude, fine_per_ton, landfill_id } =
+      req.body;
     try {
       const sts = await createStsService({
         ward,
         capacity,
         latitude,
         longitude,
+        fine_per_ton,
         landfill_id,
       });
       return res.status(201).json(sts);

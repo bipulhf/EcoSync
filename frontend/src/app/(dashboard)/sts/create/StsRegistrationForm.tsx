@@ -65,6 +65,23 @@ export default function STSRegistrationForm() {
             </div>
             <div className="mb-4 flex w-full items-center">
               <label
+                htmlFor="fine_per_ton"
+                className="w-[30%] block mb-2 max-sm:hidden"
+              >
+                Fine Per Ton
+              </label>
+              <input
+                type="number"
+                id="fine_per_ton"
+                name="fine_per_ton"
+                step="0.01"
+                required
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
+                placeholder="Enter Fine Per Ton in Taka"
+              />
+            </div>
+            <div className="mb-4 flex w-full items-center">
+              <label
                 htmlFor="latitude"
                 className="w-[30%] block mb-2 max-sm:hidden"
               >

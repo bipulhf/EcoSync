@@ -106,7 +106,7 @@ export default function ContractorRegistrationForm() {
                 name="required_amount_waste"
                 required
                 className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:border-admin`}
-                placeholder="Enter Required Amount of Waste"
+                placeholder="Enter Required Amount of Waste (in kg)"
               />
             </div>
             <div className="mb-4 flex w-full items-center">

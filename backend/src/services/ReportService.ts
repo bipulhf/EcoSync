@@ -1,12 +1,7 @@
 import { generatePdf } from "../helpers/generatePdf";
 import path from "path";
 import fs from "fs";
-import {
-  getReport,
-  getReportByVehicleNumber,
-  getReports,
-  getStsVehicleById,
-} from "../repository/ReportRepository";
+import { getReport, getStsVehicleById } from "../repository/ReportRepository";
 import { InvalidAccess } from "../errors/InvalidAccess";
 import { InvalidType } from "../errors/InvalidType";
 

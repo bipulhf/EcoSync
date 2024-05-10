@@ -65,11 +65,10 @@ workforceMonitoringRouter.put(
   "/workforce-monitor",
   middleware([rolePermissions.READ_WORKFORCE_MONITOR]),
   async (req, res) => {
-    const { leave_today, workforce_id, contractor_id } = req.body;
+    const { workforce_id } = req.body;
     try {
       const data = await updateWorkforceWasteInContractorService({
         workforce_id,
-        contractor_id,
       });
       return res.status(200).json(data);
     } catch (error) {

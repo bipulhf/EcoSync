@@ -56,18 +56,11 @@ export const createWorkforceWasteInContractorService = async ({
 };
 
 export const updateWorkforceWasteInContractorService = async ({
-  leave_today,
   workforce_id,
-  contractor_id,
 }: any) => {
   try {
-    const contractor = await getContractorById(contractor_id);
-    if (!contractor) {
-      throw new ResourceNotFound("Contractor", contractor_id);
-    }
     await updateWorkforceWasteInContractor({
       workforce_id,
-      contractor_id,
     });
     return { message: "Workforce updated successfully" };
   } catch (error) {

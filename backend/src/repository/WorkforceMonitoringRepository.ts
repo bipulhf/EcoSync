@@ -68,6 +68,7 @@ export const createWorkforceWasteInContractor = async ({
         workforce_id,
         contractor_id,
       })
+      .onConflictDoNothing()
       .execute();
   } catch (error) {
     throw new Error("Error in getAllContractorMonitor");
@@ -76,7 +77,6 @@ export const createWorkforceWasteInContractor = async ({
 
 export const updateWorkforceWasteInContractor = async ({
   workforce_id,
-  contractor_id,
 }: any) => {
   try {
     return await db
@@ -84,21 +84,7 @@ export const updateWorkforceWasteInContractor = async ({
       .set({
         logout: new Date(),
       })
-      .where(
-        and(
-          and(
-            eq(WorkforceMonitoringTable.contractor_id, contractor_id),
-            and(
-              eq(WorkforceMonitoringTable.workforce_id, workforce_id),
-              eq(WorkforceMonitoringTable.leave_today, false)
-            )
-          ),
-          gte(
-            WorkforceMonitoringTable.login,
-            new Date(new Date().getDate() - 1)
-          )
-        )
-      )
+      .where(eq(WorkforceMonitoringTable.id, workforce_id))
       .execute();
   } catch (error) {
     throw new Error("Error in getAllContractorMonitor");

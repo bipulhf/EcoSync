@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
 import { useFormState, useFormStatus } from "react-dom";
-import { workforceEntry } from "@/utils/actions";
+import { workforceUpdate } from "@/utils/actions";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -23,7 +23,7 @@ function Submit() {
 
 const WorkforceEntryModal = ({ workforce_contractor }: any) => {
   const [open, setOpen] = useState(false);
-  const [state, formAction] = useFormState(workforceEntry, null);
+  const [state, formAction] = useFormState(workforceUpdate, null);
 
   return (
     <>
