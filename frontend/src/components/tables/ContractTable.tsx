@@ -22,7 +22,7 @@ function ContractTable({ contracts }: any) {
         value: company,
       })),
       onFilter: (value: any, record: any) =>
-        (record.contractor.company_name = value),
+        record.contractor.company_name === value,
       filterMode: "tree",
       filterSearch: true,
     },

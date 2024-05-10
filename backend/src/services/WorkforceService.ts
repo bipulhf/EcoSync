@@ -1,3 +1,6 @@
+import { ResourceNotFound } from "../errors/ResourceNotFound";
+import { getDistance } from "../helpers/getDistance";
+import { getContractorById } from "../repository/ContractorRepository";
 import {
   createWorkforce,
   getAllWorkforce,
@@ -39,21 +42,30 @@ export const createWorkforceService = async ({
   mobile,
   assigned_route_latitude,
   assigned_route_longitude,
-  total_time_in_sec,
   contractor_id,
 }: any) => {
   try {
-    return await createWorkforce({
+    const contractor = await getContractorById(contractor_id);
+    if (contractor.length === 0) {
+      throw new ResourceNotFound("Contractor", contractor_id);
+    }
+    const origin = {
+      latitude: assigned_route_latitude,
+      longitude: assigned_route_longitude,
+    };
+    const total_time_in_sec = await getDistance(origin, contractor.sts);
+    const workforce = await createWorkforce({
       full_name,
-      dob,
+      dob: new Date(dob),
       job_title,
       rate_per_hour,
       mobile,
       assigned_route_latitude,
       assigned_route_longitude,
-      total_time_in_sec,
+      total_time_in_sec: total_time_in_sec.timeInSeconds,
       contractor_id,
     });
+    return workforce;
   } catch (error) {
     throw error;
   }

@@ -16,6 +16,7 @@ export const middleware = (permission: string[]) => {
         if (decoded.permissions.includes(perm)) {
           res.locals.permission = permissions;
           res.locals.userId = decoded.userId;
+          res.locals.contractor_id = decoded.contractor_id;
           flag = true;
         }
       });

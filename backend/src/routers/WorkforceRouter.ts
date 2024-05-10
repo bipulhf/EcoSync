@@ -13,10 +13,18 @@ const workforceRouter = Router();
 
 workforceRouter.get(
   "/workforce",
-  middleware([rolePermissions.READ_WORKFORCE_ALL]),
+  middleware([
+    rolePermissions.READ_WORKFORCE_ALL,
+    rolePermissions.READ_WORKFORCE_SELF,
+  ]),
   async (req, res) => {
     try {
-      const contractors = await getAllWorkforceService();
+      let contractors;
+      if (res.locals.contractor_id)
+        contractors = await getWorkforceByContractorIdService(
+          res.locals.contractor_id
+        );
+      else contractors = await getAllWorkforceService();
       return res.status(200).json(contractors);
     } catch (error) {
       const err = getErrorType(error);
@@ -37,7 +45,6 @@ workforceRouter.post(
       mobile,
       assigned_route_latitude,
       assigned_route_longitude,
-      total_time_in_sec,
     } = req.body;
     try {
       const contract = await getContractByContractorIdService(
@@ -55,7 +62,7 @@ workforceRouter.post(
         return res.status(400).json({ message: "Contract has expired" });
       }
 
-      await createWorkforceService({
+      const workforce = await createWorkforceService({
         full_name,
         dob,
         job_title,
@@ -63,12 +70,9 @@ workforceRouter.post(
         mobile,
         assigned_route_latitude,
         assigned_route_longitude,
-        total_time_in_sec,
         contractor_id: res.locals.contractor_id,
       });
-      return res
-        .status(201)
-        .json({ message: "Workforce created successfully" });
+      return res.status(201).json(workforce);
     } catch (error) {
       const err = getErrorType(error);
       return res.status(err.errorCode).json({ message: err.message });

@@ -14,7 +14,7 @@ export async function registration(prevState: any, formData: FormData) {
   const getRoles = formData.get("roles")?.toString();
   const sts_id = formData.get("sts_id");
   const landfill_id = formData.get("landfill_id");
-  const contractor_id = formData.get("conractor_id");
+  const contractor_id = formData.get("contractor_id");
   const roles = getRoles?.split(",");
 
   const data = await fetch(`${baseURL}/auth/create`, {
@@ -513,6 +513,43 @@ export async function contractRegistration(prevState: any, formData: FormData) {
 
   if (data.status === 201) {
     redirect(`/contracts`);
+  } else {
+    const response = await data.json();
+    return { message: response.message };
+  }
+}
+
+export async function workforceRegistration(
+  prevState: any,
+  formData: FormData
+) {
+  const full_name = formData.get("full_name");
+  let dob = formData.get("dob");
+  const job_title = formData.get("job_title");
+  const rate_per_hour = formData.get("rate_per_hour");
+  const mobile = formData.get("mobile");
+  const assigned_route_latitude = formData.get("assigned_route_latitude");
+  const assigned_route_longitude = formData.get("assigned_route_longitude");
+
+  const data = await fetch(`${baseURL}/workforce`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getJWT()}`,
+    },
+    body: JSON.stringify({
+      full_name,
+      dob,
+      job_title,
+      rate_per_hour,
+      mobile,
+      assigned_route_latitude,
+      assigned_route_longitude,
+    }),
+  });
+
+  if (data.status === 201) {
+    redirect(`/workforces`);
   } else {
     const response = await data.json();
     return { message: response.message };

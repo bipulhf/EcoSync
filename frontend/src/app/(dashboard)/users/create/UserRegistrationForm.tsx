@@ -128,7 +128,7 @@ export default function UserRegistaionsForm({ total_roles }: any) {
                   Enter STS ID
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   id="sts_id"
                   name="sts_id"
                   required
@@ -146,7 +146,7 @@ export default function UserRegistaionsForm({ total_roles }: any) {
                   Enter Landfill ID
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   id="landfill_id"
                   name="landfill_id"
                   required
@@ -164,7 +164,7 @@ export default function UserRegistaionsForm({ total_roles }: any) {
                   Enter Contractor ID
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   id="contractor_id"
                   name="contractor_id"
                   required

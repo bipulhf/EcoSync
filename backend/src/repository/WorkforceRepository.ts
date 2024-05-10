@@ -55,8 +55,18 @@ export const createWorkforce = async ({
   contractor_id,
 }: any) => {
   try {
+    console.log({
+      full_name,
+      dob,
+      job_title,
+      rate_per_hour,
+      mobile,
+      assigned_route_latitude,
+      assigned_route_longitude,
+      total_time_in_sec,
+    });
     return await db.transaction(async (tx) => {
-      const [workforce]: any = tx
+      const workforce = await tx
         .insert(WorkforceTable)
         .values({
           full_name,
@@ -68,11 +78,12 @@ export const createWorkforce = async ({
           assigned_route_longitude,
           total_time_in_sec,
         })
-        .returning();
-      tx.insert(ContractorWorkforceTable).values({
+        .returning({ contractor_id: WorkforceTable.id });
+      await tx.insert(ContractorWorkforceTable).values({
         contractor_id,
-        workforce_id: workforce.id,
+        workforce_id: workforce[0].contractor_id,
       });
+      return { workforce };
     });
   } catch (error) {
     throw error;
