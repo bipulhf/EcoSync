@@ -75,5 +75,5 @@ You can see more on [Resources](/resources/).
 ![Waste Trasported to STS](/resources/Pages/Web/Waste_Transported_To_Sts.png)
 ![Schedule Planner](/resources/Pages/Web/Schedule_Plan.png)
 ![Events](/resources/Pages/App/Screenshot_2024-05-11-08-26-17-65_78201e10d675b37a194979c768ebc6a5.jpg)  
-![Event Details](/resources/Pages/App/Screenshot_2024-05-11-08-26-52-56_78201e10d675b37a194979c768ebc6a5.jpg)
+![Event Details](/resources/Pages/App/IMG_20240511_083528.jpg)
 ![Report Complaint](/resources/Pages/App/Screenshot_2024-05-11-08-28-00-10_78201e10d675b37a194979c768ebc6a5.jpg)
