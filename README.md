@@ -48,7 +48,7 @@ We are Homo_spaiens from Shahjalal University of Science and Technology. Here's 
 
 ![Activity](/resources/EcoSync_Workflow.png)
 
-## Technologies Used
+## Technologies Used for the Web Version
 
 - **Frontend**: Next.js with React
 - **UI Library**: Ant Design
@@ -56,6 +56,15 @@ We are Homo_spaiens from Shahjalal University of Science and Technology. Here's 
 - **Database**: PostgreSQL
 - **ORM**: Drizzle ORM
 - **Email Service**: Nodemailer with Google SMTP server
+  
+## Technologies Used for the Android App
+
+- **Frontend**: Kotlin
+- **UI Library**: Jetpack Compose
+- **Backend**: Firebase
+- **Database**: Firebase Firestore
+- **Others**: Retrofit, DaggerHilt, Kotlin Coroutines
+  
 
 ## Some Pages
 
